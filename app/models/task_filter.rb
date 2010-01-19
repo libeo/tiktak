@@ -178,7 +178,7 @@ class TaskFilter < ActiveRecord::Base
   #end
 
   def work_log_to_include
-    to_include = [:project, :user, :customer, :task,
+    to_include = [:project, :user, :customer, {:task => [:task_property_values]} ,
       {:company => :properties },
     ]
     return to_include
