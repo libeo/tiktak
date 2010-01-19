@@ -21,6 +21,7 @@ class WorkLog < ActiveRecord::Base
   has_many    :work_log_notifications, :dependent => :destroy
   has_many    :users, :through => :work_log_notifications
 
+  
   after_update { |r|
     r.ical_entry.destroy if r.ical_entry
     l = r.event_log
@@ -42,6 +43,9 @@ class WorkLog < ActiveRecord::Base
     l.event_type = r.log_type
     l.created_at = r.started_at
     l.save
+
+    #UGLY HACK : I don't know why yet
+    r.project = r.task.project if r.project != r.task.project
     
     if r.task && r.duration.to_i > 0
       r.task.recalculate_worked_minutes
@@ -57,6 +61,12 @@ class WorkLog < ActiveRecord::Base
     end
   
   }
+
+#validates_each :started_at, :on => :update do |model, attr, value|
+#    if value < Time.now - (60 * 60 * 24)
+#      model.errors.add attr, "Cannot modify a work log 24 hours after creation"
+#    end
+#  end
 
   def self.full_text_search(q, options = {})
     return nil if q.nil? or q==""
@@ -105,5 +115,4 @@ class WorkLog < ActiveRecord::Base
   def customer_name
     customer.name if customer
   end
-
 end

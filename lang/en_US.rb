@@ -23,4 +23,6 @@ Localization.define('en_US') do |l|
   l.store "%d completed milestone", ["%d completed milestone", "%d completed milestones"] # Erlend Simonsen
   l.store "Last %d Completed Tasks", ["Last %d Completed Tasks", "Last %d Completed Tasks"]
   l.store "%d translations updated.", ["%d translations updated.", "%d translations updated."]
+  l.store "Notification new project", "Hello,\n\nA new project has been created. Here are the details:"
+  l.store "Notification other info", "Additional information:"
 end

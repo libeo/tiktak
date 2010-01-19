@@ -16,6 +16,7 @@ class Project < ActiveRecord::Base
   has_many      :milestones, :dependent => :destroy, :order => "due_at asc, lower(name) asc"
   has_many      :forums, :dependent => :destroy
   has_many      :shout_channels, :dependent => :destroy
+  has_and_belongs_to_many :notice_groups
 
   validates_length_of           :name,  :maximum=>200
   validates_presence_of         :name

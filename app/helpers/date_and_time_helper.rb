@@ -27,4 +27,12 @@ module DateAndTimeHelper
     TimeParser.date_from_params(current_user, params, key_name)
   end
 
+  def validate_date_from_params(params, key_name)
+    TimeParser.validate_date(current_user.date_format, params[key_name])
+  end
+
+  def validate_datetime_from_params(params, key_name)
+    TimeParser.validate_date("#{current_user.date_format} #{current_user.time_format}", params[key_name])
+  end
+
 end

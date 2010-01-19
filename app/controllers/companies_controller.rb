@@ -21,6 +21,8 @@ class CompaniesController < ApplicationController
 	return
     end
 
+    @company.set_payperiod_date(params[:company][:payperiod_date], current_user.date_format)
+    params[:company].delete :payperiod_date
     if @company.update_attributes(params[:company])
       @internal.name = @company.name
       @internal.save

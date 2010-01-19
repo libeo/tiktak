@@ -7,6 +7,25 @@ class TimeParser
   # date is returned.
   # The returned data will always be in UTC.
   ###
+  def self.validate_date(format, date)
+    valid = true
+    begin
+      DateTime.strptime(date, format)
+    rescue ArgumentError
+      valid = false
+    end
+    valid
+  end
+
+  def self.date_from_format(date, format)
+    begin
+      date = DateTime.strptime(date, format)
+    rescue ArgumentError
+      date = nil
+    end
+    date
+  end
+  
   def self.date_from_params(user, params, key_name)
     res = Time.now.utc
 
@@ -65,14 +84,19 @@ class TimeParser
       end
       
       if total == 0
-        times = input.split(':')
-        while time = times.shift
-          case times.size
-          when 0 then total += time.to_i
-          when 1 then total += time.to_i * 60
-          when 2 then total += time.to_i * user.workday_duration
-          when 3 then total += time.to_i * user.workday_duration * user.days_per_week
-          end
+        if input.strip.match(/^\d+:\d{2}$/)
+          times = input.split(':')
+          while time = times.shift
+            case times.size
+            when 0 then total += time.to_i
+            when 1 then total += time.to_i * 60
+            when 2 then total += time.to_i * user.workday_duration
+            when 3 then total += time.to_i * user.workday_duration * user.days_per_week
+		    end
+		  end
+        elsif input.strip.match(/^\d+\.\d{2}$/)
+          total += input.strip.to_f * 60
+          total = total.to_i
         end
       end
 

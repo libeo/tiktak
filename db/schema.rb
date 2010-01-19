@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090826193412) do
+ActiveRecord::Schema.define(:version => 20100108184202) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -63,6 +63,8 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
     t.boolean  "show_chat",                          :default => true
     t.boolean  "show_messaging",                     :default => true
     t.boolean  "restricted_userlist",                :default => false
+    t.date     "payperiod_date"
+    t.integer  "payperiod_days",                     :default => 7
   end
 
   add_index "companies", ["name"], :name => "companies_name_index"
@@ -71,9 +73,9 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
   create_table "custom_attribute_choices", :force => true do |t|
     t.integer  "custom_attribute_id"
     t.string   "value"
+    t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "position"
   end
 
   add_index "custom_attribute_choices", ["custom_attribute_id"], :name => "index_custom_attribute_choices_on_custom_attribute_id"
@@ -105,7 +107,6 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
   end
 
   add_index "custom_attributes", ["company_id", "attributable_type"], :name => "index_custom_attributes_on_company_id_and_attributable_type"
-  add_index "custom_attributes", ["company_id"], :name => "fk_custom_attributes_company_id"
 
   create_table "customers", :force => true do |t|
     t.integer  "company_id",                   :default => 0,    :null => false
@@ -185,7 +186,6 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
   end
 
   add_index "generated_reports", ["company_id"], :name => "fk_generated_reports_company_id"
-  add_index "generated_reports", ["user_id"], :name => "fk_generated_reports_user_id"
 
   create_table "ical_entries", :force => true do |t|
     t.integer "task_id"
@@ -261,6 +261,23 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
     t.datetime "created_at"
     t.text     "body"
     t.boolean  "portal",     :default => true
+  end
+
+  create_table "notice_groups", :force => true do |t|
+    t.string   "name"
+    t.integer  "duration_format"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "notice_groups_projects", :id => false, :force => true do |t|
+    t.integer "notice_group_id"
+    t.integer "project_id"
+  end
+
+  create_table "notice_groups_users", :id => false, :force => true do |t|
+    t.integer "notice_group_id"
+    t.integer "user_id"
   end
 
   create_table "notifications", :force => true do |t|
@@ -551,7 +568,7 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
     t.datetime "updated_at"
   end
 
-  add_index "sessions", ["session_id"], :name => "session_id_key", :unique => true
+  add_index "sessions", ["session_id"], :name => "sessions_session_id_index", :unique => true
 
   create_table "sheets", :force => true do |t|
     t.integer  "user_id",         :default => 0, :null => false
@@ -709,7 +726,7 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
   add_index "tasks", ["milestone_id"], :name => "index_tasks_on_milestone_id"
   add_index "tasks", ["project_id", "completed_at"], :name => "tasks_project_completed_index"
   add_index "tasks", ["project_id", "milestone_id"], :name => "tasks_project_id_index"
-  add_index "tasks", ["task_num", "company_id"], :name => "index_tasks_on_task_num_and_company_id", :unique => true
+  add_index "tasks", ["task_num", "company_id"], :name => "index_tasks_on_task_num_and_company_id"
 
   create_table "todos", :force => true do |t|
     t.integer  "task_id"
@@ -891,18 +908,24 @@ ActiveRecord::Schema.define(:version => 20090826193412) do
   add_index "wiki_revisions", ["wiki_page_id"], :name => "wiki_revisions_wiki_page_id_index"
 
   create_table "work_logs", :force => true do |t|
-    t.integer  "user_id",          :default => 0,     :null => false
+    t.integer  "user_id",                          :default => 0,     :null => false
     t.integer  "task_id"
-    t.integer  "project_id",       :default => 0,     :null => false
-    t.integer  "company_id",       :default => 0,     :null => false
-    t.integer  "customer_id",      :default => 0,     :null => false
-    t.datetime "started_at",                          :null => false
-    t.integer  "duration",         :default => 0,     :null => false
+    t.integer  "project_id",                       :default => 0,     :null => false
+    t.integer  "company_id",                       :default => 0,     :null => false
+    t.integer  "customer_id",                      :default => 0,     :null => false
+    t.datetime "started_at",                                          :null => false
+    t.integer  "duration",                         :default => 0,     :null => false
     t.text     "body"
-    t.integer  "log_type",         :default => 0
+    t.integer  "log_type",                         :default => 0
     t.integer  "scm_changeset_id"
-    t.integer  "paused_duration",  :default => 0
-    t.boolean  "comment",          :default => false
+    t.integer  "paused_duration",                  :default => 0
+    t.boolean  "comment",                          :default => false
+    t.integer  "facturable",          :limit => 1, :default => 0
+    t.integer  "distance",                         :default => 0
+    t.integer  "minute_displacement",              :default => 0
+    t.integer  "type_displacement",   :limit => 2, :default => 0
+    t.integer  "visible",             :limit => 1, :default => -1
+    t.integer  "rapport_id",                       :default => 0,     :null => false
     t.datetime "exported"
     t.boolean  "approved"
   end

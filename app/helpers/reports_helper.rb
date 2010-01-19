@@ -149,7 +149,7 @@ module ReportsHelper
   ###
   def timesheet_field_style
     display = ""
-    if params[:report].nil? || !["3", "2"].include?(params[:report][:type])
+    if params[:report] && !["5", "3", "2"].include?(params[:report][:type])
       display = "none"
     end
 

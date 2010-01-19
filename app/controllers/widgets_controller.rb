@@ -32,12 +32,20 @@ class WidgetsController < ApplicationController
         @items = current_user.tasks.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer }, :dependencies, :dependants, :todos, :tags])
       end
 
-      @items = case @widget.order_by
+      @items = @items.group_by{ |i| i.unread?(current_user) }
+      @items[true] = [] unless @items[true]
+      @items[false] = [] unless @items[false]
+      @items[false] = @items[false].slice(0, @widget.number - @items[true].length)
+      @items.keys.each do |k|
+        case @widget.order_by
                when 'priority':
-                   current_user.company.sort(@items)[0, @widget.number]
+                   @items[k] = current_user.company.sort(@items[k])
                when 'date':
-                   @items.sort_by {|t| t.created_at.to_i }[0, @widget.number]
-               end
+                   @items[k] = @items[k].sort_by {|t| t.created_at.to_i }
+        end
+      end
+      @items = @items.sort{ |b,c| b[0] == c[0] ? 0 : b[0] == true ? -1 : 1 }.map{ |i| i[1..i.length] }.flatten
+      #@items = @items.group_by{ |i| i.unread?(current_user) }.sort{ |b,c| b[0] == c[0] ? 0 : b[0] == true ? -1 : 1 }.map{ |i| i[1..i.length] }.flatten
 
     when 1
       # Project List

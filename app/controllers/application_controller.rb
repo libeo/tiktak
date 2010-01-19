@@ -9,7 +9,6 @@ class ApplicationController < ActionController::Base
   helper :users
   helper :date_and_time
   helper :javascript
-
 #  helper :all
 
   helper_method :last_active
@@ -19,6 +18,7 @@ class ApplicationController < ActionController::Base
   helper_method :all_users
   helper_method :tz
   helper_method :current_projects
+  helper_method :current_shortlist_filter
   helper_method :current_project_ids
   helper_method :completed_milestone_ids
   helper_method :worked_nice
@@ -96,6 +96,10 @@ class ApplicationController < ActionController::Base
       headers["Content-Type"] = "#{content_type}; charset=utf-8"
     end
 
+  end
+
+  def worked_nice(minutes)
+    return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
   end
 
   # Make sure the session is logged in
@@ -271,10 +275,6 @@ class ApplicationController < ActionController::Base
     @milestone_ids
   end
 
-  def worked_nice(minutes)
-    format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
-  end
-
   def highlight( text, k )
     t = text.gsub(/(#{Regexp.escape(k)})/i, '<strong>\1</strong>')
   end
@@ -399,6 +399,19 @@ class ApplicationController < ActionController::Base
   # if none set)
   def current_task_filter
     @current_task_filter ||= TaskFilter.system_filter(current_user)
+  end
+
+  
+  def current_shortlist_filter
+    unless @current_shortlist_filter
+      f = TaskFilter.find(:first, :conditions => [ "user_id = ? and name = 'shortlist'", current_user.id])
+      unless f
+        f = TaskFilter.new(:name => 'shortlist', :user_id => current_user.id, :qualifiers => [TaskFilterQualifier.new(:qualifiabile_type => "User", :qualifiable_id => current_user.id)])
+        f.save
+      end
+      @current_shortlist_filter = f
+    end
+    @current_shortlist_filter
   end
 
   # Redirects to the given url. If the current request is using ajax,

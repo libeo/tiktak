@@ -2,8 +2,17 @@
   <%= hidden_field_tag "task_filter[qualifiers_attributes][][qualifiable_id]", qualifier.qualifiable_id, :class => "id" %>
   <%= hidden_field_tag "task_filter[qualifiers_attributes][][qualifiable_type]", qualifier.qualifiable_type, :class => "type" %>
   
-  <%= qualifier.qualifiable_type == "PropertyValue" ? qualifier.qualifiable.property.name : qualifier.qualifiable_type %>:
-  <%= qualifier.qualifiable %>
+  <% if TaskFilter::OTHERS.include?(qualifier.qualifiable_type)
+      case qualifier.qualifiable_type
+      when "NoUser"
+        qual = _("Tasks with no users assigned")
+      end
+  %>
+    <%=qual%>
+  <% else %>
+    <%= qualifier.qualifiable_type == "PropertyValue" ? qualifier.qualifiable.property.name : qualifier.qualifiable_type %>:
+    <%= qualifier.qualifiable %>
+  <% end %>
   <%= link_to_function(image_tag("cross_small.png"), "removeSearchFilter(this)") %>
   &nbsp;
 </span>

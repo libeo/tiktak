@@ -18,10 +18,12 @@ class TaskFilter < ActiveRecord::Base
 
   before_create :set_company_from_user
 
+  OTHERS = ["NoUser"]
+
   # Returns the system filter for the given user. If none is found, 
   # create and saves a new one and returns that.
   def self.system_filter(user)
-    filter = user.task_filters.first(:conditions => { :system => true })
+    filter = user.task_filters.first(:conditions =>["system = true and name != 'shortlist'"])
     if filter.nil?
       filter = user.task_filters.build(:name => "System filter for #{ user }", 
                                        :user_id => user.id, :system => true)
@@ -40,10 +42,27 @@ class TaskFilter < ActiveRecord::Base
                                   :limit => 100)
   end
 
+  def work_logs(extra_conditions = nil, limit = nil)
+    return WorkLog.find(:all, :conditions => work_logs_conditions(extra_conditions),
+        :order => "tasks.id desc",
+        :include => work_log_to_include,
+        :limit => limit)
+  end
+
+  def work_log_count(extra_conditions = nil)
+    return WorkLog.count(:conditions => work_logs_conditions(extra_conditions),
+        :order => "tasks.id desc",
+        :include => work_log_to_include
+        )
+  end
+    
+
   # Returns the count of tasks matching the conditions of this filter.
   # if extra_conditions is passed, that will be ANDed to the conditions
   def count(extra_conditions = nil)
-    user.company.tasks.count(:conditions => conditions(extra_conditions),
+    #user.company.tasks.count(:conditions => conditions(extra_conditions),
+    #                         :include => to_include)
+	Task.count(:conditions => conditions(extra_conditions),
                              :include => to_include)
   end
 
@@ -68,11 +87,13 @@ class TaskFilter < ActiveRecord::Base
   def conditions(extra_conditions = nil)
     status_qualifiers = qualifiers.select { |q| q.qualifiable_type == "Status" }
     property_qualifiers = qualifiers.select { |q| q.qualifiable_type == "PropertyValue" }
-    standard_qualifiers = qualifiers - property_qualifiers - status_qualifiers
+    other_qualifiers = qualifiers.select { |q| TaskFilter::OTHERS.include?(q.qualifiable_type ) }
+    standard_qualifiers = qualifiers - property_qualifiers - status_qualifiers - other_qualifiers
     
     res = conditions_for_standard_qualifiers(standard_qualifiers)
     res += conditions_for_property_qualifiers(property_qualifiers)
     res << conditions_for_status_qualifiers(status_qualifiers)
+    res << conditions_for_other_qualifiers(other_qualifiers) if other_qualifiers.length > 0
     res << conditions_for_keywords
     res << extra_conditions if extra_conditions
 
@@ -91,6 +112,33 @@ class TaskFilter < ActiveRecord::Base
     return res
   end
 
+  def work_logs_conditions(extra_conditions = nil)
+    status_qualifiers = qualifiers.select { |q| q.qualifiable_type == "Status" }
+    property_qualifiers = qualifiers.select { |q| q.qualifiable_type == "PropertyValue" }
+    other_qualifiers = qualifiers.select { |q| TaskFilter::OTHERS.include?(q.qualifiable_type ) }
+    standard_qualifiers = qualifiers - property_qualifiers - status_qualifiers - other_qualifiers
+
+    res = conditions_for_standard_qualifiers(standard_qualifiers, true)
+    res += conditions_for_property_qualifiers(property_qualifiers)
+    res << conditions_for_status_qualifiers(status_qualifiers)
+    res << conditions_for_other_qualifiers(other_qualifiers) if other_qualifiers.length > 0
+    res << conditions_for_keywords
+    res << extra_conditions if extra_conditions
+
+    if user.projects.any?
+      project_ids = user.projects.map { |p| p.id }.join(",")
+      sql = "work_logs.project_id in (#{ project_ids })"
+      sql += " or work_logs.user_id = #{ user.id }"
+      res << "(#{ sql })"
+    else
+      res << "(work_logs.user_id = #{ user.id })"
+    end
+
+    res = res.compact.join(" AND ")
+
+    return res
+  end
+    
   # Sets the keywords for this filter using the given array
   def keywords_attributes=(new_keywords)
     keywords.clear
@@ -102,6 +150,14 @@ class TaskFilter < ActiveRecord::Base
 
   private
 
+  def work_log_to_include
+    to_include = [:project, :user, :customer,
+      {:company => :properties },
+      {:task => [:tags, :sheets, :todos, :dependencies, :milestone, :notifications, :watchers, :task_property_values]},
+    ]
+    return to_include
+  end
+  
   def to_include
     to_include = [ :users, :tags, :sheets, :todos, :dependencies, 
                    :milestone, :notifications, :watchers, 
@@ -114,6 +170,19 @@ class TaskFilter < ActiveRecord::Base
     self.company = user.company
   end
 
+  def conditions_for_other_qualifiers(qualifiers)
+    res = []
+    qualifiers.each do |q|
+      case q.qualifiable_type
+      when 'NoUser'
+        res << "tasks.id not in (select task_owners.task_id from task_owners)"
+      end
+    end
+    
+    res = res.length > 0 ? res.join(" AND ") : ""
+    return res
+  end
+  
   # Returns a conditions hash the will filter tasks based on the
   # given property value qualifiers
   def conditions_for_property_qualifiers(property_qualifiers)
@@ -133,12 +202,16 @@ class TaskFilter < ActiveRecord::Base
   # given standard qualifiers.
   # Standard qualifiers are things like project, milestone, user, where
   # a filter will OR the different users, but and between different types
-  def conditions_for_standard_qualifiers(standard_qualifiers)
+  def conditions_for_standard_qualifiers(standard_qualifiers, work_logs = false)
     res = []
 
     grouped_conditions = standard_qualifiers.group_by { |q| q.qualifiable_type }
     grouped_conditions.each do |type, values|
-      name = column_name_for(type)
+      if work_logs
+        name = work_log_column_name_for(type)
+      else
+        name = column_name_for(type)
+      end
       ids = values.map { |v| v.qualifiable_id }
       res << "#{ name } in (#{ ids.join(",") })"
     end
@@ -190,6 +263,25 @@ class TaskFilter < ActiveRecord::Base
       return "projects.customer_id"
     elsif class_type == "Company"
       return "tasks.company_id"
+    elsif class_type == "Milestone"
+      return "tasks.milestone_id"
+    elsif class_type == "Tag"
+      return "task_tags.tag_id"
+    else
+      return "#{ class_type.downcase }_id"
+    end
+  end
+
+  def work_log_column_name_for(class_type)
+    if class_type == "User"
+      return "work_logs.user_id"
+    elsif class_type == "Project"
+      return "work_logs.project_id"
+      #return "work_logs.project_id"
+    elsif class_type == "Customer"
+      return "work_logs.customer_id"
+    elsif class_type == "Company"
+      return "work_logs.company_id"
     elsif class_type == "Milestone"
       return "tasks.milestone_id"
     elsif class_type == "Tag"

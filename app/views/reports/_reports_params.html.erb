@@ -5,28 +5,48 @@
                 [_("Pivot"), "1"],
                 [_("Audit"), "2"],
                 [_("Time sheet"), "3"],
+                [_("Merged time sheet"), "5"],
                 [_("Workload"), "4"],
 #                ["Progress", "5"],
 #                ["Statistics", "6"]
-                ], :selected => ((params[:report] && params[:report][:type]) ? params[:report][:type] : "1") ) %><br/>
+                ], :selected => ((params[:report] && params[:report][:type]) ? params[:report][:type] : "3") ) %><br/>
 
-<div id="date-select" <%= "style=\"display:none;\"" if params[:report] && params[:report][:type].to_i == 4 %>><label for="report_range"><%=_ 'Time Range' %></label><%= select("report", "range", [[_("Today"), "0"],[_("Yesterday"),"8"], [_("This Week"),"1"], [_("Last Week"),"2"],[_("This Month"),"3"],[_("Last Month"),"4"],[_("This Year"),"5"],[_("Last Year"),"6"],[_("Custom"),"7"]], :selected => ((params[:report] && params[:report][:range]) ? params[:report][:range] : "1" )) %><br/></div>
+<div id="date-select"
+	<%= "style=\"display:none;\"" if params[:report] && params[:report][:type].to_i == 4 %>>
+	<label for="report_range"><%=_ 'Time Range' %></label>
+	<%= select("report", "range", [
+		 [_("Today"), "0"],
+		 [_("Yesterday"),"8"], 
+		 [_("This Week"),"1"], 
+		 [_("Last Week"),"2"],
+         [_("Last 2 weeks"), "9"],
+         [_("Since last pay period"), "10"],
+		 [_("This Month"),"3"],
+		 [_("Last Month"),"4"],
+		 [_("This Year"),"5"],
+		 [_("Last Year"),"6"],
+		 [_("Custom"),"7"]
+		], :selected => ((params[:report] && params[:report][:range]) ? params[:report][:range] : "1" )) %>
+<br/></div>
 
-<% if( params[:report] && (["1", "4"].include? params[:report][:type]) ) || params[:report].nil? %>
-<div id="pivot_config">
-<% else %>
-<div id="pivot_config" style="display:none;">
-<% end %>
-  <label for="report_rows"><%=_ 'Rows' %></label>
-  <%= display_select("rows", "1") %><br />
-  <label for="report_columns"><%=_ 'Columns' %></label>
-  <%= display_select("columns", "7") %><br />
+		<% if( params[:report] && (["1", "4"].include? params[:report][:type]) ) %>
+			<div id="pivot_config">
+		<% else %>
+			<div id="pivot_config" style="display:none;">
+		<% end %>
+
+		<label for="report_rows"><%=_ 'Rows' %></label>
+		<%= display_select("rows", "1") %><br />
+		<label for="report_columns"><%=_ 'Columns' %></label>
+		<%= display_select("columns", "7") %><br />
 </div>
+
 <% if params[:report] && params[:report][:range] == "7" %>
-<div id="date_range">
+	<div id="date_range">
 <% else %>
-<div id="date_range" style="display:none;">
+	<div id="date_range" style="display:none;">
 <% end %>
+
 <label for="report_start_date"><%=_ 'From' %></label><%= text_field 'report', 'start_date', {:id => 'start_date', :size => 12, :value => (params[:report] && params[:report][:start_date]) ? params[:report][:start_date] : ""} %><br/>        
 <label for="report_stop_date"><%=_ 'To' %></label><%= text_field 'report', 'stop_date', {:id => 'stop_date', :size => 12, :value => (params[:report] && params[:report][:stop_date]) ? params[:report][:stop_date] : ""} %><br/>
 </div>

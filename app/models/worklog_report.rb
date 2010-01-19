@@ -6,6 +6,7 @@ class WorklogReport
   PIVOT = 1
   AUDIT = 2
   TIMESHEET = 3
+  MERGED_TIMESHEET = 5
   WORKLOAD = 4
 
   ###
@@ -41,12 +42,14 @@ class WorklogReport
   attr_reader :row_totals
   attr_reader :total
   attr_reader :generated_report
+  attr_reader :warnings
 
   ###
   # Creates a report for the given tasks and params
   ###
   def initialize(controller, params)
-    tasks = controller.send(:current_task_filter).tasks
+	@tf = controller.send(:current_task_filter)
+    tasks = @tf.tasks
 
     @tz = controller.tz
     @type = params[:type].to_i
@@ -117,6 +120,18 @@ class WorklogReport
       # Last Week
       @start_date = tz.local_to_utc((tz.now - 1.week).beginning_of_week)
       @end_date = tz.local_to_utc(tz.now.beginning_of_week)
+    when 9
+      #Last 2 weeks
+      @start_date = tz.local_to_utc((tz.now - 1.week - 1.week).beginning_of_week)
+      @end_date = tz.local_to_utc(tz.now.beginning_of_week)
+    when 10
+      #Since last payperiod
+      date = current_user.company.payperiod_date
+      days = current_user.company.payperiod_days
+      @start_date = Date.today - ((Date.today - date) % days)
+      #while date + days <= Date.today
+      #  date += days
+      #@start_date = date
     when 3
       # This Month
       @start_date = tz.local_to_utc(tz.now.beginning_of_month)
@@ -134,20 +149,20 @@ class WorklogReport
     when 7
       if params[:start_date] && params[:start_date].length > 1
         begin
-          start_date = DateTime.strptime( filter[:start_date], current_user.date_format ).to_time 
+          start_date = DateTime.strptime( params[:start_date], current_user.date_format ).to_time 
         rescue
-          flash['notice'] ||= _("Invalid start date")
+          #flash['notice'] ||= _("Invalid start date")
           start_date = tz.now
         end
 
         @start_date = tz.local_to_utc(start_date.midnight)
       end
 
-      if filter[:stop_date] && filter[:stop_date].length > 1
+      if params[:stop_date] && params[:stop_date].length > 1
         begin
-          end_date = DateTime.strptime( filter[:stop_date], current_user.date_format ).to_time 
+          end_date = DateTime.strptime( params[:stop_date], current_user.date_format ).to_time 
         rescue 
-          flash['notice'] ||= _("Invalid end date")
+          #flash['notice'] ||= _("Invalid end date")
           end_date = tz.now
         end 
 
@@ -162,14 +177,21 @@ class WorklogReport
   ###
   def init_work_logs(tasks, params)
     logs = []
-
-    tasks.each do |t|
-      if @type == WORKLOAD
-        logs += work_logs_for_workload(t)
-      else
-        logs += t.work_logs
-      end
-    end
+ 
+	if [WorklogReport::TIMESHEET, WorklogReport::MERGED_TIMESHEET, WorklogReport::PIVOT, WorklogReport::AUDIT].include?  @type
+        sql = []
+        sql << "started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
+        sql << "started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+		logs = @tf.work_logs(sql.join(" AND "))
+	else
+		tasks.each do |t|
+		  if @type == WORKLOAD
+			logs += work_logs_for_workload(t)
+		  else
+			logs += t.work_logs
+		  end
+		end
+	end
 
     logs = logs.select do |log|
       (@start_date.nil? or log.started_at >= @start_date) and
@@ -235,12 +257,14 @@ class WorklogReport
   # and total instance vars
   ###
   def init_rows_and_columns
+    merged_time = 0
     @total = 0
     @row_totals = { }
     @column_totals = { }
     @column_headers = { }
     @rows = { }
-
+    @warnings = []
+	
     if start_date
       @column_headers[ '__' ] = "#{start_date.strftime_localized(current_user.date_format)}"
       @column_headers[ '__' ] << "- #{end_date.strftime_localized(current_user.date_format)}" if end_date && end_date.yday != start_date.yday
@@ -248,9 +272,35 @@ class WorklogReport
       @column_headers[ '__' ] = "&nbsp;"
     end
 
+    last_w = nil
+    last_key = nil
+    rkey = nil
+	
+	
+	b = {}
+	a = work_logs.sort{|a,c| a.user.id <=> c.user.id }
+	a.each do |x|
+		b[x.user.id] = [] unless b.key? x.user.id
+		b[x.user.id] << x
+	end
+	
+    b.each do |user, wl|
+      wl = wl.sort { |x,y| x.started_at <=> y.started_at}
+      last_w = nil
+      for w in wl
+        if last_w and last_w.duration != 0 and w.duration != 0 and w.started_at < last_w.started_at + last_w.duration - ((last_w.started_at + last_w.duration).to_f%60)
+          debugger
+          merged_time += (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
+          @warnings << w
+          @warnings << last_w unless @warnings.include? last_w
+        end
+		last_w = w
+      end
+    end
+
     for w in work_logs
       next if (w.task_id.to_i == 0) || w.duration.to_i == 0
-      @total += w.duration
+
 
       case @type
 
@@ -263,7 +313,7 @@ class WorklogReport
               @column_headers[ key ] = name_from_worklog( tag, @column_value )
               @column_totals[ key ] ||= 0
             end
-            do_column(w, key)
+            rkey = do_column(w, key)
           end
         else
           key = key_from_worklog(w, @column_value).to_s
@@ -274,7 +324,7 @@ class WorklogReport
             end
             @column_totals[ key ] ||= 0
           end
-          do_column(w, key)
+          rkey = do_column(w, key)
         end
 
       when 2
@@ -285,9 +335,9 @@ class WorklogReport
             @column_headers[ key ] = name_from_worklog( w, k )
             @column_totals[ key ] ||= 0
           end
-          do_column(w, key)
+          rkey = do_column(w, key)
         end 
-      when WorklogReport::TIMESHEET
+      when WorklogReport::TIMESHEET, WorklogReport::MERGED_TIMESHEET
         # Time sheet
         columns = [ 16, 17, 18, 21, 19 ]
         w.available_custom_attributes.each do |ca|
@@ -301,10 +351,26 @@ class WorklogReport
             @column_headers[ key ] = name_from_worklog( w, k )
             @column_totals[ key ] ||= 0
           end
-          do_column(w, key)
+          rkey = do_column(w, key)
         end
       end
+      
+      if @warnings.include?(w)
+        @warnings[@warnings.index(w)] = rkey
+      end
+
+      #Merged timesheet
+      #if last_w and w.started_at <= last_w.started_at + last_w.duration
+      #   @total -= (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
+	  #@warnings << rkey
+	  #@warnings << last_key unless @warnings.include?(last_key)
+      #end
+
+      @total += w.duration
+      last_w = w
+      last_key = rkey
     end
+	@total -= merged_time
   end
 
 
@@ -426,7 +492,8 @@ class WorklogReport
 
 
   def do_column(w, key)
-    @column_totals[ key ] += w.duration unless ["comment", "1_start", "2_end", "3_task", "4_note"].include?(key)
+
+    @column_totals[ key ] += w.duration unless ["comment", "1_start", "2_end", "3_task", "4_note"].include?(key) or @type == WorklogReport::MERGED_TIMESHEET
 
     if @row_value == 2 && !w.task.tags.empty? && (@type == 1 || @type == 4)
       w.task.tags.each do |tag|
@@ -486,6 +553,7 @@ class WorklogReport
       do_row(rkey, row_name, key, w.duration)
       @row_totals[rkey] += w.duration
     end
+    return rkey
   end
 
   def custom_attribute_from_key(str)

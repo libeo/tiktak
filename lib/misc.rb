@@ -10,12 +10,13 @@ module Misc
   $CONFIG[:email_domain] = $CONFIG[:domain].gsub(/:\d+/, '')
 
   # Format minutes => <tt>1w 2d 3h 3m</tt>
-  def format_duration(minutes, duration_format, day_duration, days_per_week = 5)
+  def format_duration(orig_minutes, duration_format, day_duration, days_per_week = 5)
     res = ''
     weeks = days = hours = 0
 
     day_duration ||= 480
-    minutes ||= 0
+    orig_minutes ||= 0
+    minutes = orig_minutes
 
     if minutes >= 60
 
@@ -43,7 +44,10 @@ module Misc
               format("%d:%02d", hours, minutes)
             end
     elsif( duration_format == 3 )
-      res = format("%d:%02d", ((weeks * day_duration * days_per_week) + (days * day_duration))/60 + hours, minutes)
+      #res = format("%d:%02d", ((weeks * day_duration * days_per_week) + (days * day_duration))/60 + hours, minutes)
+      res = format("%d:%02d", orig_minutes / 60, orig_minutes % 60)
+    elsif( duration_format == 4 )
+      res = format("%.2f", orig_minutes/60.0)
     end
 
     res.strip

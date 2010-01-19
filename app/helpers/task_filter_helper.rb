@@ -82,6 +82,13 @@ EOS
     return link_to(str, update_current_filter_task_filters_path(link_params))
   end
 
+  def link_to_non_assigned_tasks
+    link_params = []
+    link_params << {:qualifiable_type => "NoUser", :qualifiable_id => 0}
+    link_params = { :task_filter => { :qualifiers_attributes => link_params } }
+    link_to( _("Non-Assigned Tasks"), update_current_filter_task_filters_path(link_params))
+  end
+
   # Returns a link to set the task filter to show only in progress
   # tasks. Only tasks belonging to the given user will be shown.
   def link_to_in_progress_tasks(user)

@@ -6,6 +6,9 @@ class TimelineController < ApplicationController
     filter = ""
     work_log = false
     @filter_params = {}
+    if params[:filter_user].blank?
+      params.merge!({:filter_user => current_user.id.to_s, :filter_status => "-1", :filter_project => "0", :filter_date => "0" })
+    end
 
     [:filter_user, :filter_status, :filter_project, :filter_date].each do |fp|
       @filter_params[fp] = params[fp] unless params[fp].blank?
