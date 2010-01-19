@@ -1,9 +1,12 @@
 <script type="text/javascript">
-	jQuery(function() {
-		jQuery("#start_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
-		jQuery("#stop_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
-	});
+	jQuery(document).ready(function(){			
+		jQuery(function() {
+			jQuery("#start_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
+			jQuery("#stop_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
+			});
+		});
 </script>
+<% tr_class = nil %>
   <table cellspacing=0 cellpadding=0 class="content" width="99%" style="margin-left: 1em;padding-right:1em;" id="content">
   <tr><td align=left colspan=2 class="page_header"><%=_ 'Reports' %></td></tr>
   <tr>
@@ -35,11 +38,15 @@
               <% if @rows
                    last_key = ''
                    subtotal = 0
-              %>
+			   %>
               <% @rows.sort.each do |key, value| %>
 
+              <% tr_class = cycle('even', 'odd') %>
+              <% tr_class = 'warning' if @warnings.include?(key) %>
+
               <% if last_key != '' && last_key != value['__'] && subtotal > 0 && params[:report] && ["3","2"].include?(params[:report][:type]) %>
-              <tr class="<%=cycle('even', 'odd')%>">
+
+              <tr class="<%=tr_class%>">
                 <td class="row_subtotal_heading"><%=_ 'Total' %></td>
                 <% @column_headers.sort.each do |k,v| %>
                 <% next if k == '__' %>
@@ -51,7 +58,7 @@
               <% end %>
 
 
-              <tr class="<%=cycle('even', 'odd')%>">
+              <tr class="<%=tr_class%>">
                 <td class="row_heading"><%= value['__'] if last_key != value['__'] %></td>
                 <% last_key = value['__'] %>
                 <% @column_headers.sort.each do |k,v| %>
@@ -65,7 +72,8 @@
               <% end %>
 
               <% if subtotal > 0 && params[:report] && ["3","2"].include?(params[:report][:type]) %>
-              <tr class="<%=cycle('even', 'odd')%>">
+              <!--<tr class="<%=tr_class || cycle('odd', 'even')%>">-->
+              <tr class="row_header">
                 <td class="row_subtotal_heading"><%=_ 'Total' %></td>
                 <% @column_headers.sort.each do |k,v| %>
                 <% next if k == '__' %>
@@ -82,7 +90,7 @@
                 <% next if key == '__' %>
                 <th class="row_total"><%= worked_nice(@column_totals[key]/60) if @column_totals[key] > 0 %></th>
                 <% end %>
-                <th class="row_total_total" style="padding-left:1em;"><%= worked_nice(@total/60) %></th>
+                <th class="row_total_total" style="padding-left:1em;"><%= worked_nice((@total/60).to_i) %></th>
               </tr>
               <% end %>
             </table>
@@ -94,8 +102,11 @@
 </td></tr>
 </table>
 <script type="text/javascript" language="javascript" charset="utf-8">
+
+
 jQuery('#report_range').change(function() {
 if( jQuery('#report_range').val() == "7" ) {
+	 //alert('showing date_range 1');
      jQuery('#date_range').show();
   } else {
      jQuery('#date_range').hide();
@@ -104,13 +115,15 @@ if( jQuery('#report_range').val() == "7" ) {
 });
 
 jQuery('#report_range').blur(function() {
-if( jQuery('#report_type').val() == "7" ) {
+  //alert(jQuery('#report_range').val());
+  if( jQuery('#report_range').val() == "7" ) {
+	 //alert('showing date_range 2');
      jQuery('#date_range').show();
   } else {
      jQuery('#date_range').hide();
   }
   return false;
-});
+  });
 
 jQuery('#report_type').change(function() {
 	var reportType = jQuery('#report_type').val();
@@ -121,18 +134,25 @@ jQuery('#report_type').change(function() {
 	}
 	
 	if( reportType == "4" ) {
+		 //alert('showing date-select');
 		jQuery('#date-select').hide();
+		jQuery('#date_range').hide();
 	} else {
-		jQuery('#date-select').show();
+	  jQuery('#date-select').show();
+	  if( jQuery('#report_range').val() == "7" ) {
+		 jQuery('#date_range').show();
+	  } else {
+	  	 jQuery('#date_range').hide();
+	  }
 	}
 	
-	if( reportType == "3" || reportType == "2" ) {
+	if( reportType == "3" || reportType == "2" || reportType == "5" ) {
 		jQuery('#subtotals').show();
 	} else {
 		jQuery('#subtotals').hide();
         }
 
-        if (reportType == "3") {
+        if (reportType == "3" || reportType == "5" ) {
           jQuery("#approved").show();
         }
         else {
@@ -149,7 +169,7 @@ jQuery('#report_range').blur(function() {
 		jQuery('#pivot_config').hide();
 	}
 	
-	if( reportType == "3" || reportType == "2" ) {
+	if( reportType == "3" || reportType == "2" || reportType == "5" ) {
 		jQuery('#subtotals').show();
 	} else {
 		jQuery('#subtotals').hide();

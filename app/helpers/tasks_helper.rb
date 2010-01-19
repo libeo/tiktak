@@ -1,3 +1,16 @@
+#module ActiveSupport
+#  class TimeWithZone
+#    def datetime_to_i
+#      
+#      utc.is_a?(DateTime) ? utc.to_time.to_i : utc.to_i
+#    end
+#    alias_method :to_i, :datetime_to_i
+#    alias_method :hash, :datetime_to_i
+#    alias_method :tv_sec, :datetime_to_i
+#  
+#  end
+#end
+
 module TasksHelper
 
   def print_title

@@ -25,6 +25,10 @@ class ProjectsController < ApplicationController
     @project.company_id = current_user.company_id
 
     if @project.save
+
+      #Notice groups by greg
+      NoticeGroup.get_general_groups.each{ |n| n.send_project_notice(@project, current_user) }
+
       if params[:copy_project].to_i > 0
         project = current_user.all_projects.find(params[:copy_project])
         project.project_permissions.each do |perm|
@@ -273,7 +277,8 @@ class ProjectsController < ApplicationController
 
   def list
     @projects = current_user.projects.paginate(:all, 
-                                               :order => 'customer_id',
+                                               #:order => 'customer_id',
+											   :order => 'customers.name, projects.name',
                                                :page => params[:page],
                                                :per_page => 100,
                                                :include => [ :customer, :milestones]);

@@ -17,7 +17,9 @@
 <% if @task.requested_by && @task.requested_by.length > 0 -%>
   Requested By: <%= @task.requested_by %>
 <% end -%>
-  Created By:   <%= @user.name %>
+  Created By:   <%= @user.name %> <% if @duration_format %>
+  Task Duration: <%=format_duration(@task.duration, @duration_format, nil) %>
+<% end %>
 
 <%= "#{@user.name}:\n#{@note}\n" if @note && @note.length > 0 -%>
 <%= "\n" if @note && @note.length > 0 -%>

@@ -9,7 +9,8 @@ class User < ActiveRecord::Base
 
   belongs_to    :company
   belongs_to    :customer
-  has_many      :projects, :through => :project_permissions, :conditions => ['projects.completed_at IS NULL'], :order => "projects.customer_id, projects.name"
+#has_many      :projects, :through => :project_permissions, :conditions => ['projects.completed_at IS NULL'], :order => "projects.customer_id, projects.name"
+  has_many      :projects, :through => :project_permissions, :order => "projects.customer_id, projects.name"
   has_many      :completed_projects, :through => :project_permissions, :conditions => ['projects.completed_at IS NOT NULL'], :source => :project, :order => "projects.customer_id, projects.name"
   has_many      :all_projects, :through => :project_permissions, :order => "projects.customer_id, projects.name", :source => :project
   has_many      :project_permissions, :dependent => :destroy
@@ -45,6 +46,8 @@ class User < ActiveRecord::Base
   has_many      :chat_requests, :foreign_key => 'target_id', :class_name => 'Chat', :dependent => :destroy
 
   has_many      :task_filters, :dependent => :destroy
+
+  has_and_belongs_to_many :notice_groups
   
   validates_length_of           :name,  :maximum=>200, :allow_nil => true
   validates_presence_of         :name

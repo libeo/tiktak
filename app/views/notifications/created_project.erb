@@ -1,0 +1,13 @@
+<%= _ "Notification new project" %>
+
+<%= _ "Project" + " : " + @project.name %>
+<%= _ "Time" + " : " + @sent_at.strftime_localized("#{@user.date_format} #{@user.time_format}") %>
+<%= _ "Creator" + " : " + @project.owner.username %>
+<%= _ "Users" + " : " %>
+<% @project.users.each do |user| %>
+    - <% user.username %>
+<% end %>
+
+<%= _ "Description" + " : " + @project.description %>
+
+<%= _ "Notification other info" + "\n\n" + @note %>

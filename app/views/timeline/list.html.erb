@@ -13,7 +13,8 @@
             <%
             @clients = Customer.find(:all, :conditions => ["company_id = ?", current_user.company_id], :order => "name").collect{ |c| [c.name, c.id.to_s]}
             @projects = current_user.projects.collect {|p| [p.name, p.id.to_s]}
-	    @users = @logs.map { |l| l.user }.uniq.compact.sort_by { |u| u.name }
+            @users = User.find(:all, :order => "name", :conditions => ["company_id = ?", current_user.company_id]).compact.sort_by{ |u| u.name }
+            #@users = @logs.map { |l| l.user }.uniq.compact.sort_by { |u| u.name }
 	    @users = objects_to_names_and_ids(@users)
 
             filter_count = 0

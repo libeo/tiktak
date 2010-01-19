@@ -19,6 +19,11 @@
 	<%= stylesheet_link_tag "print", { :media => "print" } %>
 	<%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
 
+	<%= stylesheet_link_tag "/javascripts/jscalendar-1.0/calendar-blue.css" %>
+	<%= javascript_include_tag "jscalendar-1.0/calendar.js" %>
+	<%= javascript_include_tag "jscalendar-1.0/lang/calendar-en.js" %>
+	<%= javascript_include_tag "jscalendar-1.0/calendar-setup.js" %>
+
 	<title><%= $CONFIG[:productName] %></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	  <% @internal = current_user.company.internal_customer %>

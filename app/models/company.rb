@@ -31,10 +31,20 @@ class Company < ActiveRecord::Base
   validates_presence_of         :name
   validates_presence_of         :subdomain
   validates_uniqueness_of       :subdomain
+  validates_numericality_of     :payperiod_days, :greater_than => 0, :only_integer => true
+  validates_presence_of         :payperiod_date, :message => _("Date is not formatted properly")
 
   after_create :create_default_properties
   after_create :create_default_statuses
 
+  def set_payperiod_date(date, format)
+    debugger
+    date = TimeParser.date_from_format(date, format) if date.is_a? String
+    if date
+      self.payperiod_date = date
+    end
+  end
+  
   # Find the Internal client of this company.
   # A small kludge is needed,as it was previously called Internal, now it has the same
   # name as the parent company.

@@ -666,7 +666,7 @@ class Task < ActiveRecord::Base
   end
 
   def order_date
-    [self.created_at.to_i]
+    [self.started_at.to_i]
   end 
 
   def worked_and_duration_class

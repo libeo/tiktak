@@ -14,8 +14,25 @@ div.content_body {
 
 /* Global */
 
+
 .left 	{ float: left; }
 .right  { float: right;	}
+
+
+/*
+.left { 
+  margin-right: 0;
+  position: absolute;
+  width: 312px;
+}
+
+.right {
+  clear: both;
+  margin-left: 328px;
+  position: relative;
+  width: auto;
+}
+*/
 
 span.clear-both { display: block; clear: both; }
 
@@ -237,6 +254,18 @@ body, p, ol, ul, td, tr {
 
 .content {
   background-color: #ffffff;
+}
+
+.task_col_left {
+  margin-right :0;
+  position: absolute;
+  width: 312px;
+}
+
+.task_col_right {
+  margin-left: 328px;
+  position: relative;
+  width: auto;
 }
 
 .task {
@@ -1646,6 +1675,11 @@ li.help {
 #reports .odd {
   background-color: #f7f7f7;
 
+}
+
+#reports .warning {
+  background-color : #df1b1b;
+  border: 2px solid black;
 }
 
 #reports .row_total {

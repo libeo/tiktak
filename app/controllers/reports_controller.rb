@@ -7,22 +7,39 @@ class ReportsController < ApplicationController
     sql_filter = ""
     date_filter = ""
 
+
     @tags = Tag.top_counts(current_user.company)
     @users = User.find(:all, :order => 'name', :conditions => ['users.company_id = ?', current_user.company_id], :joins => "INNER JOIN project_permissions ON project_permissions.user_id = users.id")
     
+    
+    #TODO: the start_date and stop_date code is a last minute ugly hack. Find the time to properly code the date validations
+    valid = true
     if options = params[:report]
-      @worklog_report = WorklogReport.new(self, options)
-
-      @column_headers = @worklog_report.column_headers
-      @column_totals = @worklog_report.column_totals
-      @rows = @worklog_report.rows
-      @row_totals = @worklog_report.row_totals
-      @total = @worklog_report.total
-      @generated_report = @worklog_report.generated_report
+      p = params[:report]
+      unless p[:range] == "7"
+        p.delete(:start_date)
+        p.delete(:stop_date)
+      end
+      if p[:start_date] and not TimeParser.validate_date(current_user.date_format, p[:start_date])
+          valid = false
+          flash['notice'] = _("Invalid start date")
+      elsif p[:stop_date] and not TimeParser.validate_date(current_user.date_format, p[:stop_date])
+          valid = false
+          flash['notice'] = _("Invalid stop date")
+      end
+      if valid
+        @worklog_report = WorklogReport.new(self, options)
+        @warnings = @worklog_report.warnings
+        @column_headers = @worklog_report.column_headers
+        @column_totals = @worklog_report.column_totals
+        @rows = @worklog_report.rows
+        @row_totals = @worklog_report.row_totals
+        @total = @worklog_report.total
+        @generated_report = @worklog_report.generated_report
+      end
     end
-
     if @column_headers.nil? or @column_headers.length <= 1
-      flash['notice'] = _("Empty report, log more work!") if params[:report]
+      flash['notice'] = _("Empty report, log more work!") if params[:report] and valid
     end
   end
 

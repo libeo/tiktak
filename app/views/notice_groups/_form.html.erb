@@ -1,0 +1,35 @@
+<% form_for(@notice_group) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+
+	<div class='group_projects'>
+		<%= f.label :projects %><br />
+        <select name="notice_group[projects]" id="notice_group_project_id" multiple >
+			<%= options_for_projects(@notice_group.projects) %>
+		</select>
+	</div>
+    <br />
+
+	<div class='group_users'>
+		<%= f.label :users %><br />
+        <%= select_tag "notice_group[users][]", 
+        options_for_select(User.find(:all).map { |u| [u.name, u.id] }, @notice_group.users.map { |u| u.id } ),
+          :multiple => true, :size => 5 %>
+	</div>
+    <br />
+
+    <div class='duration_format'>
+      <%= f.label :duration_format %><br />
+      <%= f.select :duration_format, [ [_('1w 2d 3h 4m'), 0], [_('1w2d3h4m'), 1], [_('1:2:3:04'), 2], [_('59:04'), 3], [_('13.75'), 4] ] %>
+    </div>
+    <br />
+
+  <p>
+    <%= f.submit 'Create/Update' %>
+  </p>
+
+<% end %>

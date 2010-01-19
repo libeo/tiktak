@@ -7,6 +7,7 @@
     <li><%= link_to_open_tasks %></li>
     <li><%= link_to_open_tasks(current_user) %></li>
     <li><%= link_to_in_progress_tasks(current_user) %></li>
+    <li><%= link_to_non_assigned_tasks %></li>
 
     <% current_user.visible_task_filters.each do |tf| -%>
     <li>

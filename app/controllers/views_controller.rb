@@ -67,6 +67,8 @@ class ViewsController < ApplicationController
 
     set_session_filters(:filter_milestone => @milestone.id,
                         :last_project_id => session[:filter_project])
+	set_current_filter({"Milestone" => @milestone.id})
+
 
     redirect_to :controller => 'tasks', :action => 'list'
   end
@@ -82,6 +84,7 @@ class ViewsController < ApplicationController
 
     set_session_filters(:filter_project => @project.id, 
                         :last_project_id => session[:filter_project])
+	set_current_filter({"Project" => @project.id})
 
     redirect_to :controller => 'tasks', :action => 'list'
   end
@@ -90,6 +93,7 @@ class ViewsController < ApplicationController
     @user = User.find(params[:id], :conditions => ["company_id = ?", current_user.company_id])
 
     set_session_filters(:filter_user => @user.id)
+	set_current_filter({"User" => @user.id})
 
     redirect_to :controller => 'tasks', :action => 'list'
   end
@@ -98,6 +102,7 @@ class ViewsController < ApplicationController
     @client = Customer.find(params[:id], :conditions => ["company_id = ?", current_user.company_id])
     
     set_session_filters(:filter_customer => @client.id)
+	set_current_filter({"Customer" => @client.id})
 
     redirect_to :controller => 'tasks', :action => 'list'
   end
@@ -207,6 +212,7 @@ class ViewsController < ApplicationController
   # not passed are set to their defaults.
   ###
   def set_session_filters(filters)
+	f = current_task_filter
     reset_property_filters
     filters = DEFAULTS.merge(filters)
 
@@ -214,5 +220,21 @@ class ViewsController < ApplicationController
       session[filter] = value
     end
   end
+
+  def current_clear_filter
+	  filter = current_task_filter
+	  filter.keywords.clear
+	  filter.qualifiers.clear
+	  return filter
+  end
+
+  def set_current_filter(params)
+	  ats = []
+	  params.each { |k, v| ats << {"qualifiable_type" => k, "qualifiable_id" => v} }
+	  filter = current_clear_filter
+	  filter.attributes = {"qualifiers_attributes" => ats}
+	  filter.save
+  end
+
 
 end
