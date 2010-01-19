@@ -48,11 +48,17 @@ class WorklogReport
   # Creates a report for the given tasks and params
   ###
   def initialize(controller, params)
-	@tf = controller.send(:current_task_filter)
-    tasks = @tf.tasks
+    @tf = controller.send(:current_task_filter)
+    @type = params[:type].to_i
+
+    if @type == WORKLOAD
+      sql = []
+      sql << "work_logs.started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
+      sql << "work_logs.started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+      tasks = @tf.tasks(sql.join(" AND "))
+    end
 
     @tz = controller.tz
-    @type = params[:type].to_i
     @current_user = controller.current_user
 
     @row_value = params[:rows]
@@ -177,29 +183,33 @@ class WorklogReport
   ###
   def init_work_logs(tasks, params)
     logs = []
- 
-	if [WorklogReport::TIMESHEET, WorklogReport::MERGED_TIMESHEET, WorklogReport::PIVOT, WorklogReport::AUDIT].include?  @type
-        sql = []
-        sql << "started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
-        sql << "started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
-		logs = @tf.work_logs(sql.join(" AND "))
-	else
-		tasks.each do |t|
-		  if @type == WORKLOAD
-			logs += work_logs_for_workload(t)
-		  else
-			logs += t.work_logs
-		  end
-		end
-	end
 
-    logs = logs.select do |log|
-      (@start_date.nil? or log.started_at >= @start_date) and
+    if [WorklogReport::TIMESHEET, WorklogReport::MERGED_TIMESHEET, WorklogReport::PIVOT, WorklogReport::AUDIT].include?  @type
+      sql = []
+      sql << "started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
+      sql << "started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+      #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
+      logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
+    else
+
+      tasks.each do |t|
+        if @type == WORKLOAD
+          logs += work_logs_for_workload(t)
+        else
+          logs += t.work_logs
+        end
+      end
+
+      logs = logs.select do |log|
+        (@start_date.nil? or log.started_at >= @start_date) and
         (@end_date.nil? or log.started_at <= @end_date)
+      end
+
     end
-    
+
     logs = filter_logs_by_params(logs, params)
-    @work_logs = logs.sort_by { |log| log.started_at }
+    logs = logs.sort_by { |l| l.started_at } if @type == WORKLOAD
+    @work_logs = logs
   end
 
   ###
@@ -264,7 +274,7 @@ class WorklogReport
     @column_headers = { }
     @rows = { }
     @warnings = []
-	
+
     if start_date
       @column_headers[ '__' ] = "#{start_date.strftime_localized(current_user.date_format)}"
       @column_headers[ '__' ] << "- #{end_date.strftime_localized(current_user.date_format)}" if end_date && end_date.yday != start_date.yday
@@ -275,32 +285,36 @@ class WorklogReport
     last_w = nil
     last_key = nil
     rkey = nil
-	
-	
-	b = {}
-	a = work_logs.sort{|a,c| a.user.id <=> c.user.id }
-	a.each do |x|
-		b[x.user.id] = [] unless b.key? x.user.id
-		b[x.user.id] << x
-	end
-	
+
+
+    #b = {}
+    #a = work_logs.sort{|a,c| a.user.id <=> c.user.id }
+    #a.each do |x|
+    #  b[x.user.id] = [] unless b.key? x.user.id
+    #  b[x.user.id] << x
+    #end
+
+    b = {}
+    work_logs.each do |x|
+      b[x.user_id] = [] unless b.key? x.user_id
+      b[x.user_id] << x
+    end
+
     b.each do |user, wl|
-      wl = wl.sort { |x,y| x.started_at <=> y.started_at}
+      #wl = wl.sort { |x,y| x.started_at <=> y.started_at}
       last_w = nil
       for w in wl
         if last_w and last_w.duration != 0 and w.duration != 0 and w.started_at < last_w.started_at + last_w.duration - ((last_w.started_at + last_w.duration).to_f%60)
-          debugger
           merged_time += (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
           @warnings << w
           @warnings << last_w unless @warnings.include? last_w
         end
-		last_w = w
+        last_w = w
       end
     end
 
     for w in work_logs
       next if (w.task_id.to_i == 0) || w.duration.to_i == 0
-
 
       case @type
 
@@ -354,23 +368,16 @@ class WorklogReport
           rkey = do_column(w, key)
         end
       end
-      
+
       if @warnings.include?(w)
         @warnings[@warnings.index(w)] = rkey
       end
-
-      #Merged timesheet
-      #if last_w and w.started_at <= last_w.started_at + last_w.duration
-      #   @total -= (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
-	  #@warnings << rkey
-	  #@warnings << last_key unless @warnings.include?(last_key)
-      #end
 
       @total += w.duration
       last_w = w
       last_key = rkey
     end
-	@total -= merged_time
+    @total -= merged_time
   end
 
 

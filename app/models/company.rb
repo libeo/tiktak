@@ -38,7 +38,6 @@ class Company < ActiveRecord::Base
   after_create :create_default_statuses
 
   def set_payperiod_date(date, format)
-    debugger
     date = TimeParser.date_from_format(date, format) if date.is_a? String
     if date
       self.payperiod_date = date

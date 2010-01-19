@@ -62,12 +62,16 @@ class WorkLog < ActiveRecord::Base
   
   }
 
-#validates_each :started_at, :on => :update do |model, attr, value|
-#    if value < Time.now - (60 * 60 * 24)
-#      model.errors.add attr, "Cannot modify a work log 24 hours after creation"
-#    end
-#  end
+  #validates_each :started_at, :on => :update do |model, attr, value|
+  #  if value < Time.now - (60 * 60 * 24)
+  #    model.errors.add attr, "Cannot modify a work log 24 hours after creation"
+  #  end
+  #end
 
+  def self.per_page
+    40
+  end
+  
   def self.full_text_search(q, options = {})
     return nil if q.nil? or q==""
     default_options = {:limit => 10, :page => 1}

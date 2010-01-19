@@ -15,15 +15,15 @@ class ReportsController < ApplicationController
     #TODO: the start_date and stop_date code is a last minute ugly hack. Find the time to properly code the date validations
     valid = true
     if options = params[:report]
-      p = params[:report]
-      unless p[:range] == "7"
-        p.delete(:start_date)
-        p.delete(:stop_date)
+      options[:page] = params[:page]
+      unless options[:range] == "7"
+        options.delete(:start_date)
+        options.delete(:stop_date)
       end
-      if p[:start_date] and not TimeParser.validate_date(current_user.date_format, p[:start_date])
+      if options[:start_date] and not TimeParser.validate_date(current_user.date_format, options[:start_date])
           valid = false
           flash['notice'] = _("Invalid start date")
-      elsif p[:stop_date] and not TimeParser.validate_date(current_user.date_format, p[:stop_date])
+      elsif options[:stop_date] and not TimeParser.validate_date(current_user.date_format, options[:stop_date])
           valid = false
           flash['notice'] = _("Invalid stop date")
       end

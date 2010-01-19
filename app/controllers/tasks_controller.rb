@@ -25,7 +25,7 @@ class TasksController < ApplicationController
     end
 
     @notify_targets = current_projects.collect{ |p| p.users.collect(&:name) }.flatten.uniq
-    @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
+    @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids_query}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
     @notify_targets = @notify_targets.flatten.uniq
     @notify_targets ||= []
   end
@@ -199,7 +199,7 @@ class TasksController < ApplicationController
       @projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL"]).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
       @tags = Tag.top_counts(current_user.company)
       @notify_targets = current_projects.collect{ |p| p.users.collect(&:name) }.flatten.uniq
-      @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
+      @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids_query}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
       @notify_targets = @notify_targets.flatten.uniq
       @notify_targets ||= []
 
@@ -238,9 +238,9 @@ class TasksController < ApplicationController
       redirect_from_last
     else
       @projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL"]).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
-      @tags = Tag.top_counts({ :company_id => current_user.company_id, :project_ids => current_project_ids, :filter_hidden => session[:filter_hidden]})
+      @tags = Tag.top_counts({ :company_id => current_user.company_id, :project_ids => current_project_ids_query, :filter_hidden => session[:filter_hidden]})
       @notify_targets = current_projects.collect{ |p| p.users.collect(&:name) }.flatten.uniq
-      @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
+      @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids_query}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
       @notify_targets = @notify_targets.flatten.uniq
       @notify_targets ||= []
       return if request.xhr?
@@ -253,8 +253,7 @@ class TasksController < ApplicationController
   end
 
   def edit
-    @task = Task.find(:first, :conditions => ["project_id IN (#{current_project_ids}) AND task_num = ?", params[:id]])
-    #@task = Task.find(:first, :conditions => ["project_id IN (#{current_project_ids}) AND id = ?", params[:id]])
+    @task = Task.find(:first, :conditions => ["project_id IN (#{current_project_ids_query}) AND task_num = ?", params[:id]])
 
     if @task.nil?
       flash['notice'] = _("You don't have access to that task, or it doesn't exist.")
@@ -535,7 +534,7 @@ class TasksController < ApplicationController
   end
 
   def ajax_hide
-    @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids})"])
+    @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids_query})"])
 
     unless @task.hidden == 1
       @task.hidden = 1
@@ -614,7 +613,7 @@ class TasksController < ApplicationController
   end
 
   def ajax_restore
-    @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids})"])
+    @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids_query})"])
     unless @task.hidden == 0
       @task.hidden = 0
       @task.updated_by_id = current_user.id
@@ -818,7 +817,7 @@ class TasksController < ApplicationController
 
   def add_work
     begin
-      @task = Task.find( params['id'], :conditions => ["tasks.project_id IN (#{current_project_ids})"] )
+      @task = Task.find( params['id'], :conditions => ["tasks.project_id IN (#{current_project_ids_query})"] )
     rescue
       flash['notice'] = _('Unable to find task belonging to you with that ID.')
       redirect_from_last
@@ -1022,7 +1021,7 @@ class TasksController < ApplicationController
 
       @group = elems[1].split('_')[1].to_i
 
-      @task = Task.find(element, :conditions => ["project_id IN (#{current_project_ids})"])
+      @task = Task.find(element, :conditions => ["project_id IN (#{current_project_ids_query})"])
 
       worklog = WorkLog.new
       worklog.log_type = EventLog::TASK_MODIFIED
@@ -1051,7 +1050,7 @@ class TasksController < ApplicationController
         end
       when 4
         # Milestone
-        milestone = Milestone.find(@group, :conditions => ["project_id IN (#{current_project_ids})"]) if @group > 0
+        milestone = Milestone.find(@group, :conditions => ["project_id IN (#{current_project_ids_query})"]) if @group > 0
 
         if(@task.milestone_id.to_i) != @group
           if( milestone && milestone.project_id != @task.project_id )
@@ -1130,7 +1129,7 @@ class TasksController < ApplicationController
         end
 
         if elems[1].split('_').size > 2
-          milestone = Milestone.find(elems[1].split('_')[2], :conditions => ["project_id IN (#{current_project_ids})"])
+          milestone = Milestone.find(elems[1].split('_')[2], :conditions => ["project_id IN (#{current_project_ids_query})"])
 
           
           if @task.milestone_id != milestone.id
@@ -1189,7 +1188,7 @@ class TasksController < ApplicationController
     session[:only_comments] ||= 0
     session[:only_comments] = 1 - session[:only_comments]
 
-    @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids})"])
+    @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids_query})"])
     unless @logs = WorkLog.find(:all, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.task_id = ? #{"AND (work_logs.comment = 1 OR work_logs.log_type=6)" if session[:only_comments].to_i == 1}", @task.id], :include => [:user, :task, :project])
       @logs = []
     end
@@ -1229,7 +1228,7 @@ class TasksController < ApplicationController
       render(:highlight) and return
     end
 
-    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids})", params[:id]])
+    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids_query})", params[:id]])
     if @task.nil?
       render(:highlight) and return
     end
@@ -1253,7 +1252,7 @@ class TasksController < ApplicationController
       return
     end
 
-    @todo = Todo.find(:first, :conditions => ["todos.id = ? AND tasks.project_id IN (#{current_project_ids})", params[:id]], :include => [:task] )
+    @todo = Todo.find(:first, :conditions => ["todos.id = ? AND tasks.project_id IN (#{current_project_ids_query})", params[:id]], :include => [:task] )
     return if @todo.nil?
 
     if params[:todo] and !params[:todo][:name].blank?
@@ -1270,7 +1269,7 @@ class TasksController < ApplicationController
       return
     end
 
-    @todo = Todo.find(:first, :conditions => ["todos.id = ? AND tasks.project_id IN (#{current_project_ids})", params[:id]], :include => [:task] )
+    @todo = Todo.find(:first, :conditions => ["todos.id = ? AND tasks.project_id IN (#{current_project_ids_query})", params[:id]], :include => [:task] )
     return if @todo.nil?
   end 
 
@@ -1278,7 +1277,7 @@ class TasksController < ApplicationController
     @todo = Todo.find_by_id(params[:id])
     return if @todo.nil?
 
-    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids})", @todo.task_id])
+    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids_query})", @todo.task_id])
     if @task.nil?
       @highlight_target = "todos-#{params[:id]}"
       render(:highlight) and return
@@ -1301,7 +1300,7 @@ class TasksController < ApplicationController
   end
 
   def order_todos
-    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids})", params[:id]])
+    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids_query})", params[:id]])
     @task.todos.find(:all, :conditions => ["completed_at IS NULL"]).each do |todo|
       todo.position = params["todo-tasks-#{@task.id}"].index(todo.id.to_s) + 1
       todo.save
@@ -1321,7 +1320,7 @@ class TasksController < ApplicationController
       render(:highlight) and return
     end
 
-    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids})", @todo.task_id])
+    @task = Task.find(:first, :conditions => ["id = ? AND project_id IN (#{current_project_ids_query})", @todo.task_id])
 
     if @task
       @todo.destroy
@@ -1356,7 +1355,7 @@ class TasksController < ApplicationController
   end
 
   def get_comment
-    @task = Task.find(params[:id], :conditions => "project_id IN (#{current_project_ids})") rescue nil
+    @task = Task.find(params[:id], :conditions => "project_id IN (#{current_project_ids_query})") rescue nil
     if @task
       @comment = WorkLog.find(:first, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.task_id = ? AND work_logs.comment = 1", @task.id], :include => [:user, :task, :project])
     end 
@@ -1367,7 +1366,7 @@ class TasksController < ApplicationController
   ###
   def set_unread
     task = Task.find(params[:id], 
-                     :conditions => "project_id IN (#{current_project_ids})")
+                     :conditions => "project_id IN (#{current_project_ids_query})")
 
     read = params[:read] != "false"
     task.set_task_read(current_user, read)
@@ -1420,7 +1419,7 @@ class TasksController < ApplicationController
     @projects = User.find(current_user.id).projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL"]).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
 
     @notify_targets = current_projects.collect{ |p| p.users.collect(&:name) }.flatten.uniq
-    @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }.flatten.uniq
+    @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids_query}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }.flatten.uniq
   end
 
   ###
@@ -1498,7 +1497,7 @@ class TasksController < ApplicationController
   def list_init
     # Subscribe to the juggernaut channel for Task updates
     session[:channels] += ["tasks_#{current_user.company_id}"]
-    @tasks = current_task_filter.tasks
+    @tasks = current_task_filter.tasks_paginated(nil, params[:page])
   end
 
 #########################################################################SHORTLIST###################################################################
@@ -1527,7 +1526,6 @@ class TasksController < ApplicationController
   end
 
   def shortlist
-    debugger
     self.shortlist_init
 
     @filter = params[:filter] || ""
@@ -1696,7 +1694,7 @@ class TasksController < ApplicationController
       end
 
       conditions = "company_id = #{ current_user.company.id }"
-      conditions += " AND project_id IN (#{current_project_ids})#{filter} "
+      conditions += " AND project_id IN (#{current_project_ids_query})#{filter} "
       conditions += " AND completed_at IS NULL"
 
       milestones = Milestone.find(:all, :conditions => conditions, 
@@ -1731,7 +1729,7 @@ class TasksController < ApplicationController
       items = Task.status_types.collect{ |i| _(i) }
       groups = Task.group_by(tasks, items) { |t,i| _(t.status_type) == i }
     elsif session[:group_by].to_i == 10 # Projects / Milestones
-      milestones = Milestone.find(:all, :conditions => ["company_id = ? AND project_id IN (#{current_project_ids}) AND completed_at IS NULL", current_user.company_id], :order => "due_at, name")
+      milestones = Milestone.find(:all, :conditions => ["company_id = ? AND project_id IN (#{current_project_ids_query}) AND completed_at IS NULL", current_user.company_id], :order => "due_at, name")
       projects = current_user.projects
 
       milestones.each { |m| group_ids["#{m.project.name} / #{m.name}"] = "#{m.project_id}_#{m.id}" }
