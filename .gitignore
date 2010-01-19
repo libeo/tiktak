@@ -1,5 +1,7 @@
 *~
 .*.swp
+nohup.out
+*.log
 *#
 \.#*
 *.bak
