@@ -56,6 +56,7 @@ Rails::Initializer.run do |config|
 
   config.gem 'splattael-activerecord_base_without_table', :lib => 'activerecord_base_without_table', :source => 'http://gems.github.com'
   config.gem 'mysql'
+  config.gem 'will_paginate'
   config.gem 'daemons', :version => '1.0.10'
   config.gem 'eventmachine', :version => '0.12.8'
   config.gem 'json', :version => '1.1.7'

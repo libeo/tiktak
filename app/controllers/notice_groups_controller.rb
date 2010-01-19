@@ -88,7 +88,6 @@ class NoticeGroupsController < ApplicationController
   # DELETE /notice_groups/1
   # DELETE /notice_groups/1.xml
   def destroy
-    debugger
     @notice_group = NoticeGroup.find(params[:id])
     @notice_group.destroy
 

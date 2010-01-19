@@ -35,37 +35,49 @@ class TaskFilter < ActiveRecord::Base
 
   # Returns an array of all tasks matching the conditions from this filter
   # if extra_conditions is passed, that will be ANDed to the conditions
-  def tasks(extra_conditions = nil)
-    return user.company.tasks.all(:conditions => conditions(extra_conditions), 
+  def tasks(extra_conditions = nil, limit = nil)
+    #return user.company.tasks.all(:conditions => conditions(extra_conditions), 
+    return Task.find(:all, :conditions => conditions(extra_conditions), 
                                   :order => "tasks.id desc",
                                   :include => to_include,
-                                  :limit => 100)
+                                  :limit => limit)
   end
 
-  def work_logs(extra_conditions = nil, limit = nil)
-    return WorkLog.find(:all, :conditions => work_logs_conditions(extra_conditions),
-        :order => "tasks.id desc",
-        :include => work_log_to_include,
-        :limit => limit)
+  def tasks_paginated(extra_conditions = nil, page = 1)
+    return Task.paginate(:page => page,
+                          :conditions => conditions(extra_conditions), 
+                          :order => "tasks.name asc",
+                          :include => to_include)
   end
-
-  def work_log_count(extra_conditions = nil)
-    return WorkLog.count(:conditions => work_logs_conditions(extra_conditions),
-        :order => "tasks.id desc",
-        :include => work_log_to_include
-        )
-  end
-    
-
+  
   # Returns the count of tasks matching the conditions of this filter.
   # if extra_conditions is passed, that will be ANDed to the conditions
   def count(extra_conditions = nil)
     #user.company.tasks.count(:conditions => conditions(extra_conditions),
     #                         :include => to_include)
-	Task.count(:conditions => conditions(extra_conditions),
+    Task.count(:conditions => conditions(extra_conditions),
                              :include => to_include)
   end
 
+  def work_logs(extra_conditions = nil, limit = nil)
+    return WorkLog.find(:all, :conditions => work_logs_conditions(extra_conditions),
+        :order => "work_logs.started_at asc",
+        :include => work_log_to_include,
+        :limit => limit)
+  end
+  
+  def work_logs_paginated(extra_conditions = nil, page = 1)
+    return WorkLog.paginate(:page => page, :conditions => work_logs_conditions(extra_conditions),
+        :order => "work_logs.started_at asc",
+        :include => work_log_to_include)
+  end
+
+  def work_log_count(extra_conditions = nil)
+    return WorkLog.count(:conditions => work_logs_conditions(extra_conditions),
+        :include => work_log_to_include
+        )
+  end
+    
   # Returns a count to display for this filter. The count represents the
   # number of tasks that look they need attention for the given user - 
   # unassigned tasks and unread tasks are counted.
@@ -85,6 +97,7 @@ class TaskFilter < ActiveRecord::Base
   # Returns an array of the conditions to use for a sql lookup
   # of tasks for this filter
   def conditions(extra_conditions = nil)
+
     status_qualifiers = qualifiers.select { |q| q.qualifiable_type == "Status" }
     property_qualifiers = qualifiers.select { |q| q.qualifiable_type == "PropertyValue" }
     other_qualifiers = qualifiers.select { |q| TaskFilter::OTHERS.include?(q.qualifiable_type ) }
@@ -98,13 +111,16 @@ class TaskFilter < ActiveRecord::Base
     res << extra_conditions if extra_conditions
 
     if user.projects.any?
-      project_ids = user.projects.map { |p| p.id }.join(",")
-      sql = "tasks.project_id in (#{ project_ids })"
-      sql += " or task_owners.user_id = #{ user.id }"
+      sql = "tasks.project_id in (select project_id from project_permissions where user_id = #{user.id}) or task_owners.user_id = #{user.id}"
+      #project_ids = user.projects.map { |p| p.id }.join(",")
+      #sql = "tasks.project_id in (#{ project_ids })"
+      #sql += " or task_owners.user_id = #{ user.id }"
       res << "(#{ sql })"
     else
       res << "(task_owners.user_id = #{ user.id })"
     end
+
+    res << ["tasks.company_id = #{user.company_id}", "projects.completed_at IS NULL"]
 
     res = res.select { |c| !c.blank? }
     res = res.join(" AND ")
@@ -126,13 +142,16 @@ class TaskFilter < ActiveRecord::Base
     res << extra_conditions if extra_conditions
 
     if user.projects.any?
-      project_ids = user.projects.map { |p| p.id }.join(",")
-      sql = "work_logs.project_id in (#{ project_ids })"
-      sql += " or work_logs.user_id = #{ user.id }"
+      sql = "work_logs.project_id in (select project_id from project_permissions where user_id = #{user.id}) or work_logs.user_id = #{user.id}"
+      #project_ids = user.projects.map { |p| p.id }.join(",")
+      #sql = "work_logs.project_id in (#{ project_ids })"
+      #sql += " or work_logs.user_id = #{ user.id }"
       res << "(#{ sql })"
     else
       res << "(work_logs.user_id = #{ user.id })"
     end
+
+    res << ["work_logs.company_id = #{user.company_id}", "projects.completed_at IS NULL"]
 
     res = res.compact.join(" AND ")
 
@@ -150,10 +169,17 @@ class TaskFilter < ActiveRecord::Base
 
   private
 
+  #def work_log_to_include
+  #  to_include = [:project, :user, :customer,
+  #    {:company => :properties },
+  #    {:task => [:tags, :sheets, :todos, :dependencies, :milestone, :notifications, :watchers, :task_property_values]},
+  #  ]
+  #  return to_include
+  #end
+
   def work_log_to_include
-    to_include = [:project, :user, :customer,
+    to_include = [:project, :user, :customer, :task,
       {:company => :properties },
-      {:task => [:tags, :sheets, :todos, :dependencies, :milestone, :notifications, :watchers, :task_property_values]},
     ]
     return to_include
   end
@@ -165,6 +191,40 @@ class TaskFilter < ActiveRecord::Base
     to_include << { :company => :properties }
     to_include << { :project => :customer }
   end
+  
+  def get_includes(work_logs = false)
+    includes = [:users]
+    quals = qualifiers.map { |q| q.qualifiable_type }
+      #assoc = {
+      #'Project' => {:project => :customer },
+      #'User' => :users,
+      #'Customer' => :customers,
+      #'Company' => {:company => :properties},
+      #'Tag' => :tags,
+      #'Milestone' => :milestones,
+      #'PropertyValue' => :task_property_values,
+      #}
+    assoc = {
+      'Project' => :project,
+      #'User' => :users,
+      'Customer' => :customers,
+      'Company' => :company, 
+      'Tag' => :tags,
+      'Milestone' => :milestones,
+      'PropertyValue' => :task_property_values,
+    }
+    assoc_work = [:tags, :milestones, :task_property_values]
+
+    quals.each { |q| includes << assoc[q] }
+    includes.compact!
+    if work_logs
+      #others = assoc_work & includes
+      #includes = includes - others + [:tasks] if others.length > 0
+      includes = includes - assoc_work + [:task]
+    end
+    
+    return includes.uniq
+  end
 
   def set_company_from_user
     self.company = user.company
@@ -174,8 +234,10 @@ class TaskFilter < ActiveRecord::Base
     res = []
     qualifiers.each do |q|
       case q.qualifiable_type
-      when 'NoUser'
-        res << "tasks.id not in (select task_owners.task_id from task_owners)"
+        when 'NoUser'
+          res << "tasks.id not in (select task_owners.task_id from task_owners)"
+        when 'NoCreator'
+          res << 'tasks.creator_id not in (select task_owners.user_id from task_owners)'
       end
     end
     
@@ -251,6 +313,7 @@ class TaskFilter < ActiveRecord::Base
     old_status_ids = old_status_ids.join(",")
     return "tasks.status in (#{ old_status_ids })" if !old_status_ids.blank?
   end
+  
 
   # Returns the column name to use for lookup for the given
   # class_type
@@ -267,6 +330,8 @@ class TaskFilter < ActiveRecord::Base
       return "tasks.milestone_id"
     elsif class_type == "Tag"
       return "task_tags.tag_id"
+    elsif class_type == "Creator"
+      return "tasks.creator_id"
     else
       return "#{ class_type.downcase }_id"
     end
@@ -277,7 +342,6 @@ class TaskFilter < ActiveRecord::Base
       return "work_logs.user_id"
     elsif class_type == "Project"
       return "work_logs.project_id"
-      #return "work_logs.project_id"
     elsif class_type == "Customer"
       return "work_logs.customer_id"
     elsif class_type == "Company"

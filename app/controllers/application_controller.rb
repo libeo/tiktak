@@ -264,7 +264,9 @@ class ApplicationController < ActionController::Base
     current_user.all_projects
   end
 
-  
+  def current_project_ids_query
+    "select project_id from project_permissions where user_id = #{current_user.id}"
+  end
   
   # List of completed milestone ids, joined with ,
   def completed_milestone_ids

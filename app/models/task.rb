@@ -80,6 +80,10 @@ class Task < ActiveRecord::Base
     r.milestone.update_counts if r.milestone
   }
 
+  def self.per_page
+    25
+  end
+  
   # w: 1, next day-of-week: Every _Sunday_
   # m: 1, next day-of-month: On the _10th_ day of every month
   # n: 2, nth day-of-week: On the _1st_ _Sunday_ of each month

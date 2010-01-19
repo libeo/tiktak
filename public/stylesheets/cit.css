@@ -1714,6 +1714,11 @@ li.help {
     width: 45%;
 }
 
+#reports_params .pagination {
+  float: left;
+  clear: both;
+}
+
 #wiki-info {
   margin: 1em;
   padding: 1em;
