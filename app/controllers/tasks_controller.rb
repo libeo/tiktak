@@ -10,7 +10,10 @@ class TasksController < ApplicationController
 
 
   def new
-    @projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL"]).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
+
+    debugger
+    #@projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL and project_permissions.user_id=? and project_permissions.can_create = true", current_user.id], :include => :users).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
+    @projects = Project.find(:all, :conditions => ["projects.completed_at is null and project_permissions.user_id=? and project_permissions.can_create=true", current_user.id], :include => [:project_permissions, :customer], :order => 'customers.name asc, projects.name asc')
 
     if @projects.nil? || @projects.empty?
       flash['notice'] = _("You need to create a project to hold your tasks, or get access to create tasks in an existing project...")
