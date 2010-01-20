@@ -273,8 +273,9 @@ module TasksHelper
   ###
   # Returns a list of options to use for the project select tag.
   ###
-  def options_for_user_projects(task, projects)
+  def options_for_user_projects(task)
     #projects = current_user.projects.find(:all, :include => "customer", :order => "customers.name, projects.name")
+    projects = Project.find(:all, :conditions => "project_permissions.can_create = true and projects.completed_at is null and project_permissions.user_id = #{current_user.id}", :include => :project_permissions)
 
     last_customer = nil
     options = []
