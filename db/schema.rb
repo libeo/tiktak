@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100108184202) do
+ActiveRecord::Schema.define(:version => 20100120213810) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -121,6 +121,23 @@ ActiveRecord::Schema.define(:version => 20100108184202) do
   end
 
   add_index "customers", ["company_id", "name"], :name => "customers_company_id_index"
+
+  create_table "default_user_permissions", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "company_id"
+    t.boolean  "can_comment",    :default => false
+    t.boolean  "can_work",       :default => false
+    t.boolean  "can_report",     :default => false
+    t.boolean  "can_create",     :default => false
+    t.boolean  "can_edit",       :default => false
+    t.boolean  "can_reassign",   :default => false
+    t.boolean  "can_prioritize", :default => false
+    t.boolean  "can_close",      :default => false
+    t.boolean  "can_grant",      :default => false
+    t.boolean  "can_milestone",  :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "dependencies", :id => false, :force => true do |t|
     t.integer "task_id"
