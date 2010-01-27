@@ -1,0 +1,38 @@
+<table class="content" id="user_table" width="100%" style="margin-left:0;margin-right:0;">
+  <tr>
+    <th><%=_ 'User' %></th>
+    <th><%=_ "Remove" %></th>
+    <th><%=_ 'Comment' %></th>
+    <th><%=_ 'Work' %></th>
+    <th><%=_ 'Close' %></th>
+    <th><%=_ 'Create' %></th>
+    <th><%=_ 'Edit' %></th>
+    <th><%=_ 'Assign' %></th>
+    <th><%=_ 'Prioritize' %></th>
+    <th><%=_ 'Milestones' %></th>
+    <th><%=_ 'Reports' %></th>
+    <th><%=_ 'Grant' %></th>
+    <th><%=_ 'All' %></th>
+  </tr>
+
+  <% @company.default_users.each do |user| %>
+    <%= render(:partial => "/users/user_permissions", :locals => { 
+      :user => user, :base => @company, :user_edit => false, :users => @company.default_users, :creator => nil, :perm => user.default_user_permission }) %>
+  <% end %>
+
+  <tr id="add_user">
+    <td>
+      <%= _("Add user") %>
+    </td>
+    <td colspan="11">
+      <%= text_field_with_auto_complete(:user, :name, { :value => "" },
+        :after_update_element => "addUserToCompany",
+        :select => "complete_value",
+        :url => "/companies/auto_complete_for_user_name") %>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript" language="javascript" charset="utf-8">
+  updateTooltips();
+</script>

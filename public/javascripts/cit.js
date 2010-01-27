@@ -443,7 +443,33 @@ function addProjectToUser(input, li) {
     input.value = "";
 }
 
+function addCompanyToUser(input, li) {
+    li = jQuery(li);
+    var value = li.find(".complete_value").text();
+    
+    var url = document.location.toString();
+    url = url.replace("/edit/", "/company/");
+    jQuery.get(url, { company_id: value }, function(data) {
+	jQuery("#add_user").before(data);
+    });
+
+    input.value = "";
+}
+
 function addUserToProject(input, li) {
+    li = jQuery(li);
+    var value = li.find(".complete_value").text();
+    
+    var url = document.location.toString();
+    url = url.replace("/edit/", "/ajax_add_permission/");
+    jQuery.get(url, { user_id : value }, function(data) {
+	jQuery("#user_table").html(data);
+    });
+
+    input.value = "";
+}
+
+function addUserToCompany(input, li) {
     li = jQuery(li);
     var value = li.find(".complete_value").text();
     
