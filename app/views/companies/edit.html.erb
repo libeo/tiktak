@@ -7,6 +7,13 @@
 <% end %>
 </fieldset>
 
+<fieldset>
+  <legend><%= _("Users added to newly created projects") %></legend>
+  <div id="permission_list">
+    <%= render :partial => "permission_list" %> 
+  </div>
+</fieldset>
+
 <% @customer = current_user.company.internal_customer %>
 <fieldset class="basic">
 <legend><%=_ 'Custom Logo' %></legend>

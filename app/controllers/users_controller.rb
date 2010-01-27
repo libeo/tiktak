@@ -277,6 +277,17 @@ class UsersController < ApplicationController
     end
   end
 
+  def auto_complete_for_company_name
+    text = params[:company]
+    text = text[:name] if text
+
+    @companies = []
+    if !text.blank?
+      conds = [ "lower(name) like ?", "%#{ text }%" ]
+      @companies = Company.find(:all, :conditions => conds)
+    end
+  end
+
   def project
     @user = current_user.company.users.find(params[:id])
     project = current_user.company.projects.find(params[:project_id])

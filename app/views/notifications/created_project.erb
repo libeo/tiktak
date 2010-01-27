@@ -3,7 +3,7 @@
 <%= _ "Project" + " : " + @project.name %>
 <%= _ "Client" + " : " + @project.customer.name %>
 <%= _ "Time" + " : " + @sent_at.strftime_localized("#{@user.date_format} #{@user.time_format}") %>
-<%= _ "Creator" + " : " + @project.owner.username %> (<%= @project.owner.user.name %>)
+<%= _ "Creator" + " : " + @project.owner.username %> (<%= @project.owner.username %>)
 <%= _ "Users" + " : " %>
 <% @project.users.each do |user| %>
   - <%= user.username %> (<%= user.name %>)

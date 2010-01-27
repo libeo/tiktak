@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
 
   belongs_to    :company
   belongs_to    :customer
+  belongs_to    :default_user_permission
   has_many      :projects, :through => :project_permissions, :conditions => ['projects.completed_at IS NULL'], :order => "projects.customer_id, projects.name"
   #has_many      :projects, :through => :project_permissions, :order => "projects.customer_id, projects.name"
   has_many      :completed_projects, :through => :project_permissions, :conditions => ['projects.completed_at IS NOT NULL'], :source => :project, :order => "projects.customer_id, projects.name"
@@ -48,6 +49,7 @@ class User < ActiveRecord::Base
   has_many      :task_filters, :dependent => :destroy
 
   has_and_belongs_to_many :notice_groups
+  has_one :default_user_permission, :foreign_key => "user_id"
   
   validates_length_of           :name,  :maximum=>200, :allow_nil => true
   validates_presence_of         :name

@@ -59,6 +59,16 @@ class ProjectsController < ApplicationController
       @project_permission.can_milestone = 1
       @project_permission.can_grant = 1
       @project_permission.save
+
+      current_user.company.default_user_permissions.each do |pp|
+        unless @project_permission.user == pp.user
+          a = pp.attributes
+          a.delete "created_at"
+          a.delete "updated_at"
+          a[:project_id] = @project.id
+          ProjectPermission.new { |proj| proj.update_attributes a }
+        end
+      end
       
       if @project.company.users.size == 1
         flash['notice'] = _('Project was successfully created.')
@@ -110,6 +120,15 @@ class ProjectsController < ApplicationController
       @project_permission.can_milestone = 1
       @project_permission.can_grant = 1
       @project_permission.save
+
+      current_user.company.default_user_permissions.each do |pp|
+        unless @project_permission.user == pp.user
+          a = pp.attributes
+          a.delete :created_at
+          a[:project_id] = @project.id
+          ProjectPermission.new { |proj| proj.update_attributes a }
+        end
+      end
 
       session[:filter_customer_short] = "0"
       session[:filter_milestone_short] = "0"
