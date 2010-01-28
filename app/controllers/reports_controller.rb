@@ -34,6 +34,7 @@ class ReportsController < ApplicationController
         @column_totals = @worklog_report.column_totals
         @rows = @worklog_report.rows
         @row_totals = @worklog_report.row_totals
+        @subtract_totals = @worklog_report.subtract_totals
         @total = @worklog_report.total
         @generated_report = @worklog_report.generated_report
       end

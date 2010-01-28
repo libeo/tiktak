@@ -11,7 +11,6 @@ class TasksController < ApplicationController
 
   def new
 
-    debugger
     #@projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL and project_permissions.user_id=? and project_permissions.can_create = true", current_user.id], :include => :users).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
     @projects = Project.find(:all, :conditions => ["projects.completed_at is null and project_permissions.user_id=? and project_permissions.can_create=true", current_user.id], :include => [:project_permissions, :customer], :order => 'customers.name asc, projects.name asc')
 
@@ -882,6 +881,10 @@ class TasksController < ApplicationController
       redirect_from_last
     end
 
+  end
+
+  def stop_work_ajax
+    self.stop_work
   end
 
   def updatelog
