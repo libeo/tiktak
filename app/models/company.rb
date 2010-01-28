@@ -88,12 +88,13 @@ class Company < ActiveRecord::Base
   # Default sorting uses the completed at time, the due date, task num and any
   # custom properties with the default_sort parameter.
   ###
-  def sort(tasks)
+  def sort(tasks, user = nil)
     res = tasks.sort_by do |task| 
       array = []
-      array << -task.completed_at.to_i
+      array << (task.unread?(user) ? 1 : 0) if user
       array << rank_by_properties(task)
       array << - (task.due_date || 9999999999).to_i
+      array << -task.completed_at.to_i
       array << - task.task_num
     end
     res = res.reverse
