@@ -15,7 +15,6 @@
 	<tr>
 	  <td  id="reports_params">
       <%= render(:partial => "reports_params") %><br />
-      <%= will_paginate @worklog_report.work_logs if @worklog_report and @worklog_report.type != WorklogReport::WORKLOAD %>
 	  </td>
 	</tr>
         <tr>
@@ -39,15 +38,15 @@
               <% if @rows
                    last_key = ''
                    subtotal = 0
-			   %>
+               %>
               <% @rows.sort.each do |key, value| %>
 
               <% tr_class = cycle('even', 'odd') %>
               <% tr_class = 'warning' if @warnings.include?(key) %>
 
-              <% if last_key != '' && last_key != value['__'] && subtotal > 0 && params[:report] && ["3","2"].include?(params[:report][:type]) %>
+              <% if last_key != '' && last_key != value['__'] && subtotal > 0 && params[:report] && ["3","2","5"].include?(params[:report][:type]) %>
 
-              <tr class="<%=tr_class%>">
+              <tr class="row_subtotal">
                 <td class="row_subtotal_heading"><%=_ 'Total' %></td>
                 <% @column_headers.sort.each do |k,v| %>
                 <% next if k == '__' %>
@@ -64,15 +63,15 @@
                 <% last_key = value['__'] %>
                 <% @column_headers.sort.each do |k,v| %>
                 <% next if k == '__' %>
-                <td class="row_value<%=" audit" if params[:report][:type] == "2"%><%=" task" if params[:report][:type] == "3"%>"><%=(value[k] && value[k].is_a?(Fixnum)) ?  worked_nice(value[k]/60) : value[k] %></td>
+                <td class="row_value<%=" audit" if params[:report][:type] == "2"%><%=" task" if ["3","5"].include?(params[:report][:type])%>"><%=(value[k] && value[k].is_a?(Fixnum)) ?  worked_nice(value[k]/60) : value[k] %></td>
                 <% end %>
-                <% subtotal += @row_totals[key] if params[:report][:subtotals] == "1" %>
+                <% subtotal += @row_totals[key] - @subtract_totals[key] if params[:report][:subtotals] == "1" %>
                 <td class="row_total"><%= worked_nice(@row_totals[key]/60) %></td>
                 <% end %>
               </tr>
               <% end %>
 
-              <% if subtotal > 0 && params[:report] && ["3","2"].include?(params[:report][:type]) %>
+              <% if subtotal > 0 && params[:report] && ["3","2","5"].include?(params[:report][:type]) %>
               <!--<tr class="<%=tr_class || cycle('odd', 'even')%>">-->
               <tr class="row_header">
                 <td class="row_subtotal_heading"><%=_ 'Total' %></td>

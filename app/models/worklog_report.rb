@@ -40,6 +40,7 @@ class WorklogReport
   attr_reader :column_totals
   attr_reader :rows
   attr_reader :row_totals
+  attr_reader :subtract_totals
   attr_reader :total
   attr_reader :generated_report
   attr_reader :warnings
@@ -188,8 +189,8 @@ class WorklogReport
       sql = []
       sql << "started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
       sql << "started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+      logs = @tf.work_logs(sql.join(" AND "))
       #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
-      logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
     else
 
       tasks.each do |t|
@@ -270,6 +271,7 @@ class WorklogReport
     merged_time = 0
     @total = 0
     @row_totals = { }
+    @subtract_totals = { }
     @column_totals = { }
     @column_headers = { }
     @rows = { }
@@ -300,14 +302,18 @@ class WorklogReport
       b[x.user_id] << x
     end
 
+    #######################
+    #EXTREMELY UGLY, I KNOW. If ever I have the time, I want to refactor the WHOLE worklog report and its views
+    ########################
     b.each do |user, wl|
       #wl = wl.sort { |x,y| x.started_at <=> y.started_at}
       last_w = nil
       for w in wl
         if last_w and last_w.duration != 0 and w.duration != 0 and w.started_at < last_w.started_at + last_w.duration - ((last_w.started_at + last_w.duration).to_f%60)
-          merged_time += (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
+          merged_time = (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
           @warnings << w
           @warnings << last_w unless @warnings.include? last_w
+          @subtract_totals[w] = merged_time.to_i
         end
         last_w = w
       end
@@ -369,15 +375,24 @@ class WorklogReport
         end
       end
 
+      #################
+      #Yes, once again, very ugly
+      ################
       if @warnings.include?(w)
-        @warnings[@warnings.index(w)] = rkey
+          @warnings[@warnings.index(w)] = rkey
       end
 
+      if @subtract_totals.include?(w) and @type == WorklogReport::MERGED_TIMESHEET
+        @subtract_totals[rkey] = @subtract_totals[w]
+        @subtract_totals.delete w
+      end
+
+      @subtract_totals[rkey] ||= 0
       @total += w.duration
       last_w = w
       last_key = rkey
     end
-    @total -= merged_time
+    @total -= @subtract_totals.values.sum
   end
 
 

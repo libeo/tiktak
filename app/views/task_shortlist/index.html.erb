@@ -1,0 +1,77 @@
+<div id="content">
+  <div id="menu">
+    <%= render :partial => "layouts/short_info" %>
+  </div>
+
+  <fieldset id="shortlist">
+    <legend id="shortlist-legend"><%= render :partial => 'short_legend' %></legend>
+
+    <%= render :partial => "shortlist_filter" %>
+
+    <!-- CURRENT WORK_LOG INFO -->
+    <div <%= "style=\"display:none;\"" if @current_sheet.nil? %> id="work-log">
+      <div class="log_header tooltip" title="<%= _'Text entered will be saved automatically to your current work notes.'%>"><%= _'Work Log' %></div>
+      <form method="post" onsubmit="return false;" id="worklog_form">
+        <textarea name="worklog[body]" id="worklog_body" style="padding:0;margin-top:0.5em;margin-bottom:0.3em;width:100%;" rows="4"><%= @current_sheet.body if @current_sheet%></textarea>
+      </form>
+      <div id="worklog-saved" class="optional" style="text-align:right;padding-bottom:0.3em;padding-right:1em;"></div>
+    </div>
+
+    <!-- TASK LIST -->
+    <div id="shortlist-tasks">
+      <% @tasks.each do |task| -%>
+        <%= render :partial => 'tasks/task_row', :locals => {:task => task, :override_filter => false} -%>
+      <% end -%>
+    </div>
+
+    <!-- QUICK CREATE TASK -->
+    <% if ['p', 'm'].include?(@filter[0,1]) %>
+      <% form_remote_tag :url => { :action => 'create_shortlist_ajax' },
+       :loading => "showProgress();",
+       :complete => "hideProgress();",
+       :success => "jQuery('#task_name').val('');" do %>
+        <input type="text" name="task[name]" id="task_name" value="<%= _ 'New Task' %>"/>
+      <% end %>
+
+      <!-- QUICK CREATE PROJECT -->
+      <% if current_user.create_projects? %>
+        <div style="float:right;"><a href="#" onclick="jQuery('#shortlist-new-project-container').toggle();">[<%= _('New Project')%>]</a></div>
+        <div id="shortlist-new-project-container" style="display:none;">
+          <% form_remote_tag :url => { :action => 'create_shortlist_ajax', :controller => 'projects' },
+             :loading => "showProgress();",
+             :complete => "hideProgress();",
+             :success => "jQuery('#project_name').val('');" do %>
+              <input type="text" name="project[name]" id="project_name" value="<%= _ 'New Project' %>"/>
+          <% end %>
+        </div>
+      <% end %>
+
+    <% end %>
+  </fieldset>
+</div>
+
+<script type="text/javascript" language="javascript" charset="utf-8">
+fixShortLinks();
+jQuery('#task_name').focus(function() {
+  if(jQuery(this).val() == '<%= _'New Task' %>') {
+    jQuery(this).removeClass('initial');
+  }
+});
+
+jQuery('#project_name').focus(function() {
+  if(jQuery(this).value == '<%= _'New Project' %>') {
+    jQuery(this).removeClass('initial');
+  }
+});
+
+jQuery(document).ready(function () {
+  if( jQuery('#task_name').val() == '<%= _'New Task' %>') {
+    jQuery('#task_name').addClass('initial');
+  }
+  if( jQuery('#project_name').val() == '<%= _'New Project' %>') {
+    jQuery('#project_name').addClass('initial');
+  }
+
+  new Form.Element.Observer('worklog_body', 2, function(element, value) {new Ajax.Updater('worklog-saved', '/tasks/updatelog', {asynchronous:true, evalScripts:true, parameters: Form.serialize($('worklog_form'))  })});
+});
+</script>

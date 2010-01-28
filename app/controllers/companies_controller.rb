@@ -38,7 +38,6 @@ class CompaniesController < ApplicationController
   end
 
   def ajax_remove_permission
-    debugger
     if permission = DefaultUserPermission.find(:first, :conditions => ["user_id = ? AND company_id = ?", params[:user_id], current_user.company_id])
       if params[:perm]
         permission.remove params[:perm]

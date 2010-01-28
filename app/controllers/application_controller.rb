@@ -403,12 +403,20 @@ class ApplicationController < ActionController::Base
     @current_task_filter ||= TaskFilter.system_filter(current_user)
   end
 
-  
+ 
+  def default_shortlist_qualifiers
+    defaults = [{:qualifiable_type => "User", :qualifiable_id => current_user.id},
+      {:qualifiable_type => "Status", :qualifiable_id => 1},
+      {:qualifiable_type => "Status", :qualifiable_id => 2},
+    ]
+    defaults.map { |d| TaskFilterQualifier.new(d) }
+  end
+
   def current_shortlist_filter
     unless @current_shortlist_filter
       f = TaskFilter.find(:first, :conditions => [ "user_id = ? and name = 'shortlist'", current_user.id])
       unless f
-        f = TaskFilter.new(:name => 'shortlist', :user_id => current_user.id, :qualifiers => [TaskFilterQualifier.new(:qualifiabile_type => "User", :qualifiable_id => current_user.id)])
+        f = TaskFilter.new(:name => 'shortlist', :user_id => current_user.id, :qualifiers => default_shortlist_qualifiers) 
         f.save
       end
       @current_shortlist_filter = f
