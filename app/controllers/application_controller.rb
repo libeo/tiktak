@@ -267,6 +267,10 @@ class ApplicationController < ActionController::Base
   def current_project_ids_query
     "select project_id from project_permissions where user_id = #{current_user.id}"
   end
+
+  def completed_milestone_ids_query
+    "select id from milestones where company_id = #{current_user.company_id} and completed_at is not null"
+  end
   
   # List of completed milestone ids, joined with ,
   def completed_milestone_ids
@@ -403,7 +407,14 @@ class ApplicationController < ActionController::Base
     @current_task_filter ||= TaskFilter.system_filter(current_user)
   end
 
- 
+  def default_qualifiers
+    defaults = [{:qualifiable_type => "User", :qualifiable_id => current_user.id},
+      {:qualifiable_type => "Status", :qualifiable_id => 1},
+      {:qualifiable_type => "Status", :qualifiable_id => 2},
+    ]
+    defaults.map { |d| TaskFilterQualifier.new(d) }
+  end
+
   def default_shortlist_qualifiers
     defaults = [{:qualifiable_type => "User", :qualifiable_id => current_user.id},
       {:qualifiable_type => "Status", :qualifiable_id => 1},

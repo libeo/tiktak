@@ -26,26 +26,44 @@ class WidgetsController < ApplicationController
       # Tasks
       filter = filter_from_filter_by
 
-      unless @widget.mine?
-        @items = Task.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer}, :dependencies, :dependants, :users, :todos, :tags])
-      else 
-        @items = current_user.tasks.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer }, :dependencies, :dependants, :todos, :tags])
-      end
+      conditions = ["tasks.project_id in (#{current_project_ids_query})",
+        "(tasks.completed_at is null or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
+        "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
+      ]
+      conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
+      conditions << filter if filter
 
-      @items = @items.group_by{ |i| i.unread?(current_user) }
-      @items[true] = [] unless @items[true]
-      @items[false] = [] unless @items[false]
-      @items[false] = @items[false].slice(0, @widget.number - @items[true].length)
-      @items.keys.each do |k|
-        case @widget.order_by
-               when 'priority':
-                   @items[k] = current_user.company.sort(@items[k])
-               when 'date':
-                   @items[k] = @items[k].sort_by {|t| t.created_at.to_i }
-        end
+      includes = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, :task_owners]
+
+      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => includes)
+
+      #unless @widget.mine?
+      #  @items = Task.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer}, :dependencies, :dependants, :users, :todos, :tags])
+      #else 
+      #  @items = current_user.tasks.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer }, :dependencies, :dependants, :todos, :tags])
+      #end
+
+      #@items = @items.group_by{ |i| i.unread?(current_user) }
+      #@items[true] = [] unless @items[true]
+      #@items[false] = [] unless @items[false]
+      #@items[false] = @items[false].slice(0, @widget.number - @items[true].length)
+      #@items.keys.each do |k|
+      #  case @widget.order_by
+      #         when 'priority':
+      #             @items[k] = current_user.company.sort(@items[k])
+      #         when 'date':
+      #             @items[k] = @items[k].sort_by {|t| t.created_at.to_i }
+      #  end
+      #end
+      #@items = @items.sort{ |b,c| b[0] == c[0] ? 0 : b[0] == true ? -1 : 1 }.map{ |i| i[1..i.length] }.flatten
+
+      case @widget.order_by
+        when 'priority':
+          @items = current_user.company.sort(@items, current_user)
+        when 'date':
+          @items = @items.sort_by {|t| t.created_at.to_i }
       end
-      @items = @items.sort{ |b,c| b[0] == c[0] ? 0 : b[0] == true ? -1 : 1 }.map{ |i| i[1..i.length] }.flatten
-      #@items = @items.group_by{ |i| i.unread?(current_user) }.sort{ |b,c| b[0] == c[0] ? 0 : b[0] == true ? -1 : 1 }.map{ |i| i[1..i.length] }.flatten
+      @items = @items[0, @widget.number]
 
     when 1
       # Project List
@@ -520,15 +538,16 @@ class WidgetsController < ApplicationController
     return nil unless @widget.filter_by
     case @widget.filter_by[0..0]
     when 'c'
-      "AND tasks.project_id IN (#{current_user.projects.find(:all, :conditions => ["customer_id = ?", @widget.filter_by[1..-1]]).collect(&:id).compact.join(',') } )"
+      "tasks.project_id IN (select id from projects where customer_id = #{@widget.filter_by[1..-1]})"
+      #"AND tasks.project_id IN (#{current_user.projects.find(:all, :conditions => ["customer_id = ?", @widget.filter_by[1..-1]]).collect(&:id).compact.join(',') } )"
     when 'p'
-      "AND tasks.project_id = #{@widget.filter_by[1..-1]}"
+      "tasks.project_id = #{@widget.filter_by[1..-1]}"
     when 'm'
-      "AND tasks.milestone_id = #{@widget.filter_by[1..-1]}"
+      "tasks.milestone_id = #{@widget.filter_by[1..-1]}"
     when 'u'
-      "AND tasks.project_id = #{@widget.filter_by[1..-1]} AND tasks.milestone_id IS NULL"
+      "tasks.project_id = #{@widget.filter_by[1..-1]} AND tasks.milestone_id IS NULL"
     else
-      ""
+      nil
     end
   end
 
