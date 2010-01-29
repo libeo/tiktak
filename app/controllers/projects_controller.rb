@@ -2,7 +2,6 @@
 class ProjectsController < ApplicationController
 
   cache_sweeper :project_sweeper, :only => [ :create, :edit, :update, :destroy, :ajax_remove_permission, :ajax_add_permission ]
-
   def new
     unless current_user.create_projects?
       flash['notice'] = _"You're not allowed to create new projects. Have your admin give you access."
@@ -26,8 +25,6 @@ class ProjectsController < ApplicationController
 
     if @project.save
 
-      #Notice groups by greg
-      NoticeGroup.get_general_groups.each{ |n| n.send_project_notice(@project, current_user) }
 
       if params[:copy_project].to_i > 0
         project = current_user.all_projects.find(params[:copy_project])
@@ -77,6 +74,10 @@ class ProjectsController < ApplicationController
         flash['notice'] = _('Project was successfully created. Add users who need access to this project.')
         redirect_to :action => 'edit', :id => @project
       end
+
+      #Notice groups by greg
+      NoticeGroup.get_general_groups.each{ |n| n.send_project_notice(@project, current_user) }
+
     else
       render :action => 'new'
     end
