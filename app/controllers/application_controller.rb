@@ -265,7 +265,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_project_ids_query
-    "select project_id from project_permissions where user_id = #{current_user.id}"
+    "select project_permissions.project_id from project_permissions left join projects on project_permissions.project_id = projects.id where project_permissions.user_id = #{current_user.id} and projects.completed_at is null"
   end
 
   def completed_milestone_ids_query
