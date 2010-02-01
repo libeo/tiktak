@@ -43,10 +43,8 @@ class TasksController < ApplicationController
     #if no queries are entered in the task filter and the user is going towards the tasks/list page, pre-select some default queries
     unless params[:format]
       tf = current_task_filter
-      if tf.qualifiers.length == 0
-        tf.qualifiers = default_qualifiers
-        tf.save
-      end
+      tf.qualifiers = default_qualifiers
+      tf.save
     end
 
     respond_to do |format|
