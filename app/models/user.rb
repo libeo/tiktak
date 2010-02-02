@@ -40,6 +40,7 @@ class User < ActiveRecord::Base
 
   has_many      :shout_channel_subscriptions, :dependent => :destroy
   has_many      :shout_channels, :through => :shout_channel_subscriptions, :source => :shout_channel
+  has_many      :chat_messages, :through => :chats
 
   has_many      :widgets, :order => "widgets.column, widgets.position", :dependent => :destroy
 
