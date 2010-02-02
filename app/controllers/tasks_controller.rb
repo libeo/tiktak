@@ -222,6 +222,7 @@ class TasksController < ApplicationController
       session[:last_project_id] = @task.project_id
       session[:last_task_id] = @task.id
 
+      debugger
       @task.set_users(params)
       @task.set_dependency_attributes(params[:dependencies], current_project_ids)
       @task.set_resource_attributes(params[:resource])
@@ -239,6 +240,10 @@ class TasksController < ApplicationController
 
       notify(@task, worklog) do |recipients|
         Notifications::deliver_created(@task, current_user, recipients, params[:comment])
+      end
+
+      if params[:task][:status] == "2"
+        @task.close_task({:user => current_user})
       end
 
       Juggernaut.send("do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
