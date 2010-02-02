@@ -1150,7 +1150,7 @@ class Task < ActiveRecord::Base
   end
 
   def close_task(params)
-    old_status = task.status_type
+    old_status = self.status_type
     self.completed_at = Time.now.utc
     self.status = EventLog::TASK_COMPLETED
     
@@ -1160,12 +1160,12 @@ class Task < ActiveRecord::Base
       self.repeat
     end
 
-    self.updated_by = params[:user]
+    self.updated_by_id = params[:user].id
     self.save
 
     WorkLog.new do |w|
       w.log_type = EventLog::TASK_COMPLETED
-      w.body = "- <strong>Status</strong>: #{old_status} -> #{task.status_type}\n"
+      w.body = "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n"
       w.user = params[:user]
       w.project = self.project
       w.company = self.project.company
