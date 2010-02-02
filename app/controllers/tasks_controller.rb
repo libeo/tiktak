@@ -681,6 +681,14 @@ class TasksController < ApplicationController
         worklog.log_type = EventLog::TASK_COMPLETED
       end 
 
+      if @task.next_repeat_date != nil
+
+        @task.save
+        @task.reload
+
+        repeat_task(@task)
+      end
+
       @task.completed_at = Time.now.utc
       @task.updated_by_id = current_user.id
       @task.status = 2

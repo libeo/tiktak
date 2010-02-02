@@ -1117,4 +1117,84 @@ class Task < ActiveRecord::Base
   def last_comment
     @last_comment ||= self.work_logs.reverse.detect { |wl| wl.comment? }
   end
+
+  def repeat_task
+    task = self.clone
+    task.status = 0
+    task.project_id = self.project_id
+    task.company_id = self.company_id
+    task.creator_id = self.creator_id
+    task.set_tags(self.tags.collect{|t| t.name}.join(', '))
+    task.set_self_num(self.company_id)
+    task.milestone_id = self.milestone_id
+    task.due_at = task.next_repeat_date
+
+    task.save
+    task.reload
+
+    self.notifications.each do |w|
+      n = Notification.new(:user => w.user, :self => task)
+      n.save
+    end
+
+    self.self_owners.each do |o|
+      to = selfOwner.new(:user => o.user, :self => task)
+      to.save
+    end
+
+    self.dependencies.each do |d|
+        task.dependencies << d
+    end
+
+    task.save
+  end
+
+  def close_task(params)
+    old_status = task.status_type
+    self.completed_at = Time.now.utc
+    self.status = EventLog::TASK_COMPLETED
+    
+    if self.next_repeat_date != nil
+      self.save
+      self.reload
+      self.repeat
+    end
+
+    self.updated_by = params[:user]
+    self.save
+
+    WorkLog.new do |w|
+      w.log_type = EventLog::TASK_COMPLETED
+      w.body = "- <strong>Status</strong>: #{old_status} -> #{task.status_type}\n"
+      w.user = params[:user]
+      w.project = self.project
+      w.company = self.project.company
+      w.customer = self.project.customer
+      w.task = self
+      w.started_at = params[:started_at] || Time.now.utc
+      w.duration = params[:duration] || 0
+      w.paused_duration = params[:paused_duration] || 0
+      w.save
+    end
+  end
+
+  def open_task(params)
+    self.update_attributes({:status => 0,
+                  :completed_at => nil,
+                  :updated_by => params[:user],
+    })
+
+    WorkLog.new({:user => params[:user],
+                :project => self.project,
+                :customer => self.project.customer,
+                :company => self.project.company,
+                :task => self,
+                :started_at => Time.now.utc,
+                :duration => 0,
+                :log_type => EventLog::TASK_REVERTED,
+                :body => "",
+    }).save
+
+  end
+
 end
