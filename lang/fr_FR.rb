@@ -548,6 +548,7 @@ Localization.define('fr_FR') do |l|
   l.store "Report Configuration", "Configuration des rapports"
   l.store "Restricted Messaging", "Messagerie restreinte" # Jérémie
   l.store "Showing Full History", "Montrer l'historique complet" # Brice
+  l.store "Show Full History", "Montrer l'historique complet" # Brice
   l.store "This topic is locked", "Ce sujet est verrouillé" # Lancrey
   l.store "Use External Clients", "Utiliser des clients externes"
   l.store "less than %d seconds", "moins de %d secondes"
@@ -555,6 +556,7 @@ Localization.define('fr_FR') do |l|
   l.store "Projects / Milestones", "Projets / Jalons" # Brice
   l.store "Receive Notifications", "Recevoir des notifications"
   l.store "Showing Only Comments", "N'afficher que les commentaires" # Brice
+  l.store "Show Only Comments", "N'afficher que les commentaires" # Brice
   l.store "%d completed milestone", ["%d jalon atteint", "%d jalons atteints"] # Brice
   l.store "Add another dependency", "Autre dépendance" # Brice
   l.store "Download Database Dump", "Télécharger la base de données" # Lancrey

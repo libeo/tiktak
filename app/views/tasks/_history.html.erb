@@ -1,11 +1,11 @@
 <div class="page_header"><%= _ 'History' %></div><span style="float:right">
 <% if session[:only_comments].to_i == 0 %>
-           <%= link_to_remote _('Showing Full History'), :url => {:action => 'toggle_history', :id => @task.id },
+           <%= link_to_remote _('Show Only Comments'), :url => {:action => 'toggle_history', :id => @task.id },
                                    :loading => "showProgress();",
                                    :complete => "hideProgress();"
            %>
 <% else %>
-           <%= link_to_remote _('Showing Only Comments'), :url => {:action => 'toggle_history', :id => @task.id},
+           <%= link_to_remote _('Show Full History'), :url => {:action => 'toggle_history', :id => @task.id},
                                    :loading => "showProgress();",
                                    :complete => "hideProgress();"
            %>
