@@ -22,6 +22,7 @@ class Company < ActiveRecord::Base
   has_many      :statuses, :dependent => :destroy, :order => "id asc"
   has_many      :default_users, :through => :default_user_permissions, :foreign_key => "user_id", :class_name => "User"
   has_many      :default_user_permissions
+  has_many      :forums, :dependent => :destroy
 
   has_many      :preferences, :as => :preferencable
   include PreferenceMethods
