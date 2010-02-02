@@ -86,8 +86,8 @@ class User < ActiveRecord::Base
   # the given strings
   ###
   def self.search(company, strings)
-    return company.users.find(:all, 
-                              :conditions => Search.search_conditions_for(strings))
+    conds = Search.search_conditions_for(strings, [ :name ], :start_search_only => true)
+    return company.users.find(:all, :conditions => conds)
   end
 
   def path
@@ -249,7 +249,42 @@ class User < ActiveRecord::Base
 
   # Returns true if this user is allowed to view the given task.
   def can_view_task?(task)
-    projects.include?(task.project)
+    projects.include?(task.project) || task.linked_users.include?(self)
+  end
+
+  # Returns a fragment of sql to restrict tasks to only the ones this 
+  # user can see
+  def user_tasks_sql
+    res = []
+    if self.projects.any?
+      res << "tasks.project_id in (#{ all_project_ids.join(",") })"
+    end
+
+    res << "task_owners.user_id = #{ self.id }"
+    res << "notifications.user_id = #{ self.id }"
+    
+    res = res.join(" or ")
+    return "(#{ res })"
+  end
+  
+  # Returns an array of all project ids that this user has
+  # access to. Even completed projects will be included.
+  def all_project_ids
+    @all_project_ids ||= all_projects.map { |p| p.id }
+  end
+
+  # Returns an array of all customers this user has access to 
+  # (through projects). 
+  # If options is passed, those options will be passed to the find.
+  def customers(options = {})
+    company.customers.all(search_options_through_projects("customers", options))
+  end
+
+ # Returns an array of all milestone this user has access to 
+  # (through projects). 
+  # If options is passed, those options will be passed to the find.
+  def milestones(options = {})
+    company.milestones.all(search_options_through_projects("milestones", options))
   end
 
   def currently_online
@@ -328,11 +363,100 @@ class User < ActiveRecord::Base
   # Returns an array of all task filters this user can see
   def visible_task_filters
     if @visible_task_filters.nil?
-      @visible_task_filters = (task_filters.visible + company.task_filters.shared.visible)
+      @visible_task_filters = (task_filters.visible + company.task_filters.shared.visible).uniq
       @visible_task_filters = @visible_task_filters.sort_by { |tf| tf.name.downcase.strip }
     end
 
     return @visible_task_filters
   end
 
+  private
+
+  # Sets up search options to use in a find for things linked to 
+  # through projects.
+  # See methods customers and milestones.
+  def search_options_through_projects(lookup, options = {})
+    conditions = []
+    conditions << User.send(:sanitize_sql_for_conditions, options[:conditions])
+    conditions << User.send(:sanitize_sql_for_conditions, [ "projects.id in (?)", all_project_ids ])
+    conditions = conditions.compact.map { |c| "(#{ c })" }
+    options[:conditions] = conditions.join(" and ")
+
+    options[:include] ||= []
+    options[:include] << (lookup == "milestones" ? :project : :projects)
+
+    options = options.merge(:order => "lower(#{ lookup }.name)")    
+
+    return options
+  end
+
+  # Sets the date time format for this user to a sensible default
+  # if it hasn't already been set
+  def set_date_time_formats
+    first_user = company.users.detect { |u| u != self }
+
+    if first_user and first_user.time_format and first_user.date_format
+      self.time_format = first_user.time_format
+      self.date_format = first_user.date_format
+    else
+      self.date_format = "%d/%m/%Y"
+      self.time_format = "%H:%M"
+    end
+  end
+
 end
+
+# == Schema Information
+#
+# Table name: users
+#
+#  id                         :integer(4)      not null, primary key
+#  name                       :string(200)     default(""), not null
+#  username                   :string(200)     default(""), not null
+#  password                   :string(200)     default(""), not null
+#  company_id                 :integer(4)      default(0), not null
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#  email                      :string(200)
+#  last_login_at              :datetime
+#  admin                      :integer(4)      default(0)
+#  time_zone                  :string(255)
+#  option_tracktime           :integer(4)
+#  option_externalclients     :integer(4)
+#  option_tooltips            :integer(4)
+#  seen_news_id               :integer(4)      default(0)
+#  last_project_id            :integer(4)
+#  last_seen_at               :datetime
+#  last_ping_at               :datetime
+#  last_milestone_id          :integer(4)
+#  last_filter                :integer(4)
+#  date_format                :string(255)     not null
+#  time_format                :string(255)     not null
+#  send_notifications         :integer(4)      default(1)
+#  receive_notifications      :integer(4)      default(1)
+#  uuid                       :string(255)     not null
+#  seen_welcome               :integer(4)      default(0)
+#  locale                     :string(255)     default("en_US")
+#  duration_format            :integer(4)      default(0)
+#  workday_duration           :integer(4)      default(480)
+#  posts_count                :integer(4)      default(0)
+#  newsletter                 :integer(4)      default(1)
+#  option_avatars             :integer(4)      default(1)
+#  autologin                  :string(255)     not null
+#  remember_until             :datetime
+#  option_floating_chat       :boolean(1)      default(TRUE)
+#  days_per_week              :integer(4)      default(5)
+#  enable_sounds              :boolean(1)      default(TRUE)
+#  create_projects            :boolean(1)      default(TRUE)
+#  show_type_icons            :boolean(1)      default(TRUE)
+#  receive_own_notifications  :boolean(1)      default(TRUE)
+#  use_resources              :boolean(1)
+#  customer_id                :integer(4)
+#  active                     :boolean(1)      default(TRUE)
+#  read_clients               :boolean(1)      default(FALSE)
+#  create_clients             :boolean(1)      default(FALSE)
+#  edit_clients               :boolean(1)      default(FALSE)
+#  can_approve_work_logs      :boolean(1)
+#  auto_add_to_customer_tasks :boolean(1)
+#
+
