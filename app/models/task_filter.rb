@@ -151,7 +151,7 @@ class TaskFilter < ActiveRecord::Base
       res << "(work_logs.user_id = #{ user.id })"
     end
 
-    res << ["work_logs.company_id = #{user.company_id}", "projects.completed_at IS NULL"]
+    res << ["work_logs.company_id = #{user.company_id}" ] 
 
     res = res.compact.join(" AND ")
 
