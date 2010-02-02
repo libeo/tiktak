@@ -12,17 +12,6 @@ class Task < ActiveRecord::Base
 
   include Misc
 
-  acts_as_ferret( { :fields => { 'company_id' => {},
-                      'project_id' => {},
-                      'full_name' => { :boost => 1.5 },
-                      'name' => { :boost => 2.0 },
-                      'issue_name' => { :boost => 0.8 },
-                      'description' => { :boost => 1.7},
-                      'requested_by' => { :boost => 0.7 }
-                    },
-                    :remote => true
-                  } )
-
   belongs_to    :company
   belongs_to    :project
   belongs_to    :milestone
@@ -604,6 +593,21 @@ class Task < ActiveRecord::Base
     results = Task.find_with_ferret(q, options)
     return [results.total_hits, results]
   end
+
+  def self.search(user, keys)
+    tf = TaskFilter.new(:user => user)
+
+    conditions = []
+    keys.each do |k|
+      conditions << "tasks.task_num = #{ k.to_i }"
+    end
+    name_conds = Search.search_conditions_for(keys, [ "tasks.name" ], :search_by_id => false)
+    conditions << name_conds[1...-1] # strip off surounding parentheses
+    
+    conditions = "(#{ conditions.join(" or ") })"
+    return tf.tasks(conditions)
+  end
+
 
   def due
     due = self.due_at
@@ -1198,3 +1202,38 @@ class Task < ActiveRecord::Base
   end
 
 end
+
+# == Schema Information
+#
+# Table name: tasks
+#
+#  id                 :integer(4)      not null, primary key
+#  name               :string(200)     default(""), not null
+#  project_id         :integer(4)      default(0), not null
+#  position           :integer(4)      default(0), not null
+#  created_at         :datetime        not null
+#  due_at             :datetime
+#  updated_at         :datetime        not null
+#  completed_at       :datetime
+#  duration           :integer(4)      default(1)
+#  hidden             :integer(4)      default(0)
+#  milestone_id       :integer(4)
+#  description        :text
+#  company_id         :integer(4)
+#  priority           :integer(4)      default(0)
+#  updated_by_id      :integer(4)
+#  severity_id        :integer(4)      default(0)
+#  type_id            :integer(4)      default(0)
+#  task_num           :integer(4)      default(0)
+#  status             :integer(4)      default(0)
+#  requested_by       :string(255)
+#  creator_id         :integer(4)
+#  notify_emails      :string(255)
+#  repeat             :string(255)
+#  hide_until         :datetime
+#  scheduled_at       :datetime
+#  scheduled_duration :integer(4)
+#  scheduled          :boolean(1)      default(FALSE)
+#  worked_minutes     :integer(4)      default(0)
+#
+
