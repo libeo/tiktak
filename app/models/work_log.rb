@@ -27,6 +27,10 @@ class WorkLog < ActiveRecord::Base
     l = r.event_log
     l.created_at = r.started_at
     l.save
+    
+    #UGLY HACK : I don't know why yet that logs are created and sometimes don't have the same reference to the project as their task
+    #update : I suspect that it might have been in the old version when you created a work_log at the same time as you changed the project of a task
+    r.project = r.task.project if r.task and r.project != r.task.project
 
     if r.task && r.duration.to_i > 0
       r.task.recalculate_worked_minutes
@@ -44,8 +48,6 @@ class WorkLog < ActiveRecord::Base
     l.created_at = r.started_at
     l.save
 
-    #UGLY HACK : I don't know why yet
-    r.project = r.task.project if r.project != r.task.project
     
     if r.task && r.duration.to_i > 0
       r.task.recalculate_worked_minutes
