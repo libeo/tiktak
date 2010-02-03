@@ -10,7 +10,8 @@ class SearchController < ApplicationController
     @keys = params[:query].split.map { |s| s.strip.downcase }
 
     company = current_user.company
-    project_ids = "(#{ current_user.all_project_ids.join(", ") })"
+    #project_ids = "(#{ current_user.all_project_ids.join(", ") })"
+    project_ids = "(#{current_project_ids_query})"
 
     @tasks = Task.search(current_user, @keys)
     @customers = Customer.search(current_user.company, @keys)
@@ -18,7 +19,7 @@ class SearchController < ApplicationController
 
     # work logs
     conditions = Search.search_conditions_for(@keys, [ "work_logs.body" ])
-    conditions += " AND project_id in #{ project_ids }"
+    conditions += " AND work_logs.project_id in #{ project_ids }"
     @logs = company.work_logs.all(:conditions => conditions)
     
     # shouts
