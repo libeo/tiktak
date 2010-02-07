@@ -594,7 +594,7 @@ class Task < ActiveRecord::Base
     return [results.total_hits, results]
   end
 
-  def self.search(user, keys)
+  def self.search(user, keys, other_conditions=nil)
     tf = TaskFilter.new(:user => user)
 
     conditions = []
@@ -605,6 +605,7 @@ class Task < ActiveRecord::Base
     conditions << name_conds[1...-1] # strip off surounding parentheses
     
     conditions = "(#{ conditions.join(" or ") })"
+    conditions += other_conditions if other_conditions
     return tf.tasks(conditions)
   end
 
