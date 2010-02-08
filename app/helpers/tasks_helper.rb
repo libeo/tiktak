@@ -457,6 +457,8 @@ module TasksHelper
     @task = current_user.company.tasks.find_by_id(session[:last_task_id], 
                                             :conditions => [ "project_id IN (#{ current_project_ids })" ])
     if @task
+      @logs = WorkLog.find(:all, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.task_id = ? #{"AND (work_logs.comment = 1 OR work_logs.log_type=6)" if session[:only_comments].to_i == 1}", @task.id], :include => [:user, :task, :project])
+      @logs ||= []
       return render_to_string(:action => "edit", :layout => false)
     end
   end

@@ -209,7 +209,6 @@ class TasksController < ApplicationController
       session[:last_project_id] = @task.project_id
       session[:last_task_id] = @task.id
 
-      debugger
       @task.set_users(params)
       @task.set_dependency_attributes(params[:dependencies], current_project_ids)
       @task.set_resource_attributes(params[:resource])
