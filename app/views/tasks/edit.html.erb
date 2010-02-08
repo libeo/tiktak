@@ -20,9 +20,8 @@
 				<%= @task.todo_status %>
 				</a>
 			</span>
-		</div>
-		<%= render :partial => "tasks/todo_container", :locals => {:task => @task, :depth => 0} %>
-		<script type="text/javascript">jQuery('#todo-container-<%=@task.dom_id%>').show();</script>
+    </div>
+    <%= render :partial => "tasks/todo_container", :locals => {:task => @task, :depth => 0} %>
 
 	    <div id="task_history">
 	      <%= render(:partial => "history") %>
