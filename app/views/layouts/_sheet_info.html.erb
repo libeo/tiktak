@@ -23,10 +23,6 @@
         :loading => "showProgress();",
         :complete => "hideProgress();" -%> [<%= _('Paused') %>]
   <% else %>
-    <%= link_to_remote image_tag("time_pause.png", :border => 0, :title => _("Pause working on <b>%s</b>.", task.name), :class => "tooltip"),
-        :url => { :controller => 'tasks', :action => 'pause_work_ajax', :id => task },
-        :loading => "showProgress();",
-        :complete => "hideProgress();" -%>
   <% end %>
   <%= worked_nice(@current_sheet.duration/60) -%><%= info_string -%><%= " - " if total_today > 0 %>
 <% end %>

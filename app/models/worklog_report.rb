@@ -70,7 +70,7 @@ class WorklogReport
     init_start_and_end_dates(params)
     init_work_logs(tasks, params)
     init_rows_and_columns
-    init_csv
+    #init_csv
   end
 
   ###
@@ -187,8 +187,9 @@ class WorklogReport
 
     if [WorklogReport::TIMESHEET, WorklogReport::MERGED_TIMESHEET, WorklogReport::PIVOT, WorklogReport::AUDIT].include?  @type
       sql = []
-      sql << "started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
-      sql << "started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+      sql << "work_logs.started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
+      sql << "work_logs.started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+      sql << "work_logs.duration != 0"
       logs = @tf.work_logs(sql.join(" AND "))
       #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
     else
@@ -296,27 +297,55 @@ class WorklogReport
     #  b[x.user.id] << x
     #end
 
-    b = {}
-    work_logs.each do |x|
-      b[x.user_id] = [] unless b.key? x.user_id
-      b[x.user_id] << x
-    end
+    #b = {}
+    #work_logs.each do |x|
+    #  b[x.user_id] = [] unless b.key? x.user_id
+    #  b[x.user_id] << x
+    #end
 
     #######################
     #EXTREMELY UGLY, I KNOW. If ever I have the time, I want to refactor the WHOLE worklog report and its views
     ########################
-    b.each do |user, wl|
+    work_logs.group_by{ |w| w.user_id }.each do |user, wl|
       #wl = wl.sort { |x,y| x.started_at <=> y.started_at}
-      last_w = nil
-      for w in wl
-        if last_w and last_w.duration != 0 and w.duration != 0 and w.started_at < last_w.started_at + last_w.duration - ((last_w.started_at + last_w.duration).to_f%60)
-          merged_time = (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
-          @warnings << w
-          @warnings << last_w unless @warnings.include? last_w
-          @subtract_totals[w] = merged_time.to_i
+      
+      group = [wl.shift, wl.shift].compact
+      
+      while group.length > 1
+        first = group.first.started_at - group.first.started_at.sec
+        first_duration = group.first.duration
+        first_duration -= first_duration % 60
+
+        last_duration = group.last.duration
+        last_duration -= last_duration % 60
+        last = group.last.started_at - group.last.started_at.sec
+
+        if last < first + first_duration
+          @warnings = @warnings | group
+          if @type == WorklogReport::MERGED_TIMESHEET
+            if last + last_duration < first + first_duration
+              merged_time = last_duration
+            else
+              merged_time = (first + first_duration - last).to_i
+            end
+            @subtract_totals[group.first] = merged_time
+          end
         end
-        last_w = w
+
+        group.shift
+        group << wl.shift if wl.length > 0
       end
+
+      #last_w = nil
+      #for w in wl
+      #  if last_w and last_w.duration != 0 and w.duration != 0 and w.started_at < last_w.started_at + last_w.duration - ((last_w.started_at + last_w.duration).to_f%60)
+      #    merged_time = (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
+      #    @warnings << w
+      #    @warnings << last_w unless @warnings.include? last_w
+      #    @subtract_totals[w] = merged_time.to_i
+      #  end
+      #  last_w = w
+      #end
     end
 
     for w in work_logs
@@ -388,7 +417,7 @@ class WorklogReport
       end
 
       @subtract_totals[rkey] ||= 0
-      @total += w.duration
+      @total += w.duration  - w.duration % 60
       last_w = w
       last_key = rkey
     end
@@ -502,6 +531,7 @@ class WorklogReport
       @rows[ rkey ]['__'] = rname
     end
     if duration.is_a? Fixnum
+      duration -= duration % 60
       @rows[rkey][vkey] ||= 0 
       @rows[rkey][vkey] += duration if duration
     else 
