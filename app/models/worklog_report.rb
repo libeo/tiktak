@@ -187,9 +187,9 @@ class WorklogReport
 
     if [WorklogReport::TIMESHEET, WorklogReport::MERGED_TIMESHEET, WorklogReport::PIVOT, WorklogReport::AUDIT].include?  @type
       sql = []
-      sql << "started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
-      sql << "started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
-      sql << "duration != 0"
+      sql << "work_logs.started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
+      sql << "work_logs.started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
+      sql << "work_logs.duration != 0"
       logs = @tf.work_logs(sql.join(" AND "))
       #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
     else
