@@ -19,10 +19,6 @@
         :loading => "showProgress();",
         :complete => "hideProgress();" -%>
   <% else %>
-    <%= link_to_remote image_tag("time_pause.png", :border => 0, :title => _("Pause working on <b>%s</b>.", task.name), :class => "tooltip"),
-        :url => { :controller => 'tasks', :action => 'pause_work_ajax', :id => task, :depth => 0 },
-        :loading => "showProgress();",
-        :complete => "hideProgress();" -%>
   <% end %>
   <%= link_to(image_tag("time_add.png", :border => 0, :class => "tooltip work_icon", :title => _("Stop working on <b>%s</b>.", task.name)), {:controller => 'tasks', :action => 'stop_work'}, { :class => "stop-work-link" } )  -%>
 <%= info_string %>

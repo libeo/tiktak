@@ -105,7 +105,9 @@
             belongs to the previous or next year, that year is used instead.
      %h     same as %b                                                                   "Jan" through "Dec"
      %H     hour as a decimal number using a 24-hour clock                               "00" to "23"
+     %k     same as %H, without leading 0                                                "0" to "23"
      %I     hour as a decimal number using a 12-hour clock                               "01" to "12"
+     %l     same as %I, without leading 0                                                "1" to "12"
      %j     day of the year as a decimal number                                          "001" to "366"
      %m     month as a decimal number                                                    "01" to "12"
      %M     minute as a decimal number                                                   "00" to "59"
@@ -259,14 +261,16 @@
                 return t("tt").toLowerCase();
             case "A":
                 return t("tt").toUpperCase();
-            case "g":
+            case "G":
             case "%I":
                 return t("h");
-            case "G":
+            case "g":
+            case "%k":
                 return t("H");
-            case "h":
-                return t("hh");
             case "H":
+            case "%l":
+                return t("hh");
+            case "h":
             case "%H":
                 return t("HH");
             case "i":

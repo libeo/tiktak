@@ -14,10 +14,10 @@
 <%= error_messages_for "log" %>
 
 <%= f.label :started_at, _("Start") %>
- <%= f.datetime_select(:started_at, :default => @log.started_at, :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :onClose => "calendarOnSelect") %>
+ <%= f.datetime_select(:started_at, :default => @log.started_at - @log.started_at.sec, :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :onClose => "calendarOnSelect") %>
 <br />
 <%= f.label :ended_at, _("End") %>
-<%= f.datetime_select(:ended_at, :default => @log.ended_at, :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :onClose => "calendarOnSelect") %>
+<%= f.datetime_select(:ended_at, :default => @log.ended_at - @log.ended_at.sec, :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :onClose => "calendarOnSelect") %>
 <br/>
 
 <%= render(:partial => "/common/custom_attributes", :locals => { :object => @log }) %>
