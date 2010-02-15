@@ -1,8 +1,8 @@
-<script type="text/javascript">jQuery("#milestone_due_at").datepicker({dateFormat: '<%= current_user.dateFormat %>'});</script>
 <%= error_messages_for 'milestone' %>
 
 <label for="milestone_name"><%=_ 'Name' %></label><%= text_field 'milestone', 'name'  %><br/>
 <label for="milestone_due_at"><%=_ 'Due Date' %></label><%= text_field 'milestone', 'due_at', :size => 12 %><br/>
+<script type="text/javascript">jQuery("#milestone_due_at").datepicker({dateFormat: '<%= current_user.dateFormat %>'});</script>
 <label for="milestone_user_id"><%=_ 'Owner' %></label><%= select 'milestone', 'user_id', User.find(:all, :order => 'name',
     :conditions => ['company_id = ?', current_user.company.id] ).collect {|c| [ c.name, c.id ] }, :include_blank => true  %><br/>
 
