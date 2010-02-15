@@ -88,10 +88,6 @@ class="task <%=classes%>" style="position:relative;<% if depth > 1 %>margin-left
             :loading => "showProgress();",
             :complete => "hideProgress();" -%>
         <% else %>
-          <%= link_to_remote image_tag("time_pause.png", :border => 0, :title => _("Pause working on <b>%s</b>.", task.name), :class => "tooltip"),
-            :url => { :controller => 'tasks', :action => 'pause_work_ajax', :id => task },
-            :loading => "showProgress();",
-            :complete => "hideProgress();" -%>
         <% end %>
       <% else -%>
         <% if task.done? -%>
