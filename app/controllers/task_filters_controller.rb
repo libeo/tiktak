@@ -7,7 +7,7 @@ class TaskFiltersController < ApplicationController
     return if @filter.blank?
 
     @filter = @filter.downcase
-    name_conds = [ "lower(name) like ?", "#{ @filter }%" ]
+    name_conds = [ "lower(name) like ?", "%#{ @filter }%" ]
     limit = 10
 
     @to_list = []

@@ -26,3 +26,4 @@ tmp
 .project
 .idea
 lib/scripts/*.rb
+.last-cit-upgrade
