@@ -2926,6 +2926,10 @@ fieldset.basic li.attribute, fieldset.basic li.property_value {
     float: right;
 }
 
+.search_filter_legend {
+  text-align: center;
+}
+
 div.search_filter {
     text-align: center;
 }
