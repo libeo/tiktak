@@ -20,6 +20,8 @@ class ApplicationController < ActionController::Base
   helper_method :current_projects
   helper_method :current_shortlist_filter
   helper_method :current_project_ids
+  helper_method :current_project_ids_query
+  helper_method :user_project_ids_query
   helper_method :completed_milestone_ids
   helper_method :worked_nice
   helper_method :link_to_task
@@ -265,7 +267,11 @@ class ApplicationController < ActionController::Base
   end
 
   def current_project_ids_query
-    "select project_permissions.project_id from project_permissions left join projects on project_permissions.project_id = projects.id where project_permissions.user_id = #{current_user.id} and projects.completed_at is null"
+    user_project_ids_query(current_user)
+  end
+
+  def user_project_ids_query(user)
+    "select project_permissions.project_id from project_permissions left join projects on project_permissions.project_id = projects.id where project_permissions.user_id = #{user.id} and projects.completed_at is null"
   end
 
   def completed_milestone_ids_query
