@@ -278,12 +278,14 @@ class WidgetsController < ApplicationController
     when 7
       # Schedule
 
+      debugger
       filter = filter_from_filter_by
+      filter = 'AND '+filter if filter
 
       if @widget.mine?
-        tasks = current_user.tasks.find(:all, :include => [:users, :tags, :sheets, :todos, :dependencies, :dependants, { :project => :customer}, :milestone ], :conditions => ["tasks.completed_at IS NULL AND projects.completed_at IS NULL AND #{filter} AND (tasks.due_at IS NOT NULL OR tasks.milestone_id IS NOT NULL)"])
+        tasks = current_user.tasks.find(:all, :include => [:users, :tags, :sheets, :todos, :dependencies, :dependants, { :project => :customer}, :milestone ], :conditions => ["tasks.completed_at IS NULL AND projects.completed_at IS NULL #{filter if filter} AND (tasks.due_at IS NOT NULL OR tasks.milestone_id IS NOT NULL)"])
       else 
-        tasks = Task.find(:all, :include => [:users, :tags, :sheets, :todos, :dependencies, :dependants, { :project => :customer}, :milestone ], :conditions => ["tasks.project_id IN (#{current_project_ids}) AND tasks.completed_at IS NULL AND projects.completed_at IS NULL AND #{filter} AND (tasks.due_at IS NOT NULL OR tasks.milestone_id IS NOT NULL)"])
+        tasks = Task.find(:all, :include => [:users, :tags, :sheets, :todos, :dependencies, :dependants, { :project => :customer}, :milestone ], :conditions => ["tasks.project_id IN (#{current_project_ids}) AND tasks.completed_at IS NULL AND projects.completed_at IS NULL #{filter if filter} AND (tasks.due_at IS NOT NULL OR tasks.milestone_id IS NOT NULL)"])
       end
       # first use default sorting
       tasks = tasks.sort_by do |t| 
