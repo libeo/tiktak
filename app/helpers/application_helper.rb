@@ -590,7 +590,19 @@ END_OF_HTML
         s = selected
       end
     end
-    projects = Project.find(:all, :include => "customer", :order => "customers.name, projects.name", :select => [:id, :name], :conditions => ["completed_at is null"]) unless projects
+
+    projects = Project.find(:all, :order => 'customers.name, projects.name',
+      :select => 'projects.id, projects.name, customers.name',
+      :include => :customer,
+      :conditions => "projects.completed_at is null") unless projects
+
+    #This is the select without the select_with_include gem
+    #Need to see if performance is greatly impacted with or without the gem
+    ##
+    #projects = Project.find(:all, :order => "customers.name, projects.name", 
+    #  :select => "projects.id, projects.name", 
+    #  :joins => "left outer join customers on projects.customer_id=customers.id"
+    #  :conditions => "projects.completed_at is null") unless projects
 
     last_customer = nil
     options = []
@@ -605,6 +617,24 @@ END_OF_HTML
     end
 
     return grouped_options_for_select(options, s)
+  end
+
+  def options_for_user_projects(selected = nil)
+    #See comment in options_for_projects
+    #
+    #return options_for_projects(selected, 
+    #  Project.find(:all, :order => "customers.name, projects.name", 
+    #    :select => "projects.id, projects.name", 
+    #    :joins => "left outer join customers on projects.customer_id=customers.id"
+    #    :conditions => "projects.id in (#{current_project_ids_query})")
+    #)
+
+    return options_for_projects(selected, 
+      Project.find(:all, :order => "customers.name, projects.name", 
+        :select => "projects.id, projects.name, customers.name", 
+        :include => :customer,
+        :conditions => "projects.id in (#{current_project_ids_query})")
+    )
   end
 
 end
