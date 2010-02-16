@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   layout :decide_layout
+  include TasksHelper
 
   def index
     list

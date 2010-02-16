@@ -1,15 +1,17 @@
 module NoticeGroupsHelper
   include Misc
-  def options_for_projects(selected = nil)
-    s = []
+  def options_for_projects(selected = nil, projects = nil)
+    s = nil
     unless selected.nil?
-      selected.each do |se|
-        s.push(se.id)
+      if selected.is_a? Array
+        selected.each do |se|
+          s.push(se.id)
+        end
+      else
+        s = selected
       end
     end
-    puts s
-    #selected.map!{ |s| s.id }
-    projects = current_user.projects.find(:all, :include => "customer", :order => "customers.name, projects.name")
+    projects = Project.find(:all, :include => "customer", :order => "customers.name, projects.name", :select => [:id, :name], :conditions => ["completed_at is null"]) unless projects
 
     last_customer = nil
     options = []
@@ -25,4 +27,12 @@ module NoticeGroupsHelper
 
     return grouped_options_for_select(options, s)
   end
+
+  def options_for_user_projects(selected = nil)
+    return options_for_projects(selected, 
+      Project.find(:all, :include => :customer, :order => "customers.name, projects.name", :select => [:id, :name],
+        :conditions => "projects.id in (#{current_project_ids_query})")
+    )
+  end
+
 end
