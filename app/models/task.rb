@@ -17,14 +17,11 @@ class Task < ActiveRecord::Base
   belongs_to    :milestone
   has_many      :users, :through => :task_owners, :source => :user
   has_many      :task_owners, :dependent => :destroy
-  accepts_nested_attributes_for :task_owners, :allow_destroy => true
 
   has_many      :work_logs, :dependent => :destroy, :order => "started_at asc"
   has_many      :attachments, :class_name => "ProjectFile", :dependent => :destroy
 
   has_many      :notifications, :dependent => :destroy
-  accepts_nested_attributes_for :notifications, :allow_destroy => true
-
   has_many      :watchers, :through => :notifications, :source => :user
 
   belongs_to    :creator, :class_name => "User", :foreign_key => "creator_id"
@@ -53,15 +50,6 @@ class Task < ActiveRecord::Base
   
   validates_presence_of		:company
   validates_presence_of		:project
-
-  validates_each(:users, :on => :save) do |model, attr, value|
-    debugger
-    value.each do |user|
-      unless user.can?('work', self)
-        model.errors.add(user.name, _("User does not have permission to work on this project"))
-      end
-    end
-  end
 
   before_create :set_task_num
 
