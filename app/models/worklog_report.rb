@@ -190,6 +190,7 @@ class WorklogReport
       sql << "work_logs.started_at >= '#{@start_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @start_date
       sql << "work_logs.started_at <= '#{@end_date.strftime('%Y-%m-%d %H:%M:%S')}'" if @end_date
       sql << "work_logs.duration != 0"
+      sql << "(work_logs.approved = false or work_logs.approved is null)" if @type == WorklogReport::TIMESHEET or @type == WorklogReport::MERGED_TIMESHEET and params[:hide_approved].to_i > 0
       logs = @tf.work_logs(sql.join(" AND "))
       #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
     else
@@ -209,8 +210,10 @@ class WorklogReport
 
     end
 
-    logs = filter_logs_by_params(logs, params)
-    logs = logs.sort_by { |l| l.started_at } if @type == WORKLOAD
+    if @type == WORKLOAD
+      logs = filter_logs_by_params(logs, params)
+      logs = logs.sort_by { |l| l.started_at } if @type == WORKLOAD
+    end
     @work_logs = logs
   end
 
@@ -289,68 +292,44 @@ class WorklogReport
     last_key = nil
     rkey = nil
 
-
-    #b = {}
-    #a = work_logs.sort{|a,c| a.user.id <=> c.user.id }
-    #a.each do |x|
-    #  b[x.user.id] = [] unless b.key? x.user.id
-    #  b[x.user.id] << x
-    #end
-
-    #b = {}
-    #work_logs.each do |x|
-    #  b[x.user_id] = [] unless b.key? x.user_id
-    #  b[x.user_id] << x
-    #end
-
     #######################
     #EXTREMELY UGLY, I KNOW. If ever I have the time, I want to refactor the WHOLE worklog report and its views
     ########################
-    work_logs.group_by{ |w| w.user_id }.each do |user, wl|
-      #wl = wl.sort { |x,y| x.started_at <=> y.started_at}
+    merged_time = {}
+    work_logs.group_by{ |work_log| work_log.user_id }.each do |user, wl|
+      wl.map do |i|
+        i.started_at -= i.started_at.sec
+        i.duration -= i.duration % 60
+      end
       
-      group = [wl.shift, wl.shift].compact
-      
-      while group.length > 1
-        first = group.first.started_at - group.first.started_at.sec
-        first_duration = group.first.duration
-        first_duration -= first_duration % 60
+      root = wl.shift
+      while wl.size > 1
+        group = []
+        current = wl.shift
 
-        last_duration = group.last.duration
-        last_duration -= last_duration % 60
-        last = group.last.started_at - group.last.started_at.sec
-
-        if last < first + first_duration
-          @warnings = @warnings | group
-          if @type == WorklogReport::MERGED_TIMESHEET
-            if last + last_duration < first + first_duration
-              merged_time = last_duration
-            else
-              merged_time = (first + first_duration - last).to_i
-            end
-            @subtract_totals[group.first] = merged_time
-          end
+        while !current.nil? and (current.started_at < root.started_at or current.ended_at < root.ended_at)
+          group << current
+          current = wl.shift
         end
 
-        group.shift
-        group << wl.shift if wl.length > 0
-      end
+        if group.length > 0
+          @warnings =  @warnings | group
+          @warnings << root if !@warnings.include? root
 
-      #last_w = nil
-      #for w in wl
-      #  if last_w and last_w.duration != 0 and w.duration != 0 and w.started_at < last_w.started_at + last_w.duration - ((last_w.started_at + last_w.duration).to_f%60)
-      #    merged_time = (last_w.started_at + last_w.duration) - w.started_at if @type == WorklogReport::MERGED_TIMESHEET
-      #    @warnings << w
-      #    @warnings << last_w unless @warnings.include? last_w
-      #    @subtract_totals[w] = merged_time.to_i
-      #  end
-      #  last_w = w
-      #end
+          if @type == MERGED_TIMESHEET
+            group.each do |g|
+              @subtract_totals[g.id] = g.ended_at < root.ended_at ? g.duration : (root.ended_at - g.started_at).to_i
+            end
+          end
+
+          root = group.last
+        else
+          root = current
+        end
+      end
     end
 
     for w in work_logs
-      next if (w.task_id.to_i == 0) || w.duration.to_i == 0
-
       case @type
 
       when 1, 4
@@ -411,9 +390,9 @@ class WorklogReport
           @warnings[@warnings.index(w)] = rkey
       end
 
-      if @subtract_totals.include?(w) and @type == WorklogReport::MERGED_TIMESHEET
-        @subtract_totals[rkey] = @subtract_totals[w]
-        @subtract_totals.delete w
+      if @subtract_totals.keys.include? w.id and @type == WorklogReport::MERGED_TIMESHEET
+        @subtract_totals[rkey] = @subtract_totals[w.id]
+        @subtract_totals.delete w.id
       end
 
       @subtract_totals[rkey] ||= 0
