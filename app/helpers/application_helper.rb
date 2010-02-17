@@ -579,6 +579,69 @@ END_OF_HTML
     return "custom_attribute_#{ @ca_field_id }"
   end
 
+  def options_for_projects(selected = nil, projects = nil)
+    s = nil
+
+    #normally you would just need to pass the selected array to grouped_options,
+    #but for some weird reason if selected is an array of project objects that were mapped to 
+    #contain only thir id (selected.map { |p| p.id }) it doesn't work
+    unless selected.nil?
+      if selected.is_a? Array
+        s = []
+        selected.each do |se|
+          s.push(se.id)
+        end
+      else
+        s = selected
+      end
+    end
+
+    projects = Project.find(:all, :order => 'customers.name, projects.name',
+      :select => 'projects.id, projects.name, customers.name',
+      :include => :customer,
+      :conditions => "projects.completed_at is null") unless projects
+
+    #This is the select without the select_with_include gem
+    #Need to see if performance is greatly impacted with or without the gem
+    ##
+    #projects = Project.find(:all, :order => "customers.name, projects.name", 
+    #  :select => "projects.id, projects.name", 
+    #  :joins => "left outer join customers on projects.customer_id=customers.id"
+    #  :conditions => "projects.completed_at is null") unless projects
+
+    last_customer = nil
+    options = []
+
+    projects.each do |project|
+      if project.customer != last_customer
+        options << [ h(project.customer.name), [] ]
+        last_customer = project.customer
+      end
+
+      options.last[1] << [ project.name, project.id ]
+    end
+
+    return grouped_options_for_select(options, s)
+  end
+
+  def options_for_current_user_projects(selected = nil)
+    #See comment in options_for_projects
+    #
+    #return options_for_projects(selected, 
+    #  Project.find(:all, :order => "customers.name, projects.name", 
+    #    :select => "projects.id, projects.name", 
+    #    :joins => "left outer join customers on projects.customer_id=customers.id"
+    #    :conditions => "projects.id in (#{current_project_ids_query})")
+    #)
+
+    return options_for_projects(selected, 
+      Project.find(:all, :order => "customers.name, projects.name", 
+        :select => "projects.id, projects.name, customers.name", 
+        :include => :customer,
+        :conditions => "projects.id in (#{current_project_ids_query})")
+    )
+  end
+
 end
 
 
