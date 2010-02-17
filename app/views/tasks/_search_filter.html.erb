@@ -1,12 +1,3 @@
-<div class="search_filter_legend">
-  <p>
-  <b><%=_("Filter legend")%></b>: 
-  <%= ['User name', 'Project name', 'Client name', 'Milestone name', 'Tag'].map{ |word| _(word) }.join(", ") %>,
-  <%=_"Status name"%> (<%=Task.status_types.join(", ")%>),
-  <%=_"Facturable"%> (Yes, No)
-  </p>
-</div>
-
 <div class="search_filter">
   <%= text_field_tag "filter", nil, :id => "search_filter" %>
   <div id="search_filter_auto_complete" class="auto_complete"></div>
