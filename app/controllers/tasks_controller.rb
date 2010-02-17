@@ -162,7 +162,6 @@ class TasksController < ApplicationController
     params[:task][:set_tags] = nil
 
     @task = current_user.company.tasks.new
-    debugger
     @task.attributes = params[:task]
 
     if !params[:task].nil? && !params[:task][:due_at].nil? && params[:task][:due_at].length > 0
@@ -206,12 +205,11 @@ class TasksController < ApplicationController
       return
     end
     
-    debugger
     if @task.save
       session[:last_project_id] = @task.project_id
       session[:last_task_id] = @task.id
 
-      #@task.set_users(params)
+      @task.set_users(params)
       @task.set_dependency_attributes(params[:dependencies], current_project_ids)
       @task.set_resource_attributes(params[:resource])
       @task.create_work_log(params[:work_log], current_user)
