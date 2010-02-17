@@ -67,7 +67,8 @@
 	    <td id="right-menu-collapse" onclick="jQuery('#left_menu').toggle(); jQuery.get('/activities/toggle_menu'); return false;">&nbsp;</td>
 	    <td align="right" valign="top" style="width:15%;<%= "display:none;" if session[:collapse_menu].to_i > 0 %>" id="left_menu">
 
-	      <%= render(:partial => "/task_filters/panel") %>
+        <% redirect_action = controller.controller_name == 'reports' ? '/reports/list' : nil %>
+        <%= render(:partial => "/task_filters/panel", :locals => {:redirect_action => redirect_action }) %>
 
 	      <div <%= "style=\"display:none;\"" if @current_sheet.nil? || controller.action_name == "stop_work" %> id="work-log">
 		<div class="page_header tooltip" title="<%= _'Text entered will be saved automatically to your current work notes.'%>"><%= _'Work Log' %></div>
