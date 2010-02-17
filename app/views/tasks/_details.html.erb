@@ -9,7 +9,7 @@
 
   <label for="task_project_id"><%=_ 'Project' %></label>
   <select name="task[project_id]" id="task_project_id" <%= "disabled=\"disabled\"" unless perms['reassign'].empty? %>>
-    <%= options_for_user_projects(@task) %>
+    <%= options_for_user_projects(@task.new_record? ? current_user.default_project_id : @task.project_id) %>
   </select>
   <%= task_project_watchers_js %>
   <br/>
