@@ -49,6 +49,8 @@ class User < ActiveRecord::Base
 
   has_many      :task_filters, :dependent => :destroy
 
+  belongs_to       :default_project, :class_name => "Project", :foreign_key => :default_project_id
+
   has_and_belongs_to_many :notice_groups
   has_one :default_user_permission, :foreign_key => "user_id"
   

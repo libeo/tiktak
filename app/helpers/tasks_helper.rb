@@ -273,23 +273,23 @@ module TasksHelper
   ###
   # Returns a list of options to use for the project select tag.
   ###
-  def options_for_user_projects(task)
+  def options_for_user_projects(default=nil)
     #projects = current_user.projects.find(:all, :include => "customer", :order => "customers.name, projects.name")
-    projects = Project.find(:all, :conditions => "project_permissions.can_create = true and projects.completed_at is null and project_permissions.user_id = #{current_user.id}", :include => [:project_permissions, :customer], :order => "customers.name asc, projects.name asc")
+    projects = Project.find(:all, :select => "projects.name, projects.id, customers.name", :conditions => "project_permissions.can_create = true and projects.completed_at is null and project_permissions.user_id = #{current_user.id}", :include => [:project_permissions, :customer], :order => "customers.name asc, projects.name asc")
 
     last_customer = nil
     options = []
 
     projects.each do |project|
-      if project.customer != last_customer
+      if project.customer.name != last_customer
         options << [ h(project.customer.name), [] ]
-        last_customer = project.customer
+        last_customer = project.customer.name
       end
 
       options.last[1] << [ project.name, project.id ]
     end
 
-    return grouped_options_for_select(options, task.project_id)
+    return grouped_options_for_select(options, default)
   end
 
   # Returns the js to watch a task's project selector
