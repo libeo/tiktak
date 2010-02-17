@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100120213810) do
+ActiveRecord::Schema.define(:version => 20100215221610) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -825,6 +825,7 @@ ActiveRecord::Schema.define(:version => 20100120213810) do
     t.boolean  "create_clients",                           :default => false
     t.boolean  "edit_clients",                             :default => false
     t.boolean  "can_approve_work_logs"
+    t.integer  "default_project_id"
   end
 
   add_index "users", ["autologin"], :name => "index_users_on_autologin"

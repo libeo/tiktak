@@ -581,8 +581,13 @@ END_OF_HTML
 
   def options_for_projects(selected = nil, projects = nil)
     s = nil
+
+    #normally you would just need to pass the selected array to grouped_options,
+    #but for some weird reason if selected is an array of project objects that were mapped to 
+    #contain only thir id (selected.map { |p| p.id }) it doesn't work
     unless selected.nil?
       if selected.is_a? Array
+        s = []
         selected.each do |se|
           s.push(se.id)
         end
@@ -619,7 +624,7 @@ END_OF_HTML
     return grouped_options_for_select(options, s)
   end
 
-  def options_for_user_projects(selected = nil)
+  def options_for_current_user_projects(selected = nil)
     #See comment in options_for_projects
     #
     #return options_for_projects(selected, 

@@ -8,7 +8,7 @@
 
 	<div class='group_projects'>
 		<%= f.label :projects %><br />
-        <select name="notice_group[projects]" id="notice_group_project_id" multiple >
+        <select name="notice_group[projects][]" id="notice_group_project_id" multiple="multiple" >
 			<%= options_for_projects(@notice_group.projects) %>
 		</select>
 	</div>
