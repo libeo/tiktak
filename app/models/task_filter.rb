@@ -35,8 +35,7 @@ class TaskFilter < ActiveRecord::Base
 
   # Returns an array of all tasks matching the conditions from this filter
   # if extra_conditions is passed, that will be ANDed to the conditions
-  def tasks(extra_conditions = nil, limit = nil)
-    #return user.company.tasks.all(:conditions => conditions(extra_conditions), 
+  def tasks(extra_conditions = nil, selected=nil)
     return Task.find(:all, :conditions => conditions(extra_conditions), 
                                   :order => "tasks.id desc",
                                   :include => to_include,
@@ -192,38 +191,36 @@ class TaskFilter < ActiveRecord::Base
     to_include << { :project => :customer }
   end
   
-  def get_includes(work_logs = false)
-    includes = [:users]
-    quals = qualifiers.map { |q| q.qualifiable_type }
-      #assoc = {
-      #'Project' => {:project => :customer },
-      #'User' => :users,
-      #'Customer' => :customers,
-      #'Company' => {:company => :properties},
-      #'Tag' => :tags,
-      #'Milestone' => :milestones,
-      #'PropertyValue' => :task_property_values,
-      #}
-    assoc = {
-      'Project' => :project,
-      #'User' => :users,
-      'Customer' => :customers,
-      'Company' => :company, 
-      'Tag' => :tags,
-      'Milestone' => :milestones,
-      'PropertyValue' => :task_property_values,
-    }
-    assoc_work = [:tags, :milestones, :task_property_values]
+  def get_includes(fields)
+    conds = []
 
-    quals.each { |q| includes << assoc[q] }
-    includes.compact!
-    if work_logs
-      #others = assoc_work & includes
-      #includes = includes - others + [:tasks] if others.length > 0
-      includes = includes - assoc_work + [:task]
-    end
-    
-    return includes.uniq
+    fields.split(/\s+/).map{ |i| i.split('.').first }.each do |field|
+      case field
+        when 'users':
+          conds << ['users', 'task_owners.user_id', 'users.id']
+          conds << ['task_owners', 'task_owners.task_id', 'tasks.id']
+        when 'tags'
+          conds << ['tags', 'task_tags.tag_id', 'tags.id']
+          conds << ['task_tags', 'task_tags.id', 'tags.id']
+        when 'sheets'
+          conds << ['sheets', 'sheets.task_id', 'tasks.id']
+        when 'todos'
+          conds << 'todos', 'todos.task.id', 'tasks.id']
+        when 'dependencies':
+          conds << ['dependencies', 'dependencies.task_id', 'tasks.id']
+          conds << ['dependencies', 'dependencies.dependency_id', 'tasks.id']
+        when 'milestones':
+          conds << ['milestones', 'tasks.milestone_id', 'milestones.id']
+        when 'notifications':
+          conds << ['notifications', 'task_notifications.notification_id', 'notifications.id']
+          conds << ['task_notifications', 'task_notifications.task_id', 'tasks.id']
+          #TODO: check watchers
+        when 'customers':
+
+
+
+
+          
   end
 
   def set_company_from_user
