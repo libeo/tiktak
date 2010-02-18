@@ -4,7 +4,14 @@
                                    :complete => "hideProgress();" do  %>
 <label for="widget_name"><%= _("Title") %></label><%= text_field 'widget', 'name', {:size => 10} %> 
 <label for="widget_number"><%= _("Tasks") %></label><%= select( 'widget', 'number', [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100].collect{|i| [i.to_s, i]}) %>
-<%= select( 'widget', 'order_by', [[_('Recent'),'date'],[_('Priority'),'priority']]) %>
+<%= select( 'widget', 'order_by', [
+           [_('Priority'),'priority'], 
+           [_('Creation date (ascending)'),'date_asc'], 
+           [_('Creation date (descending)'), 'date_desc'], 
+           [_('Modification date (ascending)'), 'mod_asc'], 
+           [_('Modification date (descending)'), 'mod_desc'], 
+           [_('Created by user'), 'created']
+           ]) %>
 <%= select( 'widget', 'mine', [[_('Mine'),true],[_('Everyone'),false]]) %>
 <select name="widget[filter_by]" id="widget_filter_by">
   <option value="0" class="select_default"><%= _("[All Tasks]") %></option>

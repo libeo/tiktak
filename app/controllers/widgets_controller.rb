@@ -60,8 +60,16 @@ class WidgetsController < ApplicationController
       case @widget.order_by
         when 'priority':
           @items = current_user.company.sort(@items, current_user)
-        when 'date':
-          @items = @items.sort_by {|t| t.created_at.to_i }
+        when 'date_desc':
+          @items = @items.sort_by {|t| -t.created_at.to_i }
+        when 'date_asc':
+          @items = @items.sort_by { |t| t.created_at.to_i }
+        when 'mod_desc':
+          @items = @items.sort_by { |t| -t.updated_at.to_i }
+        when 'mod_asc':
+          @items = @items.sort_by { |t| t.updated_at.to_i }
+        when 'created':
+          @items = @items.select { |t| t.creator == current_user }.sort_by { |t| -t.created_at.to_i }
       end
       @items = @items[0, @widget.number]
 
