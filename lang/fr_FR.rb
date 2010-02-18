@@ -1,4 +1,9 @@
 Localization.define('fr_FR') do |l|
+ l.store "Creation date (ascending)", "Date de création (ascendant)"
+ l.store "Creation date (descending)", "Date de création (descendant)"
+ l.store "Modification date (ascending)", "Date de modification (ascendant)"
+ l.store "Modification date (descending)", "Date de modification (descendant)"
+ l.store "Created by user", "Crée par l'utilisateur"
  l.store "d", "j"
  l.store "h", "h" # Brice
  l.store "m", "mn"
