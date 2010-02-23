@@ -33,50 +33,56 @@ class WidgetsController < ApplicationController
       conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
 
+      select = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_minutes, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat,
+      dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description,
+      projects.name,
+      customers.name,
+      milestones.name'
+
       includes = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, :task_owners]
-
-      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => includes)
-
-      #unless @widget.mine?
-      #  @items = Task.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer}, :dependencies, :dependants, :users, :todos, :tags])
-      #else 
-      #  @items = current_user.tasks.find(:all, :conditions => ["tasks.project_id IN (#{current_project_ids}) #{filter} AND tasks.completed_at IS NULL AND (tasks.hide_until IS NULL OR tasks.hide_until < '#{tz.now.utc.to_s(:db)}') AND (tasks.milestone_id NOT IN (#{completed_milestone_ids}) OR tasks.milestone_id IS NULL)"], :include => [:milestone, { :project => :customer }, :dependencies, :dependants, :todos, :tags])
-      #end
-
-      #@items = @items.group_by{ |i| i.unread?(current_user) }
-      #@items[true] = [] unless @items[true]
-      #@items[false] = [] unless @items[false]
-      #@items[false] = @items[false].slice(0, @widget.number - @items[true].length)
-      #@items.keys.each do |k|
-      #  case @widget.order_by
-      #         when 'priority':
-      #             @items[k] = current_user.company.sort(@items[k])
-      #         when 'date':
-      #             @items[k] = @items[k].sort_by {|t| t.created_at.to_i }
-      #  end
-      #end
-      #@items = @items.sort{ |b,c| b[0] == c[0] ? 0 : b[0] == true ? -1 : 1 }.map{ |i| i[1..i.length] }.flatten
 
       case @widget.order_by
         when 'priority':
-          @items = current_user.company.sort(@items, current_user)
+          order = "task_owners.user_id = #{current_user.id} and task_owners.unread = true desc, tasks.due_at asc, tasks.priority asc, tasks.completed_at asc, tasks.task_num asc"
         when 'date_desc':
-          @items = @items.sort_by {|t| -t.created_at.to_i }
+          order = 'tasks.created_at desc'
         when 'date_asc':
-          @items = @items.sort_by { |t| t.created_at.to_i }
+          order = 'tasks.created_at asc'
         when 'mod_desc':
-          @items = @items.sort_by { |t| -t.updated_at.to_i }
+          order = 'tasks.updated_at desc'
         when 'mod_asc':
-          @items = @items.sort_by { |t| t.updated_at.to_i }
+          order = 'tasks.updated_at asc'
         when 'created':
-          @items = @items.select { |t| t.creator == current_user }.sort_by { |t| -t.created_at.to_i }
+          conditions << "tasks.creator_id = #{current_user.id}"
+          order = 'tasks.created_at desc'
       end
-      @items = @items[0, @widget.number]
+
+      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => includes, :order => order, :limit => @widget.number, :select => select)
+
+      #case @widget.order_by
+      #  when 'priority':
+      #    @items = current_user.company.sort(@items, current_user)
+      #    @items = @items[0, @widget.number]
+      #  when 'date_desc':
+      #    @items = @items.sort_by {|t| -t.created_at.to_i }
+      #  when 'date_asc':
+      #    @items = @items.sort_by { |t| t.created_at.to_i }
+      #  when 'mod_desc':
+      #    @items = @items.sort_by { |t| -t.updated_at.to_i }
+      #  when 'mod_asc':
+      #    @items = @items.sort_by { |t| t.updated_at.to_i }
+      #  when 'created':
+      #    @items = @items.select { |t| t.creator == current_user }.sort_by { |t| -t.created_at.to_i }
+      #end
 
     when 1
       # Project List
-      @projects = current_user.projects.find(:all, :order => 'customers.name, projects.name, milestones.due_at IS NULL, milestones.due_at, milestones.name', :conditions => ["projects.completed_at IS NULL"], :include => [ :customer, :milestones], :select => 'projects.name, customers.name, projects.critical_count, projects.normal_count, projects.low_count, projects.total_tasks, projects.open_tasks, milestones.completed_tasks, milestones.total_tasks, milestones.project_id, milestones.name, milestones.description, projects.total_milestones, projects.open_milestones')
-      debugger
+      @projects = current_user.projects.find(:all, :order => 'customers.name, projects.name, milestones.due_at IS NULL, milestones.due_at, milestones.name', 
+                                             :conditions => ["projects.completed_at IS NULL"], 
+                                             :include => [ :customer, :milestones], 
+                                             :select => 'projects.name, projects.critical_count, projects.normal_count, projects.low_count, projects.total_tasks, projects.open_tasks,
+                                             milestones.completed_tasks, milestones.total_tasks, milestones.project_id, milestones.name, milestones.description, projects.total_milestones, projects.open_milestones,
+                                             customers.name')
       @completed_projects = current_user.completed_projects.size
     when 2
       # Activities
@@ -287,7 +293,6 @@ class WidgetsController < ApplicationController
     when 7
       # Schedule
 
-      debugger
       filter = filter_from_filter_by
       filter = 'AND '+filter if filter
 
