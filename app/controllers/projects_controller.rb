@@ -301,7 +301,8 @@ class ProjectsController < ApplicationController
 											   :order => 'customers.name, projects.name',
                                                :page => params[:page],
                                                :per_page => 100,
-                                               :include => [ :customer, :milestones]);
+                                               :include => [:customer],
+                                               :select => 'customers.id, customers.name, projects.name, projects.user_id, projects.created_at, projects.description');
     @completed_projects = current_user.completed_projects.find(:all)
   end
 end
