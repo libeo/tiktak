@@ -39,11 +39,12 @@ class ApplicationController < ActionController::Base
 
 #  protect_from_forgery :secret => '112141be0ba20082c17b05c78c63f357'
 
-  def current_user
-    unless @current_user
-      @current_user = User.find(session[:user_id], 
-                                :include => [ :projects, { :company => :properties } ], 
-                                :conditions => ["projects.completed_at IS NULL"])
+  def current_user(options={})
+    if @current_user.nil? or options[:reload]
+      options = {:include => [:projects, {:company => :properties} ],
+        :conditions => ["projects.completed_at is null"]
+      }.merge(options).delete(:reload)
+      @current_user = User.find_by_id(session[:user_id], options)
     end
     @current_user
   end
