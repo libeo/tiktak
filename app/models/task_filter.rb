@@ -35,19 +35,34 @@ class TaskFilter < ActiveRecord::Base
 
   # Returns an array of all tasks matching the conditions from this filter
   # if extra_conditions is passed, that will be ANDed to the conditions
-  def tasks(extra_conditions = nil, limit = nil)
-    #return user.company.tasks.all(:conditions => conditions(extra_conditions), 
-    return Task.find(:all, :conditions => conditions(extra_conditions), 
-                                  :order => "tasks.id desc",
-                                  :include => to_include,
-                                  :limit => limit)
+  def tasks(extra_conditions = nil, selected=nil)
+    conds = conditions(extra_conditions)
+    order = "tasks.id desc"
+    
+    if selected
+      return Task.find(:all, :conditions => conds,
+                       :select => selected,
+                       :joins => get_includes(selected),
+                       :order => order
+                      )
+    else
+      return Task.find(:all, :conditions => conditions(extra_conditions), 
+                                  :order => order,
+                                  :include => to_include
+                      )
+    end
   end
 
-  def tasks_paginated(extra_conditions = nil, page = 1)
-    return Task.paginate(:page => page,
+  def tasks_paginated(extra_conditions=nil, options={})
+    options = {:page => 1, :order => "tasks.name asc"}.merge(options)
+
+    return Task.paginate(:page => options[:page],
                           :conditions => conditions(extra_conditions), 
-                          :order => "tasks.name asc",
-                          :include => to_include)
+                          :order => options[:order],
+                          #:include => options[:select] ? get_includes(options[:select]) : to_include,
+                          :include => to_include + [:task_property_values],
+                          :select => options[:select]
+                        )
   end
   
   # Returns the count of tasks matching the conditions of this filter.
@@ -192,38 +207,70 @@ class TaskFilter < ActiveRecord::Base
     to_include << { :project => :customer }
   end
   
-  def get_includes(work_logs = false)
-    includes = [:users]
-    quals = qualifiers.map { |q| q.qualifiable_type }
-      #assoc = {
-      #'Project' => {:project => :customer },
-      #'User' => :users,
-      #'Customer' => :customers,
-      #'Company' => {:company => :properties},
-      #'Tag' => :tags,
-      #'Milestone' => :milestones,
-      #'PropertyValue' => :task_property_values,
-      #}
-    assoc = {
-      'Project' => :project,
-      #'User' => :users,
-      'Customer' => :customers,
-      'Company' => :company, 
-      'Tag' => :tags,
-      'Milestone' => :milestones,
-      'PropertyValue' => :task_property_values,
-    }
-    assoc_work = [:tags, :milestones, :task_property_values]
+  #def get_includes(fields)
+  #  conds = [ ['task_owners', 'task_owners.task_id', 'tasks.id'] ]
 
-    quals.each { |q| includes << assoc[q] }
-    includes.compact!
-    if work_logs
-      #others = assoc_work & includes
-      #includes = includes - others + [:tasks] if others.length > 0
-      includes = includes - assoc_work + [:task]
+  # 
+  #  fields = fields.split(/\s+/).map{ |i| i.split('.').first }.uniq.sort
+  #  fields << "customers" if fields.include? "projects" and not fields.include? "customers"
+  #  fields = fields.insert(0,"companies") if fields.include? "property_values" and not fields.include? "companies"
+  #  debugger
+  #  fields.each do |field|
+  #    case field
+  #      when 'users' then
+  #        conds << ['users', 'task_owners.user_id', 'users.id']
+  #        #conds << ['task_owners', 'task_owners.task_id', 'tasks.id']
+  #      when 'tags' then
+  #        conds << ['tags', 'task_tags.tag_id', 'tags.id']
+  #        conds << ['task_tags', 'task_tags.id', 'tags.id']
+  #      when 'sheets' then
+  #        conds << ['sheets', 'sheets.task_id', 'tasks.id']
+  #      when 'todos' then
+  #        conds << ['todos', 'todos.task.id', 'tasks.id']
+  #      when 'dependencies' then
+  #        conds << ['dependencies', 'dependencies.task_id', 'tasks.id']
+  #        conds << ['dependencies', 'dependencies.dependency_id', 'tasks.id']
+  #      when 'milestones' then
+  #        conds << ['milestones', 'tasks.milestone_id', 'milestones.id']
+  #      when 'notifications' then
+  #        conds << ['notifications', 'task_notifications.notification_id', 'notifications.id']
+  #        conds << ['task_notifications', 'task_notifications.task_id', 'tasks.id']
+  #        #TODO: check watchers
+  #      when 'customers' then
+  #        conds << ['task_customers', 'task_customers.task_id', 'tasks.id']
+  #        conds << ['customers', 'task_customers.customer_id', 'customers.id']
+  #      when 'property_values' then
+  #        conds << ['properties', 'properties.company_id', 'companies.id']
+  #        conds << ['property_values', 'property_values.property_id', 'properties.id']
+  #      when 'companies' then
+  #        conds << ['companies', 'companies.id', 'tasks.company_id']
+  #      when 'projects' then
+  #        conds << ['projects', 'projects.id', 'tasks.project_id']
+  #    end
+  #  end
+
+  #  return conds.map { |c| "left outer join #{c[0]} on #{c[1]}=#{c[2]}" }.join(" ")
+  #end
+
+  def get_includes(fields)
+   
+    debugger
+    singular = %w(sheets todos milestones)
+    special = {'companies' => { :company => :properties}, 'projects' => {:project => :customer}}
+
+    fields = fields.split(/\s+/).map{ |i| i.split('.').first}.uniq.select { |f| f != 'tasks' }
+
+    fields = fields.map do |f|
+      if singular.include? f
+        f = f[0, f.length-1]
+      elsif special[f]
+        f = special[f]
+      end
+      f
     end
-    
-    return includes.uniq
+    fields.delete "customers"
+
+    return fields
   end
 
   def set_company_from_user
