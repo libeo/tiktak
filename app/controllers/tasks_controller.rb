@@ -1520,7 +1520,7 @@ class TasksController < ApplicationController
     users.name,
     customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
     watchers_tasks.name, 
-    task_property_values.property_id,")
+    task_property_values.property_id")
 
   end
 

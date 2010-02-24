@@ -4,6 +4,7 @@
 class Widget < ActiveRecord::Base
   belongs_to :company
   belongs_to :user
+  has_one :filter, :class_name => "TaskFilter"
 
   validates_presence_of :name
 
