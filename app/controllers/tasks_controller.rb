@@ -862,7 +862,7 @@ class TasksController < ApplicationController
       worklog.task = task
       worklog.customer = task.customers.first || @current_sheet.project.customer
       worklog.started_at = @current_sheet.created_at
-      worklog.duration = @current_sheet.duration
+      worklog.duration = @current_sheet.duration - @current_sheet.duration % 60
       worklog.paused_duration = @current_sheet.paused_duration
       worklog.body = task.description
       worklog.log_type = EventLog::TASK_WORK_ADDED
