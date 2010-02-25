@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100215221610) do
+ActiveRecord::Schema.define(:version => 20100223213732) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -887,6 +887,7 @@ ActiveRecord::Schema.define(:version => 20100215221610) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "gadget_url"
+    t.integer  "filter_id"
   end
 
   add_index "widgets", ["company_id"], :name => "fk_widgets_company_id"

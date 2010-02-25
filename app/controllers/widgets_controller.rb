@@ -5,6 +5,18 @@ class WidgetsController < ApplicationController
   THIS_WEEK  = 3
   NEXT_WEEK  = 4
 
+  TASK_ROW_SELECT = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_minutes, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat,
+  dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description,
+  projects.name,
+  task_owners.unread, task_owners.user_id,
+  notifications.unread, notifications.user_id,
+  customers.name,
+  milestones.name,
+  users.name, users.company_id, users.email'
+
+  #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, {:task_owners => :user }, :notifications, {:task_property_values => [:property_value, :property]}]
+  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
+
   def show
     begin
       @widget = Widget.find(params[:id], :conditions => ["company_id = ? AND user_id = ?", current_user.company_id, current_user.id])
@@ -22,6 +34,11 @@ class WidgetsController < ApplicationController
     end
     
     case @widget.widget_type
+    when 11
+      #Task filter
+      order, extra = @widget.order_by_sql
+      @items = @widget.filter.tasks(extra, :limit => @widget.number, :order => order, :include => TASK_ROW_INCLUDE, :select => TASK_ROW_SELECT)
+      
     when 0
       # Tasks
       filter = filter_from_filter_by
@@ -32,51 +49,10 @@ class WidgetsController < ApplicationController
       ]
       conditions << "users.id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
-
-      select = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_minutes, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat,
-      dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description,
-      projects.name,
-      customers.name,
-      milestones.name,
-      task_owners.user_id, task_owners.task_id,
-      users.name, users.company_id, users.email'
-
-      includes = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, {:task_owners => :user }]
-
-      case @widget.order_by
-        when 'priority':
-          order = "task_owners.user_id = #{current_user.id} and task_owners.unread = true desc, tasks.due_at asc, tasks.priority asc, tasks.completed_at asc, tasks.task_num asc"
-        when 'date_desc':
-          order = 'tasks.created_at desc'
-        when 'date_asc':
-          order = 'tasks.created_at asc'
-        when 'mod_desc':
-          order = 'tasks.updated_at desc'
-        when 'mod_asc':
-          order = 'tasks.updated_at asc'
-        when 'created':
-          conditions << "tasks.creator_id = #{current_user.id}"
-          order = 'tasks.created_at desc'
-      end
-
-      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => includes, :order => order, :limit => @widget.number, :select => select)
-      debugger
-
-      #case @widget.order_by
-      #  when 'priority':
-      #    @items = current_user.company.sort(@items, current_user)
-      #    @items = @items[0, @widget.number]
-      #  when 'date_desc':
-      #    @items = @items.sort_by {|t| -t.created_at.to_i }
-      #  when 'date_asc':
-      #    @items = @items.sort_by { |t| t.created_at.to_i }
-      #  when 'mod_desc':
-      #    @items = @items.sort_by { |t| -t.updated_at.to_i }
-      #  when 'mod_asc':
-      #    @items = @items.sort_by { |t| t.updated_at.to_i }
-      #  when 'created':
-      #    @items = @items.select { |t| t.creator == current_user }.sort_by { |t| -t.created_at.to_i }
-      #end
+      order, extra = @widget.order_by_sql
+      conditions << extra if extra
+      
+      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => TASK_ROW_INCLUDE, :order => order, :limit => @widget.number, :select => TASK_ROW_SELECT)
 
     when 1
       # Project List
@@ -382,7 +358,7 @@ class WidgetsController < ApplicationController
 
     render :update do |page|
       case @widget.widget_type
-      when 0
+      when 0, 11
         page.replace_html "content_#{@widget.dom_id}", :partial => 'tasks/task_list', :locals => { :tasks => @items }
       when 1
         page.replace_html "content_#{@widget.dom_id}", :partial => 'activities/project_overview'
