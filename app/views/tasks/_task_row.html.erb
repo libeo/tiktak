@@ -110,7 +110,7 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task) %> <% 
      <% end -%>
      <%= "<span class=\"task_milestone\">[#{task.milestone.name}]</span>" unless task.milestone_id.to_i == 0 -%>
    <% name = _("No one")
-      name = task.users.collect{|u| u.name}.join(', ') unless task.users.empty?
+      name = task.task_owners.collect{|u| u.user.name}.join(', ') unless task.task_owners.empty?
    %>
 
    <div class="task_info description">

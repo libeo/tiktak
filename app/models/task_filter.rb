@@ -188,7 +188,7 @@ class TaskFilter < ActiveRecord::Base
   end
   
   def to_include
-    to_include = [ :users, :tags, :sheets, :todos, :dependencies, 
+    to_include = [ :tags, :sheets, :todos, :dependencies, {:task_owners => :user},
                    :milestone, :notifications, :watchers, 
                    :customers, :task_property_values ]
     to_include << { :company => :properties }
@@ -199,7 +199,7 @@ class TaskFilter < ActiveRecord::Base
     return nil unless fields
 
     singular = %w(sheets todos milestones)
-    special = {'companies' => { :company => :properties}, 'customers_projects' => {:project => :customer}, 'watchers_tasks' => :watchers}
+    special = {'companies' => { :company => :properties}, 'customers_projects' => {:project => :customer}, 'watchers_tasks' => :watchers, 'task_owners' => :watchers, 'dependencies_tasks' => :dependencies}
 
     fields = fields.split(/\s+/).map{ |i| i.split('.').first}.uniq.select { |f| f and f != 'tasks' }
     fields.delete 'projects' if fields.include? 'customers_projects'
@@ -213,7 +213,7 @@ class TaskFilter < ActiveRecord::Base
       f
     end
 
-    return fields
+    return fields.uniq
   end
 
   def set_company_from_user
