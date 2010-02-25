@@ -37,7 +37,7 @@ class Widget < ActiveRecord::Base
     conditions, order = nil
     case self.order_by
       when 'priority':
-        order = "task_owners.user_id = #{self.user_id} and task_owners.unread = true desc, tasks.due_at asc, tasks.priority asc, tasks.completed_at asc, tasks.task_num asc"
+        order = "task_owners.user_id = #{self.user_id} and task_owners.unread = true desc, UNIX_TIMESTAMP(UTC_TIMESTAMP()) - UNIX_TIMESTAMP(tasks.due_at) desc, tasks.priority asc, tasks.completed_at asc, tasks.task_num asc"
       when 'due_date_desc':
         order = 'UNIX_TIMESTAMP(UTC_TIMESTAMP()) - UNIX_TIMESTAMP(tasks.due_at) desc'
       when 'due_date_asc':
