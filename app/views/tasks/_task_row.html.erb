@@ -112,6 +112,8 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task) %> <% 
    <% name = _("No one")
       name = task.task_owners.collect{|u| u.user.name}.join(', ') unless task.task_owners.empty?
    %>
+   <% debugger %>
+
 
    <div class="task_info description">
    <% if controller.controller_name != 'search' %>
