@@ -30,16 +30,18 @@ class WidgetsController < ApplicationController
         "(tasks.completed_at is null or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
         "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
       ]
-      conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
+      conditions << "users.id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
 
       select = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_minutes, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat,
       dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description,
       projects.name,
       customers.name,
-      milestones.name'
+      milestones.name,
+      task_owners.user_id, task_owners.task_id,
+      users.name, users.company_id, users.email'
 
-      includes = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, :task_owners]
+      includes = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, {:task_owners => :user }]
 
       case @widget.order_by
         when 'priority':
@@ -58,6 +60,7 @@ class WidgetsController < ApplicationController
       end
 
       @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => includes, :order => order, :limit => @widget.number, :select => select)
+      debugger
 
       #case @widget.order_by
       #  when 'priority':

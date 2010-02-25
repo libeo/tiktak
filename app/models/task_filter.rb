@@ -114,13 +114,13 @@ class TaskFilter < ActiveRecord::Base
     res << extra_conditions if extra_conditions
 
     if user.projects.any?
-      sql = "tasks.project_id in (select project_id from project_permissions where user_id = #{user.id}) or task_owners.user_id = #{user.id}"
+      sql = "tasks.project_id in (select project_id from project_permissions where user_id = #{user.id}) or users.id = #{user.id}"
       #project_ids = user.projects.map { |p| p.id }.join(",")
       #sql = "tasks.project_id in (#{ project_ids })"
       #sql += " or task_owners.user_id = #{ user.id }"
       res << "(#{ sql })"
     else
-      res << "(task_owners.user_id = #{ user.id })"
+      res << "(users.user_id = #{ user.id })"
     end
 
     res << ["tasks.company_id = #{user.company_id}", "projects.completed_at IS NULL"]
@@ -309,7 +309,7 @@ class TaskFilter < ActiveRecord::Base
   # class_type
   def column_name_for(class_type)
     if class_type == "User"
-      return "task_owners.user_id"
+      return "users.id"
     elsif class_type == "Project"
       return "tasks.project_id"
     elsif class_type == "Customer"
