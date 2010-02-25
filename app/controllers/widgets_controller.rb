@@ -8,6 +8,7 @@ class WidgetsController < ApplicationController
   TASK_ROW_SELECT = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_minutes, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat,
   dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description,
   projects.name,
+  tags.name,
   task_owners.unread, task_owners.user_id,
   notifications.unread, notifications.user_id,
   customers.name,
