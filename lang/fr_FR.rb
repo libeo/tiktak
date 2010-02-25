@@ -1,4 +1,10 @@
 Localization.define('fr_FR') do |l|
+ l.store "Due date (ascending)", "Date d'échéance (ascendant)"
+ l.store "Due date (descending)", "Date d'échéance (descendant)"
+ l.store "Duration (ascending)", "Durée (ascendant)"
+ l.store "Duration (descending)", "Durée (descendant)"
+ l.store "Order by", "Trier par"
+ l.store "Filter name", "Nom du filtre"
  l.store "Creation date (ascending)", "Date de création (ascendant)"
  l.store "Creation date (descending)", "Date de création (descendant)"
  l.store "Modification date (ascending)", "Date de modification (ascendant)"
