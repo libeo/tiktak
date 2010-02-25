@@ -27,6 +27,6 @@
     <%= (task.minutes_left / 60.0).round(1) %>
   </td>
   <td class="tooltip" title="<%= task_users_tip(task) %>">
-    <%=h task.users.map{ |u| u.name }.join(", ") %>
+    <%=h TaskOwner.find(:all, :conditions => ["task_owners.task_id = ?", task.id], :select => "users.name", :include => :user).map{ |u| u.user.name }.join(", ") %>
   </td>
 </tr>
