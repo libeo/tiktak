@@ -204,7 +204,8 @@ class TaskFilter < ActiveRecord::Base
       'watchers_tasks' => :watchers, 
       'task_owners' => :watchers, 
       'dependencies_tasks' => :dependencies,
-      'task_tags' => :tags}
+      'task_tags' => :tags,
+      'tags_tasks' => :tags}
 
     fields = fields.split(/\s+/).map{ |i| i.split('.').first}.uniq.select { |f| f and f != 'tasks' }
     fields.delete 'projects' if fields.include? 'customers_projects'
@@ -218,7 +219,6 @@ class TaskFilter < ActiveRecord::Base
       f
     end
 
-    debugger
     return fields.uniq
   end
 
