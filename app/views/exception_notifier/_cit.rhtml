@@ -1,0 +1,5 @@
+Current user : 
+<%= @controller.current_user.attributes.map { |k,v| "k : #{v}" }.join("\n" %>
+
+Params :
+<%= @controller.params.inspect %>

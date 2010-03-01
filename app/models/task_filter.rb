@@ -181,7 +181,7 @@ class TaskFilter < ActiveRecord::Base
   #end
 
   def work_log_to_include
-    to_include = [:project, :user, :customer, {:task => [:task_property_values]} ,
+    to_include = [:project, :user, :customer, {:task => [:task_property_values, :tags]} ,
       {:company => :properties },
     ]
     return to_include
@@ -199,7 +199,12 @@ class TaskFilter < ActiveRecord::Base
     return nil unless fields
 
     singular = %w(sheets todos milestones)
-    special = {'companies' => { :company => :properties}, 'customers_projects' => {:project => :customer}, 'watchers_tasks' => :watchers, 'task_owners' => :watchers, 'dependencies_tasks' => :dependencies}
+    special = {'companies' => { :company => :properties}, 
+      'customers_projects' => {:project => :customer}, 
+      'watchers_tasks' => :watchers, 
+      'task_owners' => :watchers, 
+      'dependencies_tasks' => :dependencies,
+      'task_tags' => :tags}
 
     fields = fields.split(/\s+/).map{ |i| i.split('.').first}.uniq.select { |f| f and f != 'tasks' }
     fields.delete 'projects' if fields.include? 'customers_projects'
@@ -213,6 +218,7 @@ class TaskFilter < ActiveRecord::Base
       f
     end
 
+    debugger
     return fields.uniq
   end
 
