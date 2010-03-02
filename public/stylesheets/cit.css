@@ -1292,6 +1292,12 @@ a.description {
   min-height: 2.3em;
 }
 
+/* Looks like widget css */
+
+#left_col {
+  min-width: 50%;
+}
+
 .handle, .widget_draggable {
           cursor: move;
 }
