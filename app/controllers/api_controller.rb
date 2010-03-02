@@ -11,4 +11,8 @@ class ApiController < ApplicationController
   # Return a list of Tasks for a Project
   def get_tasks
   end
+
+  def generate_error
+    raise RuntimeError, "Generating Error to see if Exception Notifier is working"
+  end
 end
