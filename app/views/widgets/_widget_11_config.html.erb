@@ -1,0 +1,24 @@
+<div id="config-<%= @widget.dom_id %>" style="display:none;" class="widget-config">
+<% form_remote_tag :url => {:controller => 'widgets', :action => 'update', :id => @widget },
+                                   :loading => "showProgress();",
+                                   :complete => "hideProgress();" do  %>
+<label for="widget_name"><%= _("Title") %></label><%= text_field 'widget', 'name', {:size => 10} %> 
+<label for="widget_number"><%= _("Tasks") %></label><%= select( 'widget', 'number', [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100].collect{|i| [i.to_s, i]}) %>
+<label for="widget_order_by"><%= _("Order by") %></label>
+<%= select( 'widget', 'order_by', [
+           [_('Priority'),'priority'], 
+           [_('Creation date (ascending)'),'date_asc'], 
+           [_('Creation date (descending)'), 'date_desc'], 
+           [_('Modification date (ascending)'), 'mod_asc'], 
+           [_('Modification date (descending)'), 'mod_desc'], 
+           [_('Due date (ascending)'), 'due_date_asc'],
+           [_('Due date (descending)'), 'due_date_desc'],
+           [_('Duration (ascending)'), 'duration_asc'],
+           [_('Duration (descending)'), 'duration_desc'],
+           [_('Created by user'), 'created']
+           ]) %>
+<label for="widget_filter_id"><%= _("Filter name") %></label>
+<%= select ( 'widget', 'filter_id', current_user.visible_task_filters.map { |t| [t.name, t.id] } ) %>
+<%= submit_tag _("Save"), :class => "nolabel" %> <%= _'or'%> <%= link_to_function(_('Cancel'), "jQuery('#config-#{@widget.dom_id}').remove();") %>
+<% end %>
+</div>

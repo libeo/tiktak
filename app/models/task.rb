@@ -343,10 +343,7 @@ class Task < ActiveRecord::Base
   end
   
   def minutes_left
-    d = self.duration.to_i - self.worked_minutes 
-    d = 240 if d < 0 && self.duration.to_i > 0
-    d = 0 if d < 0
-    d
+    self.duration.to_i - self.worked_minutes 
   end
 
   def scheduled_minutes_left

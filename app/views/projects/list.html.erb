@@ -12,13 +12,13 @@
     <td>
       <% client = nil
       for @project in @projects 
-        if client != @project.customer_id
+        if client != @project.customer.id
       %>
       <%= "</div>" unless client.nil? %>
-      <% client = @project.customer_id %>
+      <% client = @project.customer.id %>
       <div id="<%=@project.customer.dom_id%>" class="client-block">
 	<div class="client-heading hoverrow">
-	  <div class="client-name"><%= "<a href=\"/views/select_client/#{@project.customer_id}\">#{h(@project.customer.name)}</a>" %></div>
+	  <div class="client-name"><%= "<a href=\"/views/select_client/#{@project.customer.id}\">#{h(@project.customer.name)}</a>" %></div>
 	</div>
       <% end %>
 

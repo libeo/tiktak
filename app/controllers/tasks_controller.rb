@@ -862,7 +862,7 @@ class TasksController < ApplicationController
       worklog.task = task
       worklog.customer = task.customers.first || @current_sheet.project.customer
       worklog.started_at = @current_sheet.created_at
-      worklog.duration = @current_sheet.duration
+      worklog.duration = @current_sheet.duration - @current_sheet.duration % 60
       worklog.paused_duration = @current_sheet.paused_duration
       worklog.body = task.description
       worklog.log_type = EventLog::TASK_WORK_ADDED
@@ -1511,7 +1511,20 @@ class TasksController < ApplicationController
   def list_init
     # Subscribe to the juggernaut channel for Task updates
     session[:channels] += ["tasks_#{current_user.company_id}"]
-    @tasks = current_task_filter.tasks_paginated(nil, params[:page])
+    #@tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => "tasks.id, tasks.task_num, tasks.name, tasks.due_at, property_values.id, customers.id, customers.name, projects.id, projects.name, milestones.id, milestones.name, users.id, users.name")
+    @tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => "
+    tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.repeat, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.requested_by,
+    dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_minutes, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.requested_by,
+    customers.name, customers.contact_name, customers.contact_email,
+    projects.name,
+    milestones.name,
+    users.name, users.company_id, users.email,
+    customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
+    watchers_tasks.name,
+    tags.name,
+    tags_tasks.id,
+    task_property_values.property_id")
+
   end
 
 #########################################################################SHORTLIST###################################################################

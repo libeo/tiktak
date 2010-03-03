@@ -1,0 +1,8 @@
+Current user : 
+<% atts = @controller.current_user.attributes
+atts.delete("password")
+%>
+<%= atts.map { |k,v| "#{k} : #{v}" }.join("\n") %>
+
+Params :
+<%= @controller.params.inspect %>

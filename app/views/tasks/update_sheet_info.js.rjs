@@ -10,7 +10,7 @@ page << "}"
 page << "if($('presence-online')) {"
 page.replace_html 'presence-online', (online_users).to_s
 
-current_user.chats.each do |@chat|
+current_user(:select => 'users.id', :include => [{:chats => :target}], :reload => true).chats.each do |@chat|
   page << "if($('presence-toggle-#{@chat.target.dom_id}')) {"
   page.replace_html "presence-toggle-#{@chat.target.dom_id}", :partial => "shout/chat_tab_status", :locals => { :user => @chat.target }
   page << "}"
