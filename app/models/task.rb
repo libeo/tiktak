@@ -1145,6 +1145,23 @@ class Task < ActiveRecord::Base
     task.save
   end
 
+  def close_current_work_log(sheet)
+    worklog = WorkLog.new({
+      :user => sheet.user,
+      :company => sheet.company,
+      :project => sheet.project,
+      :task => sheet.task,
+      :customer => sheet.customer,
+      :started_at => sheet.created_at,
+      :duration => sheet.duration,
+      :paused_duration => sheet.paused_duration,
+      :body => sheet.body,
+      :log_type => EventLog::TASK_WORK_ADDED
+    })
+    worklog.comment = true if sheet.body and sheet.body.length > 0
+    worklog.save
+  end
+
   def close_task(params)
     old_status = self.status_type
     self.completed_at = Time.now.utc
@@ -1192,6 +1209,17 @@ class Task < ActiveRecord::Base
     }).save
 
   end
+
+  def self.create_for_user(user, project, params={})
+    defaults = {:project => project, :company => project.company, :updated_by => user, :creator => user, :duration => 0, :description => ""}
+    task = Task.new(defaults.merge(params))
+    task.set_task_num(user.company_id)
+    result = task.save
+    return result unless result
+    task.users << user
+    return task
+  end
+
 
 end
 
