@@ -77,8 +77,8 @@ class WorkLog < ActiveRecord::Base
   # If comment is given, it will be escaped before saving.
   # The newly created worklog is returned. 
   ###
-  def self.create_for_task(task, user, comment)
-    worklog = WorkLog.new
+  def self.create_for_task(task, user, comment, params={})
+    worklog = WorkLog.new(params)
     worklog.user = user
     worklog.company = task.project.company
     worklog.customer = task.project.customer

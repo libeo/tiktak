@@ -20,7 +20,7 @@
     <!-- TASK LIST -->
     <div id="shortlist-tasks">
       <% @tasks.each do |task| -%>
-        <%= render :partial => 'tasks/task_row', :locals => {:task => task, :override_filter => false} -%>
+        <%= render :partial => 'tasks/task_row', :locals => {:task => task, :override_filter => false, :cont => 'task_shortlist'} -%>
       <% end -%>
     </div>
 

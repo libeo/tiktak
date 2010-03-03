@@ -6,65 +6,56 @@ class TaskShortlistController < ApplicationController
 
   def init
     session[:channels] += ["tasks_#{current_user.company_id}"]
+
     f = current_shortlist_filter
     selected = f.qualifiers.select { |q| !["User", "Status"].include?(q.qualifiable_type) }
     @filter = selected.length > 0 ? qualifier_to_indice(selected.first) : ""
     @tasks = f.tasks
+
+    #TODO : remove this ?
     @tags = {}
     @tags_total = 0
     @group_ids, @groups = group_tasks(@tasks)
   end
 
-  def stop_work
-    unless @current_sheet
-      render :nothing => true
-      return
-    end
 
-    @task = @current_sheet.task
-    #!!!
-    swap_work_ajax
-    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
 
-  end
-
-  def index
-    self.init
-  end
-
-  
   def qualifier_to_indice(qualifier)
     str = ""
     case qualifier.qualifiable_type
-      when 'Customer'
-        str += "c"
-      when 'Project'
-        str += "p"
-      when 'Milestone'
-        str += 'm'
-      when 'NoUser'
-        str += 'u'
+    when 'Customer'
+      str += "c"
+    when 'Project'
+      str += "p"
+    when 'Milestone'
+      str += 'm'
+    when 'NoUser'
+      str += 'u'
+    when 'Tag'
+      str += 't'
     end
-    
+
     if qualifier.qualifiable_id != 0
       str += qualifier.qualifiable_id.to_s
     end
 
     return str
   end
-    
+
   def indice_to_qualifier(indice)
     type = nil
     qualifier = nil
     case indice[0,1]
-      when 'c'
-       type = 'Customer'
-      when 'p'
-        type = 'Project'
-      when 'm'
-        type = 'Milestone'
-      when 'u'
-        type = 'NoUser'
+    when 'c'
+      type = 'Customer'
+    when 'p'
+      type = 'Project'
+    when 'm'
+      type = 'Milestone'
+    when 'u'
+      type = 'NoUser'
+    when 't'
+      type = 'Tag'
     end
 
     if type  
@@ -74,7 +65,7 @@ class TaskShortlistController < ApplicationController
 
     return qualifier
   end
-      
+
   def filter_shortlist
     f = current_shortlist_filter
 
@@ -87,33 +78,6 @@ class TaskShortlistController < ApplicationController
     redirect_to :controller => 'task_shortlist', :action => 'index'
   end
 
-  def new_blank_task
-    task = Task.new do |t|
-      t.company = current_user.company
-      t.updated_by = current_user
-      t.creator = current_user
-      t.duration = 0
-      t.description = ""
-    end
-    task.set_task_num(current_user.company_id)
-    task
-  end
-
-  def new_blank_worklog(task)
-    worklog = WorkLog.new do |w|
-      w.user = current_user
-      w.company = task.project.company
-      w.customer = task.project.customer
-      w.project = task.project
-      w.task = task
-      w.started_at = Time.now.utc
-      w.duration = 0
-      w.log_type = EventLog::TASK_CREATED
-      w.body = ""
-    end
-    worklog
-  end
-   
   #!!!
   def create_shortlist_ajax
     @highlight_target = "shortlist"
@@ -121,41 +85,99 @@ class TaskShortlistController < ApplicationController
       render(:highlight) and return
     end
 
-    @task = self.new_blank_task
-    @task.name = params[:task][:name]
+    p = {}
+    f = current_shortlist_filter.qualifiers.select { |q| q.qualifiable_type != 'User' }.first
 
-    if session[:filter_milestone_short].to_i > 0
-      @task.project = Milestone.find(:first, :conditions => ["company_id = ? AND id = ?", current_user.company_id, session[:filter_milestone_short]]).project
-      @task.milestone_id = session[:filter_milestone_short].to_i
-    elsif session[:filter_project_short].to_i > 0
-      @task.project_id = session[:filter_project_short].to_i
-      @task.milestone_id = nil
-    else
-      render(:highlight) and return
+    case f.qualifiable_type
+      when 'Milestone':
+        p[:miletsone] = Milestone.find_by_id(f.qualifiable_id)
+        project = Project.find_by_id(f.qualifiable_id)
+      when 'Project':
+        project = Project.find_by_id(f.qualifiable_id)
     end
 
-    @task.save
-    @task.reload
-
-    if @task.id.nil?
-      @highlight_target = "quick_add_container"
-      render(:highlight) and return
+    @task = Task.create_for_user(current_user, project, p)
+    
+    unless @task
+      render :hightlight and return
     else
-      to = TaskOwner.new(:user => current_user, :task => @task)
-      to.save
+      @highlight_target = "quick_add_container"
 
-      worklog = self.new_blank_worklog(@task)
-      worklog.save
+      WorkLog.create_for_task(@task, current_user, _("Created tyhrough the shortlist"))
 
       if params['notify'].to_i == 1
         Notifications::deliver_created( @task, current_user, params[:comment]) rescue begin end
       end
+    end
 
-      Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
-      Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+  end
+
+
+  def swap_work_ajax
+    if @current_sheet
+
+      @old_task = @current_sheet.task
+
+      if @old_task.nil?
+        @current_sheet.destroy
+        @current_sheet = nil
+        redirect_from_last
+      end
+
+      if @old_task.close_current_work_log(@current_sheet) 
+        @current_sheet.destroy
+        flash['notice'] = _("Log entry saved...")
+        Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @old_task.id)}');", ["tasks_#{current_user.company_id}"])
+        Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+        @current_sheet = nil
+      else
+        flash['notice'] = _("Unable to save log entry...")
+        redirect_from_last
+      end
+
+    end
+
+  end
+
+  def start_work_ajax
+    if @current_sheet
+      self.swap_work_ajax
+    end
+
+    task = Task.find(params[:id], :conditions => ["task_owners.user_id = ?", current_user.id], :include => :task_owners)
+    if task
+      @current_sheet = Sheet.new({
+        :task => task,
+        :user => current_user,
+        :project => task.project,
+      })
+      @current_sheet.save
+      task.status = 1 if task.status == 0
+      task.save
+
+      Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => task.id)}');", ["tasks_#{current_user.company_id}"])
+      render 'tasks/task_row'
+
+      return if request.xhr?
     end
   end
 
+  def stop_work
+    unless @current_sheet
+      render :nothing => true
+      return
+    end
+
+    @task = @current_sheet.task
+    swap_work_ajax
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+  end
+
+  def index
+    self.init
+  end
 
   private
   ###
@@ -163,11 +185,34 @@ class TaskShortlistController < ApplicationController
   # The first element is an in-order array of group ids / names
   # The second element is a hash mapping group ids / names to arrays of tasks.
   ###
+  
+  def order_condition(order)
+    order = self.qualifier_to_indice(order) unless order.is_a? String
+    cond = []
+    include = []
+
+    case order
+      when 't'
+        cond << 'tags.name'
+        include << :tags
+      when 'c'
+      when 'm'
+        include << :project
+        cond << 'projects.name'
+      #when 'u'
+    end
+    cond << 'tasks.name'
+
+    return [cond.join "," , include]
+  end
+
+
+  #TODO: remove this ?
   def group_tasks(tasks)
     group_ids = {}
     groups = []
     rechecked = false
-        
+
     if session[:group_by].to_i == 1 # tags
       @tag_names = @all_tags.collect{|i,j| i}
       groups = Task.tag_groups(current_user.company_id, @tag_names, tasks)
@@ -184,7 +229,7 @@ class TaskShortlistController < ApplicationController
 
     elsif session[:group_by].to_i == 4 and rechecked # Milestones
       tf = TaskFilter.new(self, session)
-      
+
       if tf.milestone_ids.any?
         filter = " AND id in (#{ tf.milestone_ids.join(",") })"
       elsif tf.project_ids.any?
@@ -261,10 +306,10 @@ class TaskShortlistController < ApplicationController
         group = (value and value == match_value)
         group ||= (value.nil? and match_value == unassigned)
         group
-        end
+      end
     else
       groups = [tasks]
-      end
+    end
 
     return [ group_ids, groups ]
   end
