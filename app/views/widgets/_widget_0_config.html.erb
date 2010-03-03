@@ -10,6 +10,10 @@
            [_('Creation date (descending)'), 'date_desc'], 
            [_('Modification date (ascending)'), 'mod_asc'], 
            [_('Modification date (descending)'), 'mod_desc'], 
+           [_('Due date (ascending)'), 'due_date_asc'],
+           [_('Due date (descending)'), 'due_date_desc'],
+           [_('Duration (ascending)'), 'duration_asc'],
+           [_('Duration (descending)'), 'duration_desc'],
            [_('Created by user'), 'created']
            ]) %>
 <%= select( 'widget', 'mine', [[_('Mine'),true],[_('Everyone'),false]]) %>

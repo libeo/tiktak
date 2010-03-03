@@ -33,21 +33,24 @@ class TaskFilter < ActiveRecord::Base
     return filter
   end
 
+  def merge_options(options, conditions)
+    options.delete :conditions
+    options = {:order => "tasks.id desc",
+      :conditions => conditions,
+    }.merge(options)
+
+    options[:include] ||= get_includes(options[:select]) || to_include
+    return options
+  end
+  
   # Returns an array of all tasks matching the conditions from this filter
   # if extra_conditions is passed, that will be ANDed to the conditions
-  def tasks(extra_conditions = nil, limit = nil)
-    #return user.company.tasks.all(:conditions => conditions(extra_conditions), 
-    return Task.find(:all, :conditions => conditions(extra_conditions), 
-                                  :order => "tasks.id desc",
-                                  :include => to_include,
-                                  :limit => limit)
+  def tasks(extra_conditions = nil, options={})
+    return Task.find(:all, merge_options(options, conditions(extra_conditions)))
   end
 
-  def tasks_paginated(extra_conditions = nil, page = 1)
-    return Task.paginate(:page => page,
-                          :conditions => conditions(extra_conditions), 
-                          :order => "tasks.name asc",
-                          :include => to_include)
+  def tasks_paginated(extra_conditions=nil, options={})
+    return Task.paginate(merge_options(options, conditions(extra_conditions)))
   end
   
   # Returns the count of tasks matching the conditions of this filter.
@@ -111,13 +114,13 @@ class TaskFilter < ActiveRecord::Base
     res << extra_conditions if extra_conditions
 
     if user.projects.any?
-      sql = "tasks.project_id in (select project_id from project_permissions where user_id = #{user.id}) or task_owners.user_id = #{user.id}"
+      sql = "tasks.project_id in (select project_id from project_permissions where user_id = #{user.id}) or users.id = #{user.id}"
       #project_ids = user.projects.map { |p| p.id }.join(",")
       #sql = "tasks.project_id in (#{ project_ids })"
       #sql += " or task_owners.user_id = #{ user.id }"
       res << "(#{ sql })"
     else
-      res << "(task_owners.user_id = #{ user.id })"
+      res << "(users.user_id = #{ user.id })"
     end
 
     res << ["tasks.company_id = #{user.company_id}", "projects.completed_at IS NULL"]
@@ -178,52 +181,45 @@ class TaskFilter < ActiveRecord::Base
   #end
 
   def work_log_to_include
-    to_include = [:project, :user, :customer, {:task => [:task_property_values]} ,
+    to_include = [:project, :user, :customer, {:task => [:task_property_values, :tags]} ,
       {:company => :properties },
     ]
     return to_include
   end
   
   def to_include
-    to_include = [ :users, :tags, :sheets, :todos, :dependencies, 
+    to_include = [ :tags, :sheets, :todos, :dependencies, {:task_owners => :user},
                    :milestone, :notifications, :watchers, 
                    :customers, :task_property_values ]
     to_include << { :company => :properties }
     to_include << { :project => :customer }
   end
   
-  def get_includes(work_logs = false)
-    includes = [:users]
-    quals = qualifiers.map { |q| q.qualifiable_type }
-      #assoc = {
-      #'Project' => {:project => :customer },
-      #'User' => :users,
-      #'Customer' => :customers,
-      #'Company' => {:company => :properties},
-      #'Tag' => :tags,
-      #'Milestone' => :milestones,
-      #'PropertyValue' => :task_property_values,
-      #}
-    assoc = {
-      'Project' => :project,
-      #'User' => :users,
-      'Customer' => :customers,
-      'Company' => :company, 
-      'Tag' => :tags,
-      'Milestone' => :milestones,
-      'PropertyValue' => :task_property_values,
-    }
-    assoc_work = [:tags, :milestones, :task_property_values]
+  def get_includes(fields)
+    return nil unless fields
 
-    quals.each { |q| includes << assoc[q] }
-    includes.compact!
-    if work_logs
-      #others = assoc_work & includes
-      #includes = includes - others + [:tasks] if others.length > 0
-      includes = includes - assoc_work + [:task]
+    singular = %w(sheets todos milestones)
+    special = {'companies' => { :company => :properties}, 
+      'customers_projects' => {:project => :customer}, 
+      'watchers_tasks' => :watchers, 
+      'task_owners' => :watchers, 
+      'dependencies_tasks' => :dependencies,
+      'task_tags' => :tags,
+      'tags_tasks' => :tags}
+
+    fields = fields.split(/\s+/).map{ |i| i.split('.').first}.uniq.select { |f| f and f != 'tasks' }
+    fields.delete 'projects' if fields.include? 'customers_projects'
+
+    fields = fields.map do |f|
+      if singular.include? f
+        f = f[0, f.length-1]
+      elsif special[f]
+        f = special[f]
+      end
+      f
     end
-    
-    return includes.uniq
+
+    return fields.uniq
   end
 
   def set_company_from_user
@@ -319,7 +315,7 @@ class TaskFilter < ActiveRecord::Base
   # class_type
   def column_name_for(class_type)
     if class_type == "User"
-      return "task_owners.user_id"
+      return "users.id"
     elsif class_type == "Project"
       return "tasks.project_id"
     elsif class_type == "Customer"

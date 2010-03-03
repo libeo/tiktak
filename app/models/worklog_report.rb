@@ -301,9 +301,10 @@ class WorklogReport
         i.started_at -= i.started_at.sec
         i.duration -= i.duration % 60
       end
+      debugger
       
       root = wl.shift
-      while wl.size > 1
+      while wl.size > 0
         group = []
         current = wl.shift
 
