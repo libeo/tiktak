@@ -77,7 +77,7 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task) %> <% 
           :class => "button tooltip checkbox", :checked => "checked", :id => "button_#{task.id}" }.merge(can_complete) ) -%>
     <% end %>
 
-    <% if current_user.option_tracktime.to_i == 1 && can_work.size == 0 -%>
+    <% if current_user.option_tracktime.to_i == 1 && can_work.size == 0 && !task.done? -%>
       <% if @current_sheet && @current_sheet.task_id == task.id -%>
         <%= link_to(image_tag("time_add.png", :border => 0, :class => "tooltip work_icon", :title => _("Stop working on <b>%s</b>.", task.name)), {:controller => 'tasks', :action => 'stop_work'}, { :class => "stop-work-link work-icon" } )  -%>
       <% else -%>
