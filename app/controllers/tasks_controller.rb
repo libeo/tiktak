@@ -864,7 +864,7 @@ class TasksController < ApplicationController
       worklog.started_at = @current_sheet.created_at
       worklog.duration = @current_sheet.duration - @current_sheet.duration % 60
       worklog.paused_duration = @current_sheet.paused_duration
-      worklog.body = task.description
+      #worklog.body = task.description
       worklog.log_type = EventLog::TASK_WORK_ADDED
       worklog.comment = true if @current_sheet.body && @current_sheet.body.length > 0 
       
@@ -1397,7 +1397,7 @@ class TasksController < ApplicationController
     user = current_user.company.users.find(params[:user_id])
     @task.notifications.build(:user => user)
     
-    render(:partial => "notification", :locals => { :notification => user })
+    render(:partial => "notification", :locals => { :notification => user, :assign => true })
   end
 
   def add_client
@@ -1513,8 +1513,8 @@ class TasksController < ApplicationController
     session[:channels] += ["tasks_#{current_user.company_id}"]
     #@tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => "tasks.id, tasks.task_num, tasks.name, tasks.due_at, property_values.id, customers.id, customers.name, projects.id, projects.name, milestones.id, milestones.name, users.id, users.name")
     @tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => "
-    tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.repeat, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.requested_by,
-    dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_minutes, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.requested_by,
+    tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.repeat, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.requested_by, tasks.completed_at, tasks.hidden,
+    dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_minutes, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.requested_by, dependencies_tasks.completed_at, dependencies_tasks.hidden,
     customers.name, customers.contact_name, customers.contact_email,
     projects.name,
     milestones.name,
