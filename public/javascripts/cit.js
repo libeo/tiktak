@@ -269,7 +269,7 @@ function fixShortLinks() {
   $$('a.stop-work-link').each(function(e) {
       if( e.href != '#' ) {
         Event.observe(e, "click", function(e) {
-              jQuery.get('/tasks/stop_work_shortlist');
+              jQuery.getScript('/task_shortlist/stop_work');
             return false;
           });
         e.href = '#';

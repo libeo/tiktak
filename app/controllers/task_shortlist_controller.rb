@@ -21,9 +21,11 @@ class TaskShortlistController < ApplicationController
 
     f = current_shortlist_filter
     selected = f.qualifiers.select { |q| !["User", "Status"].include?(q.qualifiable_type) }.first
-    options[:order], include = order_condition(selected)
-
-    @filter = selected ? qualifier_to_indice(selected) : ""
+    if selected
+      options[:order], include = order_condition(selected)
+      @filter = qualifier_to_indice(selected)
+    end
+    @filter ||= ""
     @tasks = f.tasks(nil, options)
 
     #TODO : remove this ?
@@ -41,7 +43,7 @@ class TaskShortlistController < ApplicationController
     f.qualifiers = q
     f.save
 
-    redirect_to :controller => :action => 'index'
+    redirect_to :action => 'index'
   end
 
   def create_ajax
@@ -50,21 +52,24 @@ class TaskShortlistController < ApplicationController
       render(:highlight) and return
     end
 
-    p = {:body => _("Created through the shortlist")}
-    f = current_shortlist_filter.qualifiers.select { |q| q.qualifiable_type != 'User' }.first
+    
+    p = {}.merge(params[:task])
+    f = current_shortlist_filter.qualifiers.reject { |q| ['User', 'Status'].include? q.qualifiable_type }.first
 
     case f.qualifiable_type
       when 'Milestone':
-        p[:miletsone] = Milestone.find_by_id(f.qualifiable_id)
-        project = Project.find_by_id(f.qualifiable_id)
+        p[:miletsone] = Milestone.find_by_id(f.qualifiable_id, :select => "id, project_id")
+        project = Project.find_by_id(p[:milestone].project_id, :select => "projects.id, companies.id, projects.name, projects.company_id, customers.id", :include => [:company, :customer])
       when 'Project':
-        project = Project.find_by_id(f.qualifiable_id)
+        project = Project.find_by_id(f.qualifiable_id, :select => "projects.id, companies.id, projects.name, projects.company_id, customers.id", :include => [:company, :customer])
     end
 
     @task = Task.create_for_user(current_user, project, p)
+    @task.properties = {"1" => "1"}
+    @task.save
     
     unless @task
-      render :hightlight and return
+      render 'tasks/highlight' and return
     else
       @highlight_target = "quick_add_container"
     end
@@ -148,7 +153,7 @@ class TaskShortlistController < ApplicationController
     end
 
     @task = @current_sheet.task
-    swap_work_ajax
+    swap_work
     Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
   end
 
@@ -183,7 +188,7 @@ class TaskShortlistController < ApplicationController
   end
 
   def ajax_check
-    @task = Task.find(params[:id], :conditions => ["project_in in (#{current_project_ids_query}) and completed_at is null"], :include => :project)
+    @task = Task.find(params[:id], :conditions => ["tasks.project_id in (#{current_project_ids_query}) and tasks.completed_at is null"], :include => :project)
     render :nothing => true and return unless @task
 
     info = {}
@@ -194,6 +199,8 @@ class TaskShortlistController < ApplicationController
         :body => @current_sheet.body || "",
         :comment => !@current_sheet.body.blank?,
       }
+      close_work_log = true
+      swap_work
     end
 
     @task.close_task(current_user, info)
@@ -203,7 +210,7 @@ class TaskShortlistController < ApplicationController
   end
 
   def ajax_uncheck
-    @task = Task.find(params[:id], :conditions => ["project_in in (#{current_project_ids_query}) and completed_at is null"], :include => :project)
+    @task = Task.find(params[:id], :conditions => ["tasks.project_id in (#{current_project_ids_query}) and tasks.completed_at is null"], :include => :project)
     render :nothing => true and return unless @task
 
     @task.open_task(current_user)
@@ -265,7 +272,7 @@ class TaskShortlistController < ApplicationController
   end
   
   def order_condition(order)
-    order = self.qualifier_to_indice(order) unless order.is_a? String
+    order = qualifier_to_indice(order) unless order.is_a? String
     cond = []
     include = []
 
