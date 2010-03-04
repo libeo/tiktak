@@ -1130,8 +1130,8 @@ class Task < ActiveRecord::Base
       n.save
     end
 
-    self.self_owners.each do |o|
-      to = selfOwner.new(:user => o.user, :self => task)
+    self.task_owners.each do |o|
+      to = TaskOwner.new(:user => o.user, :self => task)
       to.save
     end
 
@@ -1159,7 +1159,7 @@ class Task < ActiveRecord::Base
     worklog.save
   end
 
-  def close_task(params)
+  def close_task(user, params={})
     old_status = self.status_type
     self.completed_at = Time.now.utc
     self.status = EventLog::TASK_COMPLETED
@@ -1167,44 +1167,44 @@ class Task < ActiveRecord::Base
     if self.next_repeat_date != nil
       self.save
       self.reload
-      self.repeat
+      self.repeat_task
     end
 
-    self.updated_by_id = params[:user].id
+    self.updated_by_id = user.id
     self.save
 
-    WorkLog.new do |w|
-      w.log_type = EventLog::TASK_COMPLETED
-      w.body = "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n"
-      w.user = params[:user]
-      w.project = self.project
-      w.company = self.project.company
-      w.customer = self.project.customer
-      w.task = self
-      w.started_at = params[:started_at] || Time.now.utc
-      w.duration = params[:duration] || 0
-      w.paused_duration = params[:paused_duration] || 0
-      w.save
+    params = {:body => "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n",
+      :started_at => Time.now.utc,
+      :duration => 0,
+      :paused_duration => 0,
+    }.merge(params)
+
+    worklog = WorkLog.create_for_task(self, user, "", params)
+    worklog.save
+
+    if user.send_notifications?
+      Notifications::deliver_changed(:completed, self, user, worklog.body.gsub(/<[^>]*>/,'') ) rescue nil
     end
   end
 
-  def open_task(params)
+  def open_task(user, params={})
+    old_status = self.status_type
     self.update_attributes({:status => 0,
                   :completed_at => nil,
-                  :updated_by => params[:user],
+                  :updated_by => user,
     })
+    
+    params = {:body => "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n",
+      :log_type => EventLog::TASK_REVERTED,
+      :started_at => Time.now.utc,
+    }.merge(params)
 
-    WorkLog.new({:user => params[:user],
-                :project => self.project,
-                :customer => self.project.customer,
-                :company => self.project.company,
-                :task => self,
-                :started_at => Time.now.utc,
-                :duration => 0,
-                :log_type => EventLog::TASK_REVERTED,
-                :body => "",
-    }).save
+    worklog = WorkLog.create_for_task(self, user, "", params)
+    worklog.save
 
+    if user.send_notifications?
+      Notifications::deliver_changed(:reverted, self, user, worklog.body.gsub(/<[^>]*>/,'') ) rescue nil
+    end
   end
 
   def self.create_for_user(user, project, params={})
@@ -1214,6 +1214,13 @@ class Task < ActiveRecord::Base
     result = task.save
     return result unless result
     task.users << user
+
+    WorkLog.create_for_task(self, user, "")
+
+    if user.send_notifications?
+        Notifications::deliver_created(self, user, params[:comment] || "") rescue begin end
+    end
+
     return task
   end
 

@@ -78,6 +78,7 @@ class WorkLog < ActiveRecord::Base
   # The newly created worklog is returned. 
   ###
   def self.create_for_task(task, user, comment, params={})
+    params = {:log_type => EventLog::TASK_CREATED}.merge(params)
     worklog = WorkLog.new(params)
     worklog.user = user
     worklog.company = task.project.company
@@ -86,7 +87,6 @@ class WorkLog < ActiveRecord::Base
     worklog.task = task
     worklog.started_at = Time.now.utc
     worklog.duration = 0
-    worklog.log_type = EventLog::TASK_CREATED
 
     if !comment.blank?
       worklog.body =  CGI::escapeHTML(comment)

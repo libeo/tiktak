@@ -1,0 +1,7 @@
+#page.remove "task_#{@task.id}"
+#page << "if(jQuery('#done_sep_0')) {"
+#page.insert_html :before, "done_sep_0", :partial => "task_row", :locals => {:task => @task }
+#page << "}"
+page.replace "task_#{@task.id}", :partial => "tasks/task_row", :locals => {:task => @task, :cont => 'task_shortlist'}
+page.visual_effect(:highlight, "task_#{@task.id}", :duration => 2.0)
+page.call "UpdateDnD"

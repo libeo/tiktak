@@ -10,12 +10,12 @@
 %>
 
   <%= link_to_remote image_tag("time_delete.png", :border => 0, :title => _("Cancel working on <b>%s</b>.", task.name), :class => "tooltip"),
-      :url => { :controller => 'tasks', :action => 'tasks/cancel_work_ajax', :id => task, :depth => 0 },
+      :url => { :controller => 'task_shortlist', :action => 'cancel_work_ajax', :id => task, :depth => 0 },
       :loading => "showProgress();",
       :complete => "hideProgress();" -%>
   <% if @current_sheet.paused? %>
     <%= link_to_remote image_tag("time_resume.png", :border => 0, :title => _("Resume working on <b>%s</b>.", task.name), :class => "tooltip"),
-        :url => { :controller => 'tasks', :action => 'tasks/pause_work_ajax', :id => task, :depth => 0 },
+        :url => { :controller => 'task_shortlist', :action => 'pause_work_ajax', :id => task, :depth => 0 },
         :loading => "showProgress();",
         :complete => "hideProgress();" -%>
   <% else %>
