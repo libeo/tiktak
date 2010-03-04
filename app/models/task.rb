@@ -1208,14 +1208,15 @@ class Task < ActiveRecord::Base
   end
 
   def self.create_for_user(user, project, params={})
-    defaults = {:project => project, :company => project.company, :updated_by => user, :creator => user, :duration => 0, :description => ""}
+    defaults = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}
     task = Task.new(defaults.merge(params))
+    debugger
     task.set_task_num(user.company_id)
     result = task.save
     return result unless result
     task.users << user
 
-    WorkLog.create_for_task(self, user, "")
+    WorkLog.create_for_task(task, user, "")
 
     if user.send_notifications?
         Notifications::deliver_created(self, user, params[:comment] || "") rescue begin end

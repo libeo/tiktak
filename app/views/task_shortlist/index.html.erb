@@ -26,24 +26,47 @@
 
     <!-- QUICK CREATE TASK -->
     <% if ['p', 'm'].include?(@filter[0,1]) %>
-      <% form_remote_tag :url => { :action => 'create_shortlist_ajax' },
+      <% form_remote_tag :url => { :action => 'create_ajax' },
        :loading => "showProgress();",
        :complete => "hideProgress();",
        :success => "jQuery('#task_name').val('');" do %>
-        <input type="text" name="task[name]" id="task_name" value="<%= _ 'New Task' %>"/>
+         <table>
+           <tr>
+             <td>
+               <%=_("Task name") %>
+              </td>
+             <td>
+               <input type="text" name="task[name]" id="task_name" value="<%= _ 'New Task' %>"/>
+             </td>
+            </tr>
+            <tr>
+              <td>
+                <%=_("Due Date")%> 
+              </td>
+              <td>
+                <%= text_field(:task, :due_date) %>
+              </td>
+            </tr>
+            <tr>
+              <td><%=_("Time Estimate")%></td>
+              <td><%= text_field(:task, :duration) %></td>
+            </tr>
+          </table>
       <% end %>
 
       <!-- QUICK CREATE PROJECT -->
-      <% if current_user.create_projects? %>
-        <div style="float:right;"><a href="#" onclick="jQuery('#shortlist-new-project-container').toggle();">[<%= _('New Project')%>]</a></div>
-        <div id="shortlist-new-project-container" style="display:none;">
-          <% form_remote_tag :url => { :action => 'create_shortlist_ajax', :controller => 'projects' },
-             :loading => "showProgress();",
-             :complete => "hideProgress();",
-             :success => "jQuery('#project_name').val('');" do %>
-              <input type="text" name="project[name]" id="project_name" value="<%= _ 'New Project' %>"/>
-          <% end %>
-        </div>
+      <% if false %>
+        <% if current_user.create_projects? %>
+          <div style="float:right;"><a href="#" onclick="jQuery('#shortlist-new-project-container').toggle();">[<%= _('New Project')%>]</a></div>
+          <div id="shortlist-new-project-container" style="display:none;">
+            <% form_remote_tag :url => { :action => 'create_shortlist_ajax', :controller => 'projects' },
+               :loading => "showProgress();",
+               :complete => "hideProgress();",
+               :success => "jQuery('#project_name').val('');" do %>
+                <input type="text" name="project[name]" id="project_name" value="<%= _ 'New Project' %>"/>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
 
     <% end %>
@@ -63,6 +86,8 @@ jQuery('#project_name').focus(function() {
     jQuery(this).removeClass('initial');
   }
 });
+
+jQuery("#task_due_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
 
 jQuery(document).ready(function () {
   if( jQuery('#task_name').val() == '<%= _'New Task' %>') {
