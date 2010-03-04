@@ -34,7 +34,8 @@ class Widget < ActiveRecord::Base
   end
 
   def order_by_sql
-    conditions, order = nil
+    order = nil
+    conditions = []
     case self.order_by
       when 'priority':
         order = "task_owners.user_id = #{self.user_id} and task_owners.unread = true desc, UNIX_TIMESTAMP(UTC_TIMESTAMP()) - UNIX_TIMESTAMP(tasks.due_at) desc, tasks.priority asc, tasks.completed_at asc, tasks.task_num asc"
@@ -58,7 +59,7 @@ class Widget < ActiveRecord::Base
         conditions << "tasks.creator_id = #{self.user_id}"
         order = 'tasks.created_at desc'
     end
-    return order, conditions
+    return order, conditions.join(" AND ")
   end
 
 end
