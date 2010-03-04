@@ -111,7 +111,7 @@ class TaskFilter < ActiveRecord::Base
     res << conditions_for_status_qualifiers(status_qualifiers)
     res << conditions_for_other_qualifiers(other_qualifiers) if other_qualifiers.length > 0
     res << conditions_for_keywords
-    res << extra_conditions if extra_conditions
+    res << extra_conditions if extra_conditions and extra_conditions.length > 0
 
     if user.projects.any?
       sql = "tasks.project_id in (select project_id from project_permissions where user_id = #{user.id}) or users.id = #{user.id}"

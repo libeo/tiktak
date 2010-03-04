@@ -52,7 +52,8 @@ class WidgetsController < ApplicationController
       conditions << "users.id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
       order, extra = @widget.order_by_sql
-      conditions << extra if extra
+      conditions << extra if extra.length > 0
+      debugger
       
       @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => TASK_ROW_INCLUDE, :order => order, :limit => @widget.number, :select => TASK_ROW_SELECT)
 
