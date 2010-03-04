@@ -6,7 +6,7 @@
  depth = 1 if depth < 1
  classes = ""
  cont ||= 'tasks'
- 
+
  can_complete = { :disabled => "disabled" } unless current_user.can?(task.project, 'close')
  can_complete ||= {}
 
@@ -71,10 +71,10 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task) %> <% 
   <div style="float:left; padding-left:0.3em;">
 
     <% unless task.done? %>
-      <%= check_box("task", "done", { "title" => _("Close <b>%s</b>", task.name), "onclick" => "if (confirm(\"#{_("Really close task ?")}\")) { new Ajax.Request('/tasks/ajax_check/#{task.id}', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}}); } return false;",
+      <%= check_box("task", "done", { "title" => _("Close <b>%s</b>", task.name), "onclick" => "if (confirm(\"#{_("Really close task ?")}\")) { new Ajax.Request('/#{cont}/ajax_check/#{task.id}', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}}); } return false;",
           :class => "button tooltip checkbox", :id => "button_#{task.id}" }.merge(can_complete) ) -%>
     <% else %>
-      <%= check_box("task", "done", {"title" => _("Revert <b>%s</b> to not completed status.", task.name), "onclick" => "new Ajax.Request('/tasks/ajax_uncheck/#{task.id}', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}})",
+      <%= check_box("task", "done", {"title" => _("Revert <b>%s</b> to not completed status.", task.name), "onclick" => "new Ajax.Request('/#{cont}/ajax_uncheck/#{task.id}', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}})",
           :class => "button tooltip checkbox", :checked => "checked", :id => "button_#{task.id}" }.merge(can_complete) ) -%>
     <% end %>
 
@@ -82,7 +82,7 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task) %> <% 
       <% if @current_sheet && @current_sheet.task_id == task.id -%>
         <%= link_to(image_tag("time_add.png", :border => 0, :class => "tooltip work_icon", :title => _("Stop working on <b>%s</b>.", task.name)), {:controller => cont, :action => 'stop_work'}, { :class => "stop-work-link work-icon" } )  -%>
       <% else -%>
-        <a href="#" onclick="jQuery.getScript('/tasks/start_work_ajax/<%=task.id%>?depth=<%=depth%>'); return false;"><%= image_tag("time.png", :border => 0, :class => "tooltip work_icon", :title => _("Start working on <b>%s</b>. Click again when done.", task.name))%></a>
+        <a href="#" onclick="jQuery.getScript('/<%=cont%>/start_work_ajax/<%=task.id%>?depth=<%=depth%>'); return false;"><%= image_tag("time.png", :border => 0, :class => "tooltip work_icon", :title => _("Start working on <b>%s</b>. Click again when done.", task.name))%></a>
       <% end -%>
    <% else -%>
      <img src="/images/spacer.gif" width="16" height="16" border="0"/>
@@ -102,7 +102,7 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task) %> <% 
      <%= link_to_task(task, false, @keys)  -%>
    <% end %>
      <span id="todo-status-<%= task.dom_id %>">
-       <a class="<%=(task.todos.empty? ? "todo-status-link-empty" :"todo-status-link")%>" href="#" onclick="jQuery('#todo-container-<%=task.dom_id%>').toggle(); Sortable.create('todo-<%=task.dom_id%>', {containment:'todo-<%=task.dom_id%>', format:/^[^-]*-(.*)$/, onUpdate:function(){new Ajax.Request('/tasks/order_todos/<%=task.id%>', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize('todo-<%=task.dom_id%>')})}, only:'todo-active'}); return false;"><%=task.todo_status%></a>
+       <a class="<%=(task.todos.empty? ? "todo-status-link-empty" :"todo-status-link")%>" href="#" onclick="jQuery('#todo-container-<%=task.dom_id%>').toggle(); Sortable.create('todo-<%=task.dom_id%>', {containment:'todo-<%=task.dom_id%>', format:/^[^-]*-(.*)$/, onUpdate:function(){new Ajax.Request('/<%=cont%>/order_todos/<%=task.id%>', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize('todo-<%=task.dom_id%>')})}, only:'todo-active'}); return false;"><%=task.todo_status%></a>
      </span>
      <%  if current_user.option_tracktime.to_i == 1 -%>
      <% if task.duration.to_i > 0 -%>

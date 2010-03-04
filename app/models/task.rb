@@ -1145,10 +1145,10 @@ class Task < ActiveRecord::Base
   def close_current_work_log(sheet)
     worklog = WorkLog.new({
       :user => sheet.user,
-      :company => sheet.company,
+      :company => sheet.user.company,
       :project => sheet.project,
       :task => sheet.task,
-      :customer => sheet.customer,
+      :customer => sheet.project.customer,
       :started_at => sheet.created_at,
       :duration => sheet.duration,
       :paused_duration => sheet.paused_duration,

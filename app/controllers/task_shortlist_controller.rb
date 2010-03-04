@@ -5,12 +5,24 @@ class TaskShortlistController < ApplicationController
   end
 
   def init
+    options = {
+      :select => 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.description, tasks.due_at, tasks.repeat, tasks.requested_by,
+        dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.duration, dependencies_tasks.worked_minutes, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.description, dependencies_tasks.due_at, dependencies_tasks.repeat, dependencies_tasks.requested_by,
+        projects.name,
+        customers.name,
+        users.name, users.company_id, users.email,
+        milestones.name,
+        tags.name',
+      :include => [{:project => :customer}, :users, :milestone, :tags, :dependencies, :notifications]
+    }
     session[:channels] += ["tasks_#{current_user.company_id}"]
 
     f = current_shortlist_filter
-    selected = f.qualifiers.select { |q| !["User", "Status"].include?(q.qualifiable_type) }
-    @filter = selected.length > 0 ? qualifier_to_indice(selected.first) : ""
-    @tasks = f.tasks
+    selected = f.qualifiers.select { |q| !["User", "Status"].include?(q.qualifiable_type) }.first
+    options[:order], include = order_condition(selected)
+
+    @filter = selected ? qualifier_to_indice(selected) : ""
+    @tasks = f.tasks(nil, options)
 
     #TODO : remove this ?
     @tags = {}
@@ -158,8 +170,8 @@ class TaskShortlistController < ApplicationController
       task.save
 
       Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => task.id)}');", ["tasks_#{current_user.company_id}"])
-      render 'tasks/task_row'
 
+      render 'tasks/start_work_ajax'
       return if request.xhr?
     end
   end
@@ -203,7 +215,7 @@ class TaskShortlistController < ApplicationController
     end
     cond << 'tasks.name'
 
-    return [cond.join "," , include]
+    return [cond.join(",") , include]
   end
 
 
