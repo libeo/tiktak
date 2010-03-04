@@ -1,18 +1,20 @@
 class TaskShortlistController < ApplicationController
 
-  def quick_add
-    self.new
-  end
-
-  def init
-    options = {
-      :select => 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.description, tasks.due_at, tasks.repeat, tasks.requested_by,
+  TASK_ROW_SELECT = 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.description, tasks.due_at, tasks.repeat, tasks.requested_by,
         dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.duration, dependencies_tasks.worked_minutes, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.description, dependencies_tasks.due_at, dependencies_tasks.repeat, dependencies_tasks.requested_by,
         projects.name,
         customers.name,
         users.name, users.company_id, users.email,
         milestones.name,
-        tags.name',
+        tags.name'
+
+  def quick_add
+    self.new
+  end
+
+  def index
+    options = {
+      :select => TASK_ROW_SELECT,
       :include => [{:project => :customer}, :users, :milestone, :tags, :dependencies, :notifications]
     }
     session[:channels] += ["tasks_#{current_user.company_id}"]
@@ -30,8 +32,192 @@ class TaskShortlistController < ApplicationController
     @group_ids, @groups = group_tasks(@tasks)
   end
 
+  def filter
+    f = current_shortlist_filter
 
+    i = indice_to_qualifier(params[:filter])
+    q = default_shortlist_qualifiers
+    q << i if i
+    f.qualifiers = q
+    f.save
 
+    redirect_to :controller => :action => 'index'
+  end
+
+  def create_ajax
+    @highlight_target = "shortlist"
+    if !params[:task][:name] || params[:task][:name].empty?
+      render(:highlight) and return
+    end
+
+    p = {:body => _("Created through the shortlist")}
+    f = current_shortlist_filter.qualifiers.select { |q| q.qualifiable_type != 'User' }.first
+
+    case f.qualifiable_type
+      when 'Milestone':
+        p[:miletsone] = Milestone.find_by_id(f.qualifiable_id)
+        project = Project.find_by_id(f.qualifiable_id)
+      when 'Project':
+        project = Project.find_by_id(f.qualifiable_id)
+    end
+
+    @task = Task.create_for_user(current_user, project, p)
+    
+    unless @task
+      render :hightlight and return
+    else
+      @highlight_target = "quick_add_container"
+    end
+
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+  end
+
+  def swap_work
+    if @current_sheet
+
+      @old_task = @current_sheet.task
+
+      if @old_task.nil?
+        @current_sheet.destroy
+        @current_sheet = nil
+        redirect_from_last
+      end
+
+      if @old_task.close_current_work_log(@current_sheet) 
+        @current_sheet.destroy
+        flash['notice'] = _("Log entry saved...")
+        Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @old_task.id)}');", ["tasks_#{current_user.company_id}"])
+        Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+        @current_sheet = nil
+      else
+        flash['notice'] = _("Unable to save log entry...")
+        redirect_from_last
+      end
+
+    end
+
+  end
+
+  def start_work
+    if @current_sheet
+      self.swap_work
+    end
+
+    task = Task.find(params[:id], :conditions => ["task_owners.user_id = ?", current_user.id], :include => :task_owners)
+    if task
+      @current_sheet = Sheet.new({
+        :task => task,
+        :user => current_user,
+        :project => task.project,
+      })
+      @current_sheet.save
+      task.status = 1 if task.status == 0
+      task.save
+
+      Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => task.id)}');", ["tasks_#{current_user.company_id}"])
+
+      return if request.xhr?
+    end
+  end
+  
+  def start_work_ajax
+    self.start_work
+  end
+
+  def start_work_edit_ajax
+    self.start_work
+  end
+
+  def cancel_work_ajax
+    return if request.xhr? or not @current_sheet
+    @task = @current_sheet.task
+    @current_sheet.destroy
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+    @current_sheet = nil
+  end
+
+  def stop_work_ajax
+    self.stop_work
+  end
+
+  def stop_work
+    unless @current_sheet
+      render :nothing => true
+      return
+    end
+
+    @task = @current_sheet.task
+    swap_work_ajax
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+  end
+
+  #TODO: check if this is really used
+  def ajax_hide
+    @task = Task.find(params[:id], :conditions => ["tasks.project_id IN (#{current_project_ids_query})"], :select => "tasks.id, tasks.hidden, tasks.updated_by_id, projects.id, companies.id, customers.id", :include => {:project => [:customer, :company]})
+
+    unless @task.hidden == 1
+      @task.hidden = 1
+      @task.updated_by_id = current_user.id
+      @task.save
+
+      worklog = WorkLog.create_for_task(@task, current_user, "", {:log_type => EventLog::TASK_ARCHIVED})
+      worklog.save
+    end
+
+    render :nothing => true
+  end
+
+  #TODO: check if this is really needed
+  def ajax_restore
+    @task = Task.find(params[:id], :conditions => ["tasks.project_id IN (#{current_project_ids_query})"], :select => "tasks.id, tasks.hidden, tasks.updated_by_id, projects.id, companies.id, customers.id", :include => {:project => [:customer, :company]})
+
+    unless @task.hidden == 0
+      @task.hidden = 0
+      @task.updated_by_id = current_user.id
+      @task.save
+
+      worklog = WorkLog.create_for_task(@task, current_user, "", {:log_type => EventLog::TASK_RESTORED})
+      worklog.save
+    end
+  end
+
+  def ajax_check
+    @task = Task.find(params[:id], :conditions => ["project_in in (#{current_project_ids_query}) and completed_at is null"], :include => :project)
+    render :nothing => true and return unless @task
+
+    info = {}
+    if @current_sheet and @current_sheet.task_id == @task.id
+      info = {:started_at => @current_sheet.created_at,
+        :duration => @current_sheet.duration,
+        :paused_duration => @current_sheet.paused_duration,
+        :body => @current_sheet.body || "",
+        :comment => !@current_sheet.body.blank?,
+      }
+    end
+
+    @task.close_task(current_user, info)
+
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+  end
+
+  def ajax_uncheck
+    @task = Task.find(params[:id], :conditions => ["project_in in (#{current_project_ids_query}) and completed_at is null"], :include => :project)
+    render :nothing => true and return unless @task
+
+    @task.open_task(current_user)
+
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
+    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
+  end
+
+  private
+  ###
+  # Returns a two element array containing the grouped tasks.
+  # The first element is an in-order array of group ids / names
+  # The second element is a hash mapping group ids / names to arrays of tasks.
+  ###
   def qualifier_to_indice(qualifier)
     str = ""
     case qualifier.qualifiable_type
@@ -77,126 +263,6 @@ class TaskShortlistController < ApplicationController
 
     return qualifier
   end
-
-  def filter_shortlist
-    f = current_shortlist_filter
-
-    i = indice_to_qualifier(params[:filter])
-    q = default_shortlist_qualifiers
-    q << i if i
-    f.qualifiers = q
-    f.save
-
-    redirect_to :controller => 'task_shortlist', :action => 'index'
-  end
-
-  #!!!
-  def create_shortlist_ajax
-    @highlight_target = "shortlist"
-    if !params[:task][:name] || params[:task][:name].empty?
-      render(:highlight) and return
-    end
-
-    p = {}
-    f = current_shortlist_filter.qualifiers.select { |q| q.qualifiable_type != 'User' }.first
-
-    case f.qualifiable_type
-      when 'Milestone':
-        p[:miletsone] = Milestone.find_by_id(f.qualifiable_id)
-        project = Project.find_by_id(f.qualifiable_id)
-      when 'Project':
-        project = Project.find_by_id(f.qualifiable_id)
-    end
-
-    @task = Task.create_for_user(current_user, project, p)
-    
-    unless @task
-      render :hightlight and return
-    else
-      @highlight_target = "quick_add_container"
-
-      WorkLog.create_for_task(@task, current_user, _("Created tyhrough the shortlist"))
-
-      if params['notify'].to_i == 1
-        Notifications::deliver_created( @task, current_user, params[:comment]) rescue begin end
-      end
-    end
-
-    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
-    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
-  end
-
-
-  def swap_work_ajax
-    if @current_sheet
-
-      @old_task = @current_sheet.task
-
-      if @old_task.nil?
-        @current_sheet.destroy
-        @current_sheet = nil
-        redirect_from_last
-      end
-
-      if @old_task.close_current_work_log(@current_sheet) 
-        @current_sheet.destroy
-        flash['notice'] = _("Log entry saved...")
-        Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @old_task.id)}');", ["tasks_#{current_user.company_id}"])
-        Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
-        @current_sheet = nil
-      else
-        flash['notice'] = _("Unable to save log entry...")
-        redirect_from_last
-      end
-
-    end
-
-  end
-
-  def start_work_ajax
-    if @current_sheet
-      self.swap_work_ajax
-    end
-
-    task = Task.find(params[:id], :conditions => ["task_owners.user_id = ?", current_user.id], :include => :task_owners)
-    if task
-      @current_sheet = Sheet.new({
-        :task => task,
-        :user => current_user,
-        :project => task.project,
-      })
-      @current_sheet.save
-      task.status = 1 if task.status == 0
-      task.save
-
-      Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => task.id)}');", ["tasks_#{current_user.company_id}"])
-
-      render 'tasks/start_work_ajax'
-      return if request.xhr?
-    end
-  end
-
-  def stop_work
-    unless @current_sheet
-      render :nothing => true
-      return
-    end
-
-    @task = @current_sheet.task
-    swap_work_ajax
-    Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
-  end
-
-  def index
-    self.init
-  end
-
-  private
-  ###
-  # Returns a two element array containing the grouped tasks.
-  # The first element is an in-order array of group ids / names
-  # The second element is a hash mapping group ids / names to arrays of tasks.
-  ###
   
   def order_condition(order)
     order = self.qualifier_to_indice(order) unless order.is_a? String

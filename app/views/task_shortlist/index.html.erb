@@ -6,7 +6,7 @@
   <fieldset id="shortlist">
     <legend id="shortlist-legend"><%= render :partial => 'short_legend' %></legend>
 
-    <%= render :partial => "shortlist_filter" %>
+    <%= render :partial => "filter" %>
 
     <!-- CURRENT WORK_LOG INFO -->
     <div <%= "style=\"display:none;\"" if @current_sheet.nil? %> id="work-log">

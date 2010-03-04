@@ -1,0 +1,3 @@
+page << "jQuery('.#{@task.dom_id}').hide('slow');"
+page.call "UpdateDnD"
+
