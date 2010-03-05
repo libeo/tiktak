@@ -1,4 +1,5 @@
 <% 
+   assign ||= false
    user = notification 
    classname = "user" 
    if @task.new_record? and @task.should_be_notified?(user)
@@ -15,7 +16,7 @@
   :disabled => !@task.should_be_notified?(user)) %>
 
   <label>
-    <%= assigned_icon(@task, user) %>
+    <%= assigned_icon(@task, user, assign) %>
     <%= notify_icon(@task, user) %>
   </label>
 
