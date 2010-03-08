@@ -137,7 +137,7 @@ class TaskShortlistController < ApplicationController
   end
 
   def cancel_work_ajax
-    return if request.xhr? or not @current_sheet
+    return if not @current_sheet
     @task = @current_sheet.task
     @current_sheet.destroy
     Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])

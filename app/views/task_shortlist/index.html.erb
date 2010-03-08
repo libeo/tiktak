@@ -36,12 +36,12 @@
              <td> <input type="text" name="task[name]" id="task_name" value="" /> </td>
            </tr>
            <tr>
-             <td> <%=_("Due Date")%> </td>
-             <td> <%= text_field(:task, :due_at, :value => "" )%> </td>
-           </tr>
-           <tr>
              <td><%=_("Time Estimate")%></td>
              <td><%= text_field(:task, :duration, :value => "" )%></td>
+           </tr>
+           <tr>
+             <td> <%=_("Due Date")%> </td>
+             <td> <%= text_field(:task, :due_at, :value => "" )%> </td>
            </tr>
            <tr>
              <td> <%= submit_tag(_("Create")) %> </td>
