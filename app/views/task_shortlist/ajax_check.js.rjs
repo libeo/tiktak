@@ -1,0 +1,6 @@
+page << "jQuery('.#{@task.dom_id}').hide('slow');"
+page << "if($('shortlist-legend')) {"
+page.replace_html("shortlist-legend", "")
+page << "}"
+page.call "UpdateDnD"
+

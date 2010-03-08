@@ -1,0 +1,9 @@
+page.replace "task_#{@task.id}", :partial => "tasks/task_row", :locals => {:task => @task, :depth => params[:depth].to_i || 0, :cont => 'task_shortlist' }
+
+page.replace_html "shortlist-legend", :partial => "short_legend"
+page.call "fixShortLinks"
+
+page['work-log'].hide
+
+page.call "UpdateDnD"
+

@@ -278,7 +278,7 @@ class LoginController < ApplicationController
     session[:redirect] = nil
     authorize
 
-    redirect_to :controller => 'tasks', :action => 'shortlist'
+    redirect_to :controller => 'task_shortlist', :action => 'index'
 
   end
 

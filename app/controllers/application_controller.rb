@@ -423,8 +423,7 @@ class ApplicationController < ActionController::Base
   end
 
   def default_shortlist_qualifiers
-    defaults = [{:qualifiable_type => "User", :qualifiable_id => current_user.id},
-      {:qualifiable_type => "Status", :qualifiable_id => 1},
+    defaults = [{:qualifiable_type => "Status", :qualifiable_id => 1},
       {:qualifiable_type => "Status", :qualifiable_id => 2},
     ]
     defaults.map { |d| TaskFilterQualifier.new(d) }

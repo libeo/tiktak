@@ -1130,8 +1130,8 @@ class Task < ActiveRecord::Base
       n.save
     end
 
-    self.self_owners.each do |o|
-      to = selfOwner.new(:user => o.user, :self => task)
+    self.task_owners.each do |o|
+      to = TaskOwner.new(:user => o.user, :self => task)
       to.save
     end
 
@@ -1142,7 +1142,24 @@ class Task < ActiveRecord::Base
     task.save
   end
 
-  def close_task(params)
+  def close_current_work_log(sheet)
+    worklog = WorkLog.new({
+      :user => sheet.user,
+      :company => sheet.user.company,
+      :project => sheet.project,
+      :task => sheet.task,
+      :customer => sheet.project.customer,
+      :started_at => sheet.created_at,
+      :duration => sheet.duration,
+      :paused_duration => sheet.paused_duration,
+      :body => sheet.body,
+      :log_type => EventLog::TASK_WORK_ADDED
+    })
+    worklog.comment = true if sheet.body and sheet.body.length > 0
+    worklog.save
+  end
+
+  def close_task(user, params={})
     old_status = self.status_type
     self.completed_at = Time.now.utc
     self.status = EventLog::TASK_COMPLETED
@@ -1150,45 +1167,66 @@ class Task < ActiveRecord::Base
     if self.next_repeat_date != nil
       self.save
       self.reload
-      self.repeat
+      self.repeat_task
     end
 
-    self.updated_by_id = params[:user].id
+    self.updated_by_id = user.id
     self.save
 
-    WorkLog.new do |w|
-      w.log_type = EventLog::TASK_COMPLETED
-      w.body = "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n"
-      w.user = params[:user]
-      w.project = self.project
-      w.company = self.project.company
-      w.customer = self.project.customer
-      w.task = self
-      w.started_at = params[:started_at] || Time.now.utc
-      w.duration = params[:duration] || 0
-      w.paused_duration = params[:paused_duration] || 0
-      w.save
+    params = {:body => "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n",
+      :started_at => Time.now.utc,
+      :duration => 0,
+      :paused_duration => 0,
+    }.merge(params)
+
+    worklog = WorkLog.create_for_task(self, user, "", params)
+    worklog.save
+
+    if user.send_notifications?
+      Notifications::deliver_changed(:completed, self, user, worklog.body.gsub(/<[^>]*>/,'') ) rescue nil
     end
   end
 
-  def open_task(params)
+  def open_task(user, params={})
+    old_status = self.status_type
     self.update_attributes({:status => 0,
                   :completed_at => nil,
-                  :updated_by => params[:user],
+                  :updated_by => user,
     })
+    
+    params = {:body => "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n",
+      :log_type => EventLog::TASK_REVERTED,
+      :started_at => Time.now.utc,
+    }.merge(params)
 
-    WorkLog.new({:user => params[:user],
-                :project => self.project,
-                :customer => self.project.customer,
-                :company => self.project.company,
-                :task => self,
-                :started_at => Time.now.utc,
-                :duration => 0,
-                :log_type => EventLog::TASK_REVERTED,
-                :body => "",
-    }).save
+    worklog = WorkLog.create_for_task(self, user, "", params)
+    worklog.save
 
+    if user.send_notifications?
+      Notifications::deliver_changed(:reverted, self, user, worklog.body.gsub(/<[^>]*>/,'') ) rescue nil
+    end
   end
+
+  def self.create_for_user(user, project, params={})
+    params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
+    params[:due_at] = TimeParser.date_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
+    debugger
+    params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
+    task = Task.new(params)
+    task.set_task_num(user.company_id)
+    result = task.save
+    return result unless result
+    task.users << user
+
+    WorkLog.create_for_task(task, user, "")
+
+    if user.send_notifications?
+        Notifications::deliver_created(self, user, params[:comment] || "") rescue begin end
+    end
+
+    return task
+  end
+
 
 end
 
