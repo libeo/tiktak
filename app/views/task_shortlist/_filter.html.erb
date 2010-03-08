@@ -1,0 +1,32 @@
+<% @clients = Customer.find(:all, 
+                            :conditions => ["customers.company_id = ? 
+                              and projects.completed_at is null 
+                              and project_permissions.user_id = ?
+                              and milestones.completed_at is null", current_user.company_id, current_user.id], 
+                            :order => "customers.name, projects.name, milestones.due_at, milestones.name", 
+                            :select => "customers.name, customers.id, projects.name, projects.id, milestones.name, milestones.id",
+                            :include => [{:projects => [:project_permissions, :milestones]}]) %>
+<div id="shortlist-filter">
+<% form_tag( :controller => 'task_shortlist', :action => 'filter') do %>
+<select name="filter" id="filter" onchange="javascript:document.forms[0].submit();">
+  <option value="0" class="select_default"><%= _("[All Tasks]") %></option>
+
+  <% @clients.each do |c| %>
+    <% @client_projects = c.projects %>
+    <% if @client_projects.size > 0 %>
+      <option value="c<%=c.id.to_s%>" class="select_heading"<%= " selected" if "c" + c.id.to_s == @filter %>><%= c.name %></option>
+      <% @client_projects.each do |p| %>
+        <option value="p<%= p.id %>" class="select_item"<%= " selected" if( "p#{p.id}" == @filter  ) %>>&nbsp;&nbsp;<%= p.name %></option>
+        <% @project_milestones = p.milestones %>
+        <% if @project_milestones.size > 0 -%>
+          <% @project_milestones.each do |m| -%>
+            <option value="m<%=m.id%>" class="select_subitem"<%= " selected" if "m#{m.id}" == @filter %>>&nbsp;&nbsp;&nbsp;&nbsp;<%= m.name %></option>
+          <% end -%>
+          <option value="u<%=p.id%>" class="select_default select_subitem"<%= " selected" if "u#{p.id}" == @filter %>>&nbsp;&nbsp;&nbsp;&nbsp;<%= _("[Unassigned]") -%></option>
+        <% end -%>
+      <% end -%>
+    <% end -%>
+  <% end %>
+</select>
+</div>
+<% end -%>

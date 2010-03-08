@@ -77,8 +77,9 @@ class WorkLog < ActiveRecord::Base
   # If comment is given, it will be escaped before saving.
   # The newly created worklog is returned. 
   ###
-  def self.create_for_task(task, user, comment)
-    worklog = WorkLog.new
+  def self.create_for_task(task, user, comment, params={})
+    params = {:log_type => EventLog::TASK_CREATED}.merge(params)
+    worklog = WorkLog.new(params)
     worklog.user = user
     worklog.company = task.project.company
     worklog.customer = task.project.customer
@@ -86,7 +87,6 @@ class WorkLog < ActiveRecord::Base
     worklog.task = task
     worklog.started_at = Time.now.utc
     worklog.duration = 0
-    worklog.log_type = EventLog::TASK_CREATED
 
     if !comment.blank?
       worklog.body =  CGI::escapeHTML(comment)

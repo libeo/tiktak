@@ -14,7 +14,8 @@ class TaskFilter < ActiveRecord::Base
   validates_presence_of :name
 
   named_scope :shared, :conditions => { :shared => true }
-  named_scope :visible, :conditions => { :system => false }
+  #named_scope :visible, :conditions => { :system => false }
+  named_scope :visible, :conditions => "task_filters.system = false and task_filters.name != 'shortlist'"
 
   before_create :set_company_from_user
 

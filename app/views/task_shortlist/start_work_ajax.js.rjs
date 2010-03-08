@@ -3,12 +3,11 @@ if params[:id].to_i != @current_sheet.task_id
 else
   unless @old_task.nil?
     page.replace(".#{ @old_task.dom_id }", :partial => "tasks/task_row", 
-    :locals => {:task => @old_task, :depth => 0 } )
+    :locals => {:task => @old_task, :depth => 0, :cont => 'task_shortlist' } )
   end
 
   page.replace(".#{ @current_sheet.task.dom_id }", :partial => "tasks/task_row", 
-          :locals => {:task => @current_sheet.task, :depth => params[:depth].to_i || 0 })
-
+          :locals => {:task => @current_sheet.task, :depth => params[:depth].to_i || 0, :cont => 'task_shortlist' })
 
   page << "if($('work-log')) {"
   page << "jQuery('#worklog_body').val('');"
