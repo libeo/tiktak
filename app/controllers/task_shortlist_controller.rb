@@ -64,6 +64,8 @@ class TaskShortlistController < ApplicationController
         project = Project.find_by_id(f.qualifiable_id, :select => "projects.id, companies.id, projects.name, projects.company_id, customers.id", :include => [:company, :customer])
     end
 
+    debugger
+    p.each_key { |k| p[k.to_sym] = p[k] and p.delete(k) if !k.is_a? Symbol }
     @task = Task.create_for_user(current_user, project, p)
     @task.properties = {"1" => "1"}
     @task.save

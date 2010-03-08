@@ -29,29 +29,24 @@
       <% form_remote_tag :url => { :action => 'create_ajax' },
        :loading => "showProgress();",
        :complete => "hideProgress();",
-       :success => "jQuery('#task_name').val('');" do %>
+       :success => "jQuery('#task_name').val('');jQuery('#task_due_at').val('');jQuery('#task_duration').val('')" do %>
          <table>
            <tr>
-             <td>
-               <%=_("Task name") %>
-              </td>
-             <td>
-               <input type="text" name="task[name]" id="task_name" value="<%= _ 'New Task' %>"/>
-             </td>
+             <td> <%=_("Task name") %> </td>
+             <td> <input type="text" name="task[name]" id="task_name" value="" /> </td>
+           </tr>
+           <tr>
+             <td> <%=_("Due Date")%> </td>
+             <td> <%= text_field(:task, :due_at, :value => "" )%> </td>
+           </tr>
+           <tr>
+             <td><%=_("Time Estimate")%></td>
+             <td><%= text_field(:task, :duration, :value => "" )%></td>
+           </tr>
+           <tr>
+             <td> <%= submit_tag(_("Create")) %> </td>
             </tr>
-            <tr>
-              <td>
-                <%=_("Due Date")%> 
-              </td>
-              <td>
-                <%= text_field(:task, :due_date) %>
-              </td>
-            </tr>
-            <tr>
-              <td><%=_("Time Estimate")%></td>
-              <td><%= text_field(:task, :duration) %></td>
-            </tr>
-          </table>
+         </table>
       <% end %>
 
       <!-- QUICK CREATE PROJECT -->
@@ -87,7 +82,7 @@ jQuery('#project_name').focus(function() {
   }
 });
 
-jQuery("#task_due_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
+jQuery("#task_due_at").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
 
 jQuery(document).ready(function () {
   if( jQuery('#task_name').val() == '<%= _'New Task' %>') {
