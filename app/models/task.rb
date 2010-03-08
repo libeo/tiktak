@@ -1208,9 +1208,11 @@ class Task < ActiveRecord::Base
   end
 
   def self.create_for_user(user, project, params={})
-    defaults = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}
-    task = Task.new(defaults.merge(params))
+    params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
+    params[:due_at] = TimeParser.date_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
     debugger
+    params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
+    task = Task.new(params)
     task.set_task_num(user.company_id)
     result = task.save
     return result unless result
