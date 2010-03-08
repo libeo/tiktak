@@ -1,4 +1,4 @@
-page.replace ".#{@task.dom_id}", :partial => "task_row", :locals => {:task => @task, :depth => params[:depth].to_i || 0 }
+page.replace ".#{@task.dom_id}", :partial => "tasks/task_row", :locals => {:task => @task, :depth => params[:depth].to_i || 0 }
 
 page << "if(jQuery('#work-log')) {"
 page << "jQuery('#work-log:visible').hide();"
