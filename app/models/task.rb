@@ -47,7 +47,7 @@ class Task < ActiveRecord::Base
 
   validates_length_of           :name,  :maximum=>200, :allow_nil => true
   validates_presence_of         :name
-  
+
   validates_presence_of		:company
   validates_presence_of		:project
 
@@ -65,14 +65,14 @@ class Task < ActiveRecord::Base
       p.update_project_stats
       p.save
     end
-    
+
     r.milestone.update_counts if r.milestone
   }
 
   def self.per_page
     25
   end
-  
+
   # w: 1, next day-of-week: Every _Sunday_
   # m: 1, next day-of-month: On the _10th_ day of every month
   # n: 2, nth day-of-week: On the _1st_ _Sunday_ of each month
@@ -93,37 +93,37 @@ class Task < ActiveRecord::Base
     case code
     when ''  :
     when 'w' :
-        @date = @start + (7 - @start.wday + args[1].to_i).days
+      @date = @start + (7 - @start.wday + args[1].to_i).days
     when 'm' :
-        @date = @start.beginning_of_month.next_month.change(:day => (args[1].to_i))
+      @date = @start.beginning_of_month.next_month.change(:day => (args[1].to_i))
     when 'n' :
-        @date = @start.beginning_of_month.next_month.change(:day => 1)
+      @date = @start.beginning_of_month.next_month.change(:day => 1)
       if args[2].to_i < @date.day
         args[2] = args[2].to_i + 7
       end
       @date = @date + (@date.day + args[2].to_i - @date.wday - 1).days
       @date = @date + (7 * (args[1].to_i - 1)).days
     when 'l' :
-        @date = @start.next_month.end_of_month
+      @date = @start.next_month.end_of_month
       if args[1].to_i > @date.wday
         @date = @date.change(:day => @date.day - 7)
       end
       @date = @date.change(:day => @date.day - @date.wday + args[1].to_i)
     when 'y' :
-        @date = @start.beginning_of_year.change(:year => @start.year + 1, :month => args[1].to_i, :day => args[2].to_i)
+      @date = @start.beginning_of_year.change(:year => @start.year + 1, :month => args[1].to_i, :day => args[2].to_i)
     when 'a' :
-        @date = @start + args[1].to_i.days
+      @date = @start + args[1].to_i.days
     end
     @date.change(:hour => 23, :min => 59)
   end
 
   Task::REPEAT_DATE = [
-                       [_('last')],
-                       ['1st', 'first'], ['2nd', 'second'], ['3rd', 'third'], ['4th', 'fourth'], ['5th', 'fifth'], ['6th', 'sixth'], ['7th', 'seventh'], ['8th', 'eighth'], ['9th', 'ninth'], ['10th', 'tenth'],
-                       ['11th', 'eleventh'], ['12th', 'twelwth'], ['13th', 'thirteenth'], ['14th', 'fourteenth'], ['15th', 'fifthteenth'], ['16th', 'sixteenth'], ['17th', 'seventeenth'], ['18th', 'eighthteenth'], ['19th', 'nineteenth'], ['20th', 'twentieth'],
-                       ['21st', 'twentyfirst'], ['22nd', 'twentysecond'], ['23rd', 'twentythird'], ['24th', 'twentyfourth'], ['25th', 'twentyfifth'], ['26th', 'twentysixth'], ['27th', 'twentyseventh'], ['28th', 'twentyeight'], ['29th', 'twentyninth'], ['30th', 'thirtieth'], ['31st', 'thirtyfirst'],
+    [_('last')],
+    ['1st', 'first'], ['2nd', 'second'], ['3rd', 'third'], ['4th', 'fourth'], ['5th', 'fifth'], ['6th', 'sixth'], ['7th', 'seventh'], ['8th', 'eighth'], ['9th', 'ninth'], ['10th', 'tenth'],
+    ['11th', 'eleventh'], ['12th', 'twelwth'], ['13th', 'thirteenth'], ['14th', 'fourteenth'], ['15th', 'fifthteenth'], ['16th', 'sixteenth'], ['17th', 'seventeenth'], ['18th', 'eighthteenth'], ['19th', 'nineteenth'], ['20th', 'twentieth'],
+    ['21st', 'twentyfirst'], ['22nd', 'twentysecond'], ['23rd', 'twentythird'], ['24th', 'twentyfourth'], ['25th', 'twentyfifth'], ['26th', 'twentysixth'], ['27th', 'twentyseventh'], ['28th', 'twentyeight'], ['29th', 'twentyninth'], ['30th', 'thirtieth'], ['31st', 'thirtyfirst'],
 
-                      ]
+  ]
 
   def repeat_summary
     return "" if self.repeat.nil?
@@ -132,18 +132,18 @@ class Task < ActiveRecord::Base
     code = args[0]
 
     case code
-      when ''
-      when 'w'
+    when ''
+    when 'w'
       "#{_'every'} #{_(Date::DAYNAMES[args[1].to_i]).downcase}"
-      when 'm'
+    when 'm'
       "#{_'every'} #{Task::REPEAT_DATE[args[1].to_i][0]}"
-      when 'n'
+    when 'n'
       "#{_'every'} #{Task::REPEAT_DATE[args[1].to_i][0]} #{_(Date::DAYNAMES[args[2].to_i]).downcase}"
-      when 'l'
+    when 'l'
       "#{_'every'} #{_'last'} #{_(Date::DAYNAMES[args[2].to_i]).downcase}"
-      when 'y'
+    when 'y'
       "#{_'every'} #{args[1].to_i}/#{args[2].to_i}"
-      when 'a'
+    when 'a'
       "#{_'every'} #{args[1]} #{_ 'days'}"
     end
   end
@@ -295,7 +295,7 @@ class Task < ActiveRecord::Base
   def started?
     worked_minutes > 0 || self.worked_on?
   end
-  
+
   def due_date
     if self.due_at?
       self.due_at
@@ -341,7 +341,7 @@ class Task < ActiveRecord::Base
   def recalculate_worked_minutes
     self.worked_minutes = WorkLog.sum(:duration, :conditions => ["task_id = ?", self.id]).to_i / 60
   end
-  
+
   def minutes_left
     self.duration.to_i - self.worked_minutes 
   end
@@ -356,7 +356,7 @@ class Task < ActiveRecord::Base
   def overworked?
     ((self.duration.to_i - self.worked_minutes) < 0 && (self.duration.to_i) > 0)
   end
-  
+
   def full_name
     if self.project
       [self.project.full_name, self.full_tags].join(' / ')
@@ -383,9 +383,9 @@ class Task < ActiveRecord::Base
 
   def issue_num
     if self.status > 1
-    "<strike>##{self.task_num}</strike>"
+      "<strike>##{self.task_num}</strike>"
     else
-    "##{self.task_num}"
+      "##{self.task_num}"
     end
   end
 
@@ -591,7 +591,7 @@ class Task < ActiveRecord::Base
     end
     name_conds = Search.search_conditions_for(keys, [ "tasks.name" ], :search_by_id => false)
     conditions << name_conds[1...-1] # strip off surounding parentheses
-    
+
     conditions = "(#{ conditions.join(" or ") })"
     conditions += other_conditions if other_conditions
     return tf.tasks(conditions)
@@ -644,12 +644,12 @@ class Task < ActiveRecord::Base
   def css_classes
     unless @css
       @css = case self.status
-      when 0 then ""
-      when 1 then " in_progress"
-      when 2 then " closed"
-      else 
-        " invalid"
-      end
+             when 0 then ""
+             when 1 then " in_progress"
+             when 2 then " closed"
+             else 
+               " invalid"
+             end
     end   
     @css
   end
@@ -870,17 +870,17 @@ class Task < ActiveRecord::Base
     recipients = [ ]
 
     if user_who_made_change and
-        user_who_made_change.receive_notifications?
+      user_who_made_change.receive_notifications?
       recipients << user_who_made_change
     end
-    
+
     recipients += all_related_users.select { |u| u.receive_notifications? }
 
     # remove them if they don't want their own notifications. 
     # do it here rather than at start of method in case they're 
     # on the watchers list, etc
     if user_who_made_change and 
-        !user_who_made_change.receive_own_notifications?
+      !user_who_made_change.receive_own_notifications?
       recipients.delete(user_who_made_change) 
     end
 
@@ -898,7 +898,7 @@ class Task < ActiveRecord::Base
     return emails
   end
 
-  
+
   ###
   # Sets the task watchers for this task.
   # Existing watchers WILL be cleared by this method.
@@ -958,9 +958,9 @@ class Task < ActiveRecord::Base
         next if dep.to_i == 0
 
         conditions = [ "project_id IN (#{ project_ids }) " +
-                       " AND task_num = ?", dep ]
-        t = Task.find(:first, :conditions => conditions)
-        new_dependencies << t if t
+          " AND task_num = ?", dep ]
+          t = Task.find(:first, :conditions => conditions)
+          new_dependencies << t if t
       end
     end
 
@@ -971,7 +971,7 @@ class Task < ActiveRecord::Base
       existing = self.dependencies.detect { |d| d.id == t.id }
       self.dependencies << t if !existing
     end
-    
+
     self.save
   end
 
@@ -1017,7 +1017,7 @@ class Task < ActiveRecord::Base
     # TODO: if we merge owners and notifications into one table, should
     # clean this up.
     notifications = self.notifications + self.task_owners
-    
+
     notifications.each do |n|
       n.update_attribute(:unread, true) if !exclude.include?(n.user)
     end
@@ -1032,7 +1032,7 @@ class Task < ActiveRecord::Base
     # TODO: if we merge owners and notifications into one table, should
     # clean this up.
     notifications = self.notifications + self.task_owners
-    
+
     user_notifications = notifications.select { |n| n.user == user }
     user_notifications.each do |n|
       n.update_attribute(:unread, !read)
@@ -1136,7 +1136,7 @@ class Task < ActiveRecord::Base
     end
 
     self.dependencies.each do |d|
-        task.dependencies << d
+      task.dependencies << d
     end
 
     task.save
@@ -1163,7 +1163,7 @@ class Task < ActiveRecord::Base
     old_status = self.status_type
     self.completed_at = Time.now.utc
     self.status = EventLog::TASK_COMPLETED
-    
+
     if self.next_repeat_date != nil
       self.save
       self.reload
@@ -1175,42 +1175,55 @@ class Task < ActiveRecord::Base
 
     params = {:body => "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n",
       :started_at => Time.now.utc,
-      :duration => 0,
-      :paused_duration => 0,
+        :duration => 0,
+        :paused_duration => 0,
     }.merge(params)
 
-    worklog = WorkLog.create_for_task(self, user, "", params)
-    worklog.save
+      worklog = WorkLog.create_for_task(self, user, "", params)
+      worklog.save
 
-    if user.send_notifications?
-      Notifications::deliver_changed(:completed, self, user, worklog.body.gsub(/<[^>]*>/,'') ) rescue nil
-    end
+      #deliver emails
+      recipients = task.notification_email_addresses(user)
+      if recipients.length > 0
+        begin
+          Notifications::deliver_changed(:reverted, self, user, recipients, params[:comment] || "")
+          Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
+        rescue
+        end
+      end
+      project.all_notice_groups.each { |ng| ng.send_task_notice(task, user) }
   end
 
   def open_task(user, params={})
     old_status = self.status_type
     self.update_attributes({:status => 0,
-                  :completed_at => nil,
-                  :updated_by => user,
+                           :completed_at => nil,
+                           :updated_by => user,
     })
-    
+
     params = {:body => "- <strong>Status</strong>: #{old_status} -> #{self.status_type}\n",
       :log_type => EventLog::TASK_REVERTED,
-      :started_at => Time.now.utc,
+        :started_at => Time.now.utc,
     }.merge(params)
 
-    worklog = WorkLog.create_for_task(self, user, "", params)
-    worklog.save
+      worklog = WorkLog.create_for_task(self, user, "", params)
+      worklog.save
 
-    if user.send_notifications?
-      Notifications::deliver_changed(:reverted, self, user, worklog.body.gsub(/<[^>]*>/,'') ) rescue nil
-    end
+      #deliver emails
+      recipients = task.notification_email_addresses(user)
+      if recipients.length > 0
+        begin
+          Notifications::deliver_changed(:reverted, self, user, recipients, params[:comment] || "")
+          Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
+        rescue
+        end
+      end
+      project.all_notice_groups.each { |ng| ng.send_task_notice(task, user) }
   end
 
   def self.create_for_user(user, project, params={})
     params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
     params[:due_at] = TimeParser.date_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
-    debugger
     params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
     task = Task.new(params)
     task.set_task_num(user.company_id)
@@ -1218,15 +1231,21 @@ class Task < ActiveRecord::Base
     return result unless result
     task.users << user
 
-    WorkLog.create_for_task(task, user, "")
+    WorkLog.create_for_task(task, user, params[:comment] || "")
 
-    if user.send_notifications?
-        Notifications::deliver_created(self, user, params[:comment] || "") rescue begin end
+    #deliver emails
+    recipients = task.notification_email_addresses(user)
+    if recipients.length > 0
+      begin
+        Notifications::deliver_created(self, user, recipients, params[:comment] || "")
+        Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
+      rescue
+      end
     end
+    project.all_notice_groups.each { |ng| ng.send_task_notice(task, user) }
 
     return task
   end
-
 
 end
 

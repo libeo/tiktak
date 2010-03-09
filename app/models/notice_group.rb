@@ -26,9 +26,17 @@ class NoticeGroup < ActiveRecord::Base
 		Notifications::deliver_created_project(project, user, emails)
 	end
 
-	def self.get_general_groups
-      return NoticeGroup.find_by_sql("select * from notice_groups where id not in (select notice_group_id from notice_groups_projects)")
+	def self.get_general_groups(options={})
+      options.delete(:conditions)
+      options = {:select => 'notice_groups.duration_format, users.email, users.id, users.name', :include => :users, :conditions => "notice_groups.id not in (select notice_group_id from notice_groups_projects)"}
+      return NoticeGroup.find(:all, options)
 	end
+
+  def self.get_general_emails(options={})
+    options.delete(:conditions)
+    options = {:select => 'users.email', :include => :users, :conditions => 'notice_groups.id not in (select notice_group_id from notice_group_projects)'}
+    return NoticeGroup.find(:all, options).map { |ng| ng.users.map { |u| u.email } }.flatten.uniq
+  end
 
 	def set_projects(project_ids)
 		project_ids = [project_ids] unless project_ids.is_a?(Array)
