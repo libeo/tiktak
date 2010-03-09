@@ -84,7 +84,7 @@ class TaskFiltersController < ApplicationController
       flash[:notice] = _"You don't have access to that task filter"
     end
 
-    redirect_to "/tasks/list"
+    redirect_to params[:redirect_action] || "/tasks/list"
   end
 
   def update_current_filter

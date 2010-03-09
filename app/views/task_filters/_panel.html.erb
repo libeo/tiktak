@@ -23,7 +23,8 @@
 
       <% count = tf.display_count(current_user) -%>
       <%= link_to("#{ tf.name } (#{ count })", 
-	  select_task_filter_path(tf), :class => (count > 0 ? "unread" : "")) %>
+        {:controller => 'task_filters', :action => 'select', :id => tf.id,  :redirect_action => redirect_action},
+        {:class => (count > 0 ? "unread" : "")})%>
     </li>
     <% end -%>
   </ul>
