@@ -56,15 +56,18 @@ class TaskShortlistController < ApplicationController
     p = {}.merge(params[:task])
     f = current_shortlist_filter.qualifiers.reject { |q| ['User', 'Status'].include? q.qualifiable_type }.first
 
+    project_fields = 'projects.id, projects.name, projects.company_id,
+    companies.id,
+    customers.id, customers.name
+    '
     case f.qualifiable_type
       when 'Milestone':
-        p[:miletsone] = Milestone.find_by_id(f.qualifiable_id, :select => "id, project_id")
-        project = Project.find_by_id(p[:milestone].project_id, :select => "projects.id, companies.id, projects.name, projects.company_id, customers.id", :include => [:company, :customer])
+        p[:milestone] = Milestone.find_by_id(f.qualifiable_id, :select => "id, project_id, name")
+        project = Project.find_by_id(p[:milestone].project_id, :select => project_fields, :include => [:company, :customer])
       when 'Project':
-        project = Project.find_by_id(f.qualifiable_id, :select => "projects.id, companies.id, projects.name, projects.company_id, customers.id", :include => [:company, :customer])
+        project = Project.find_by_id(f.qualifiable_id, :select => project_fields, :include => [:company, :customer])
     end
 
-    debugger
     p.each_key { |k| p[k.to_sym] = p[k] and p.delete(k) if !k.is_a? Symbol }
     @task = Task.create_for_user(current_user, project, p)
     @task.properties = {"1" => "1"}

@@ -359,7 +359,6 @@ class TasksController < ApplicationController
         @task.repeat = nil
       end
 
-      debugger
       @task.set_users(params)
       @task.set_dependency_attributes(params[:dependencies], current_project_ids)
       @task.set_resource_attributes(params[:resource])

@@ -35,6 +35,15 @@ class Project < ActiveRecord::Base
     "#{customer.name} / #{name}"
   end
 
+  def all_notice_groups
+    return self.notice_groups | NoticeGroup.get_general_groups
+  end
+
+  def all_notice_group_emails
+    emails = User.find(:all, :select => 'users.email', :conditions => ['id in (select distinct user_id from notice_groups where project_id = ?', self.id]).map { |u| u.email }
+    emails = emails | NoticeGroup.get_general_emails
+  end
+
   def to_s
     name
   end
