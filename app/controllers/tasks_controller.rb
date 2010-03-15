@@ -1522,7 +1522,7 @@ class TasksController < ApplicationController
     customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
     watchers_tasks.name,
     tags.name,
-    tags_tasks.id,
+    tags_tasks.id, tags_tasks.name,
     task_property_values.property_id")
 
   end
