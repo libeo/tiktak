@@ -36,10 +36,12 @@ class TasksController < ApplicationController
     redirect_to 'list'
   end
   
-
   def list
-    list_init
+    redirect_to params.merge({:controller => 'tasks', :action => current_user.default_list_view})
+  end
 
+  def list_new
+    list_init
     #if no queries are entered in the task filter and the user is going towards the tasks/list page, pre-select some default queries
     unless params[:format]
       tf = current_task_filter
@@ -50,8 +52,8 @@ class TasksController < ApplicationController
     end
 
     respond_to do |format|
-      format.html # list.html.erb
-      format.js { render :partial => "task_list_v2", :layout => false }
+      format.html # list_new.html.erb
+      format.js { render :partial => "task_list_v2", :layout => false, :locals => {:redirect_action => 'list_new'} }
     end
   end
 

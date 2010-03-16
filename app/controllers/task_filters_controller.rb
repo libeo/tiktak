@@ -23,9 +23,9 @@ class TaskFiltersController < ApplicationController
     users = c.users.all(:conditions => name_conds, :limit => limit)
     @to_list << [ _("Users"), users ]
 
-#@to_list << [ _("Users (without creators)"), users]
+    #@to_list << [ _("Users (without creators)"), users]
 
-#@to_list << [ _("Creators"), users]
+    #@to_list << [ _("Creators"), users]
 
     milestones = c.milestones.all(:conditions => name_conds, :limit => limit)
     @to_list << [ _("Milestones"), milestones ]

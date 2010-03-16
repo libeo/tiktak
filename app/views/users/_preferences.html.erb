@@ -35,6 +35,7 @@
 <label for="user_enable_sounds"><%=_ 'Enable Sounds' %></label><%= check_box 'user', 'enable_sounds', {:class => 'tooltip', :title => _("Play sounds when new messages are received.")} %><br/>
 <label for="user_show_type_icons"><%=_ 'Show TaskType Icons' %></label><%= check_box 'user', 'show_type_icons', {:class => 'tooltip', :title => _("Show icons next to tasks representing their type.")} %><br/>
 <label for="user_default_project"><%=_ 'Default project to select' %></label><select id="user_default_project_id" name="user[default_project_id]"><%= options_for_current_user_projects(current_user.default_project_id) %></select>
+<label for="user_default_list_view"><%= _'Default task list view' %></label><%= select 'user', 'default_list_view', [ [_('List (new)'), 'list_new'], [_('List (old)'), 'list_old'] ] %>
 </fieldset>
 
 <!--[eoform:user]-->
