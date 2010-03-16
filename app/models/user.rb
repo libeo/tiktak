@@ -66,6 +66,8 @@ class User < ActiveRecord::Base
 
   validates_presence_of         :company
 
+  validates_inclusion_of :default_list_view, :in => ['list_old', 'list_new'], :message => _("Selected list view does not exist")
+
   after_destroy { |r|
     begin
       File.delete(r.avatar_path)

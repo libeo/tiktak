@@ -403,7 +403,7 @@ END_OF_HTML
   ###
   def task_view_links
     links = []
-    links << [ "List", { :controller => "tasks", :action => "list" } ]
+    links << [ "List", { :controller => "tasks", :action => "list_new" } ]
     links << [ "Schedule", { :controller => "schedule", :action => "list" } ]
     links << [ "Gantt", { :controller => "schedule", :action => "gantt" } ]
     links << [ "List (old)", { :controller => "tasks", :action => "list_old" } ]

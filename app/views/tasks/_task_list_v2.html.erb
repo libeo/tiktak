@@ -1,4 +1,7 @@
-<%= render(:partial => "search_filter", :locals => { :redirect_params => { :tag => params[:tag] }}) %>
+<%
+  redirect_action = nil unless local_assigns[:redirect_action]
+%>
+<%= render(:partial => "search_filter", :locals => { :redirect_action => redirect_action, :redirect_params => { :tag => params[:tag] }}) %>
 
 <div id="task_list">
   <div id="print_title"><%= print_title %></div>
