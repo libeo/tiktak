@@ -46,6 +46,13 @@ class Company < ActiveRecord::Base
       self.payperiod_date = date
     end
   end
+
+  def last_payperiod_date
+    now = Time.now.utc
+    date = self.payperiod_date
+    days = self.payperiod_days
+    return now - ((now - date) % (days * 24 * 60 * 60) )
+  end
   
   # Find the Internal client of this company.
   # A small kludge is needed,as it was previously called Internal, now it has the same

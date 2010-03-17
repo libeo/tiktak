@@ -382,7 +382,7 @@ module TasksHelper
     values = []
     values << [ _("Description"), task.description ]
     comment = task.last_comment
-    if comment
+    if comment and comment.body
       values << [ _("Last Comment"), "#{ comment.user.shout_nick }:<br/>#{ comment.body.gsub(/\n/, '<br/>') }" ]
     end
     

@@ -1,0 +1,13 @@
+<%
+  worked = WorkLog.find(:all, :select => "(SUM(work_logs.duration) - SUM(work_logs.paused_duration)) as total_duration", 
+                        :conditions => ["work_logs.started_at >= ? and work_logs.user_id = ?", current_user.company.last_payperiod_date, current_user.id]
+      ).first.attributes['total_duration'].to_i
+
+  total = current_user.work_hours * 60 * 60
+  left = total - worked
+  left -= @current_sheet.duration if @current_sheet
+  left /= 60
+
+%>
+<span><%= _('You have') %> <span class='time_left'><%= worked_nice(left.to_i) %></span> <%= _('work hours left') %></span>
+

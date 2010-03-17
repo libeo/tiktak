@@ -864,7 +864,7 @@ class TasksController < ApplicationController
       worklog.started_at = @current_sheet.created_at
       worklog.duration = @current_sheet.duration - @current_sheet.duration % 60
       worklog.paused_duration = @current_sheet.paused_duration
-      #worklog.body = task.description
+      worklog.body = @current_sheet.body 
       worklog.log_type = EventLog::TASK_WORK_ADDED
       worklog.comment = true if @current_sheet.body && @current_sheet.body.length > 0 
       
