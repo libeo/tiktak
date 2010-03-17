@@ -27,6 +27,7 @@
   <%= worked_nice(@current_sheet.duration/60) -%><%= info_string -%><%= " - " if total_today > 0 %>
 <% end %>
 <% if total_today > 0 %>
- <%= distance_of_time_in_words(total_today.minutes) %> <%=_ 'worked today'%>
+  
+  <p style="padding-top:6px;"> <%= distance_of_time_in_words(total_today.minutes) %> <%=_ 'worked today'%> </p>
 <% end %>
 

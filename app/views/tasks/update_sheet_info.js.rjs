@@ -1,6 +1,7 @@
 page << "if($('menu_info')) {"
 page.replace_html 'menu_info', :partial => 'layouts/sheet_info'
 page.replace_html 'menu_login', :partial => 'layouts/login_info'
+page.replace_html 'menu_timeleft', :partial => 'layouts/time_left'
 page << "}"
 
 page << "if($('shortlist-legend')) {"
