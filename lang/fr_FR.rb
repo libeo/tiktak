@@ -1,4 +1,6 @@
 Localization.define('fr_FR') do |l|
+ l.store "You have", "Il vous reste"
+ l.store "work hours left", "avant que Sandrine vous massacre"
  l.store "Task name", "Nom de la tâche"
  l.store "Due date (ascending)", "Date d'échéance (ascendant)"
  l.store "Due date (descending)", "Date d'échéance (descendant)"

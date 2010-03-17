@@ -27,11 +27,14 @@ class Tag < ActiveRecord::Base
   # Returns an array of tag counts grouped by tag.
   # Uses Tag.top_counts.
   def self.top_counts_as_tags(company, task_conditions = {})
-    sql = "select tag_id, count(task_id) from task_tags group by tag_id"
-    ids_and_counts = connection.select_rows(sql)
+    #sql = "select tag_id, count(task_id) from task_tags group by tag_id"
+    #ids_and_counts = connection.select_rows(sql)
 
-    res = ids_and_counts.map { |id, count| [ Tag.find(id), count.to_i ] }
-    return res.sort_by { |tag, count| tag.name.downcase }
+    #res = ids_and_counts.map { |id, count| [ Tag.find(id), count.to_i ] }
+    #return res.sort_by { |tag, count| tag.name.downcase }
+
+    tags = Tag.find(:all, :select => "tags.id, tags.name, task_tags.tag_id, count(task_tags.task_id) as task_count", :joins => [:tasks], :group => "tags.id", :order => "lower(tags.name)")
+    tags.map { |t| [t, t.attributes['task_count'].to_i] }
   end
 
 end

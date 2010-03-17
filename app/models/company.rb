@@ -40,11 +40,21 @@ class Company < ActiveRecord::Base
   after_create :create_default_properties
   after_create :create_default_statuses
 
-  def set_payperiod_date(date, format)
-    date = TimeParser.date_from_format(date, format) if date.is_a? String
+  def set_payperiod_date(date, format, tz)
+    if date.is_a? String
+      date = TimeParser.datetime_from_format(date, format)
+      date = tz.local_to_utc(date)
+    end
     if date
       self.payperiod_date = date
     end
+  end
+
+  def last_payperiod_date
+    now = Time.now.utc
+    date = self.payperiod_date
+    days = self.payperiod_days
+    return now - ((now - date) % (days * 24 * 60 * 60) )
   end
   
   # Find the Internal client of this company.
