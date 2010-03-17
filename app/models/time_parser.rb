@@ -17,7 +17,7 @@ class TimeParser
     valid
   end
 
-  def self.date_from_format(date, format)
+  def self.datetime_from_format(date, format)
     begin
       date = DateTime.strptime(date, format)
     rescue ArgumentError

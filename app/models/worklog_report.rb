@@ -133,12 +133,7 @@ class WorklogReport
       @end_date = tz.local_to_utc(tz.now.beginning_of_week)
     when 10
       #Since last payperiod
-      date = current_user.company.payperiod_date
-      days = current_user.company.payperiod_days
-      @start_date = Date.today - ((Date.today - date) % days)
-      #while date + days <= Date.today
-      #  date += days
-      #@start_date = date
+      @start_date = current_user.company.last_payperiod_date
     when 3
       # This Month
       @start_date = tz.local_to_utc(tz.now.beginning_of_month)
