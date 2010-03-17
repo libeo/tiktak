@@ -5,7 +5,7 @@
 <label for="company_show_chat"><%=_ 'Use Chat' %></label><%= check_box 'company', 'show_chat' %><br/>
 <label for="company_show_messaging"><%=_ 'Use Messaging' %></label><%= check_box 'company', 'show_messaging' %><br/>
 <label for="company_restricted_userlist" class="tooltip" title="<%=_ 'Limit instant messaging to users sharing the same projects' %>"><%=_ 'Restricted Messaging' %></label><%= check_box 'company', 'restricted_userlist' %><br/>
-<label for="company_payperiod_date"><%= _ 'Pay Period Date' %></label><%= date_select 'company', 'payperiod_date', :ifFormat => "#{current_user.date_format}", :default => @company.payperiod_date  %><br/>
+<label for="company_payperiod_date"><%= _ 'Pay Period Date' %></label><%= datetime_select 'company', 'payperiod_date', :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :default => @company.payperiod_date %><br/>
 <label for="company_payperiod_days"> <%= _ 'Pay Period Length (days)' %></label><%= text_field 'company', 'payperiod_days' %><br/>
 
 <label for="incoming_email_project" class="tooltip" title="<%=_ 'Emails received by ClockingIT that don\'t belong to a task will be added to this project' %>">
