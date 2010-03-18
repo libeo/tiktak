@@ -114,6 +114,11 @@ h4 {
 
 }
 
+#menu_info {
+  max-width: 350px;
+}
+
+
 #menu .header .right_section {
   border-left : 4px solid #e3e3e3;
   float:right;
