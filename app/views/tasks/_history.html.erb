@@ -1,25 +1,28 @@
-<div class="page_header"><%= _ 'History' %></div><span style="float:right">
+<div class="page_header"><%= _ 'History' %></div> 
+<div id='history'>
 <% if session[:only_comments].to_i == 0 %>
-           <%= link_to_remote _('Show Only Comments'), :url => {:action => 'toggle_history', :id => @task.id },
-                                   :loading => "showProgress();",
-                                   :complete => "hideProgress();"
-           %>
-<% else %>
-           <%= link_to_remote _('Show Full History'), :url => {:action => 'toggle_history', :id => @task.id},
-                                   :loading => "showProgress();",
-                                   :complete => "hideProgress();"
-           %>
-<% end %>
-</span>
-<ul>
-<%  day = 0
-@logs ||= []
-@logs.each do |log|
-	if day != (tz.utc_to_local(log.started_at)).yday
-		day = (tz.utc_to_local(log.started_at)).yday
-%>
-	<h4><%= tz.utc_to_local(log.started_at).strftime("%A, %d %B %Y") %></h4>
-	<% end %>
+             <%= link_to_remote _('Show Only Comments'), :url => {:action => 'toggle_history', :id => @task.id },
+                                     :loading => "showProgress();",
+                                     :complete => "hideProgress();"
+             %>
+  <% else %>
+             <%= link_to_remote _('Show Full History'), :url => {:action => 'toggle_history', :id => @task.id},
+                                     :loading => "showProgress();",
+                                     :complete => "hideProgress();"
+             %>
+  <% end %>
+<table class='history'>
+  <tr>
+    <th><%= _('Date') %>
+    <th><%= _('Action')%></th>
+    <th><%= _('User')%></th>
+    <th><%= _('Comment') %></th>
+  </tr>
+    <%
+    @logs ||= []
+    @logs.each do |log|
+    %>
 	<%= render :partial => 'activities/log_row2', :locals => {:log => log} %>
 <% end %>
-</ul>
+</table>
+</div>

@@ -8,6 +8,7 @@ class EventLog < ActiveRecord::Base
   belongs_to :user
   belongs_to :company
 
+
   TASK_CREATED       = 1
   TASK_COMPLETED     = 2
   TASK_REVERTED      = 3
@@ -44,6 +45,37 @@ class EventLog < ActiveRecord::Base
 
   RESOURCE_PASSWORD_REQUESTED = 70
   RESOURCE_CHANGE = 71
+
+  EVENT_LABELS = {
+    TASK_CREATED => 'Task created',
+    TASK_COMPLETED  =>  'Task completed',
+    TASK_REVERTED   =>  'Task reverted',
+    TASK_DELETED    =>  'Task deleted',
+    TASK_MODIFIED   =>  'Task modified',
+    TASK_COMMENT    =>  'Task comment',
+    TASK_WORK_ADDED =>  'Task work added',
+    TASK_ASSIGNED   =>  'Task assigned',
+    TASK_ARCHIVED   =>  'Task archived',
+    TASK_RESTORED   =>  'Task restored',
+    PAGE_CREATED => 'Page created',
+    PAGE_DELETED  => 'Page deleted',
+    PAGE_RENAMED  => 'Page renamed',
+    PAGE_MODIFIED => 'Page modified',
+    WIKI_CREATED   => 'Wiki created',
+    WIKI_MODIFIED  => 'Wiki modified',
+    FILE_UPLOADED  => 'File uploaded',
+    FILE_DELETED   => 'File deleted',
+    ACCESS_GRANTED => 'Access granted',
+    ACCESS_REVOKED => 'Access revoked',
+    SCM_COMMIT     => 'Scm commit',
+    PROJECT_COMPLETED   => 'Project completed',
+    MILESTONE_COMPLETED => 'Milestone completed',
+    PROJECT_REVERTED    => 'Project reverted',
+    MILESTONE_REVERTED  => 'Milestone reverted',
+    FORUM_NEW_POST => 'Forum new post',
+    RESOURCE_PASSWORD_REQUESTED => 'Resource password requested',
+    RESOURCE_CHANGE => 'Resource change'
+  }
 
   def started_at
     self.created_at

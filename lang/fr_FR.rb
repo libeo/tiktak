@@ -1,4 +1,6 @@
 Localization.define('fr_FR') do |l|
+ l.store "For Ever", "Depuis toujours"
+ l.store "Since last pay period", "Depuis la dernière période de paye"
  l.store "No", "Non"
  l.store "Creators", "Créateurs"
  l.store "Creator", "Créateur"
