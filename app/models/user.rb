@@ -411,6 +411,13 @@ class User < ActiveRecord::Base
 
 end
 
+#These classes used for their 'qualifiable' property that is used when showing qualifiers underneath the task filter
+class Creator < User
+end
+
+class CreatorNoAssignment < User
+end
+
 # == Schema Information
 #
 # Table name: users
