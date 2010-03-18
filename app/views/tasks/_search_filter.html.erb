@@ -1,9 +1,9 @@
 <div class="search_filter_legend">
   <p>
   <b><%=_("Filter legend")%></b>: 
-  <%= ['User name', 'Project name', 'Client name', 'Milestone name', 'Tag'].map{ |word| _(word) }.join(", ") %>,
+  <%= ['User name', 'Creator', 'Created by - no assignments', 'Tasks with no users assigned', 'Project name', 'Client name', 'Milestone name', 'Tag'].map{ |word| _(word) }.join(", ") %>,
   <%=_"Status name"%> (<%=Task.status_types.join(", ")%>),
-  <%=_"Facturable"%> (Yes, No)
+  <%=_"Facturable"%> (<%= ['Yes', 'No'].map{ |w| _(w) }.join(', ') %>)
   </p>
 </div>
 
