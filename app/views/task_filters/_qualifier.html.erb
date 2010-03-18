@@ -3,10 +3,14 @@
   <%= hidden_field_tag "task_filter[qualifiers_attributes][][qualifiable_type]", qualifier.qualifiable_type, :class => "type" %>
   
   <% if TaskFilter::OTHERS.include?(qualifier.qualifiable_type)
-      case qualifier.qualifiable_type
-      when "NoUser"
-        qual = _("Tasks with no users assigned")
-      end
+       case qualifier.qualifiable_type
+       when "NoUser"
+         qual = _("Tasks with no users assigned")
+       when 'CreatorNoAssignment'
+         qual = _('Created by, no assignments') + ": #{qualifier.qualifiable}"
+       when 'TaskNumber'
+         qual = _('Task number') + ": #{qualifier.qualifiable_id}"
+       end
   %>
     <%=qual%>
   <% else %>

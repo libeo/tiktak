@@ -12,33 +12,38 @@ class TaskFiltersController < ApplicationController
 
     @to_list = []
 
+    @to_list << [ _('Task number'), 'TaskNumber', @filter] if @filter =~ /^\d+$/
+
     c = current_user.company
 
     customers = c.customers.all(:conditions => name_conds, :limit => limit)
-    @to_list << [ _("Clients"), customers ]
+    @to_list << [ _("Clients"), 'Client', customers ]
 
     projects = c.projects.all(:conditions => name_conds, :limit => limit)
-    @to_list << [ _("Projects"), projects ]
+    @to_list << [ _("Projects"), 'Project', projects ]
 
     users = c.users.all(:conditions => name_conds, :limit => limit)
-    @to_list << [ _("Users"), users ]
+    @to_list << [ _("Users"), 'User', users ]
 
-    #@to_list << [ _("Users (without creators)"), users]
+    @to_list << [ _("Creators"), 'Creator', users]
 
-    #@to_list << [ _("Creators"), users]
+    @to_list << [ _("Created by, no assignments"), 'CreatorNoAssignment', users]
 
     milestones = c.milestones.all(:conditions => name_conds, :limit => limit)
-    @to_list << [ _("Milestones"), milestones ]
+    @to_list << [ _("Milestones"), 'Milestone', milestones ]
 
     tags = c.tags.all(:conditions => name_conds, :limit => limit)
-    @to_list << [ _("Tags"), tags ]
+    @to_list << [ _("Tags"), 'Tag', tags ]
 
-    @to_list << [ _("Status"), c.statuses.all(:conditions => name_conds, :limit => limit) ]
+    @to_list << [ _("Status"), 'Status', c.statuses.all(:conditions => name_conds, :limit => limit) ]
 
     current_user.company.properties.each do |property|
       values = property.property_values.all(:conditions => [ "value like ?", "#{ @filter }%" ])
-      @to_list << [ property, values ] if values.any?
+      @to_list << [ property, property, values ] if values.any?
     end
+
+    @to_list << [ _("Other"), 'NoUser', _("Tasks with no users assigned") ] if _("Tasks with no users assigned").downcase.include? @filter
+
   end
 
   def new
