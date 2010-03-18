@@ -148,6 +148,9 @@ class WorklogReport
       # Last Year
       @start_date = tz.local_to_utc(tz.now.last_year.beginning_of_year)
       @end_date = tz.local_to_utc(tz.now.beginning_of_year)
+    when 11
+      #For ever
+      @end_date = tz.now.utc
     when 7
       if params[:start_date] && params[:start_date].length > 1
         begin
