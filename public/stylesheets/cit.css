@@ -2798,6 +2798,9 @@ fieldset.basic li.attribute, fieldset.basic li.property_value {
     padding: 20px 0px 10px 0px;
 }
 
+.history .date_col {
+  width: 140px;
+}
 
 .history .hoverrow {
     clear: both;
