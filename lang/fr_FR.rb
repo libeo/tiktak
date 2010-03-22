@@ -1,4 +1,5 @@
 Localization.define('fr_FR') do |l|
+ l.store "Notification emails sent to", "Des courriels de notification one été envoyés à"
  l.store "For Ever", "Depuis toujours"
  l.store "Since last pay period", "Depuis la dernière période de paye"
  l.store "No", "Non"
@@ -240,7 +241,7 @@ Localization.define('fr_FR') do |l|
  l.store "Projects", "Projets"
  l.store "QuickAdd", "AjoutRapide" # Brice
  l.store "Resolved", "Résolu" # Brice
- l.store "Reverted", "Version précédente" # Brice
+ l.store "Reverted", "Réouverte" # Brice
  l.store "Revision", "Révision"
  l.store "Saturday", "Samedi"
  l.store "Schedule", "Calendrier"
