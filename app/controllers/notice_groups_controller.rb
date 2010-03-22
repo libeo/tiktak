@@ -3,9 +3,13 @@ class NoticeGroupsController < ApplicationController
   helper_method :worked_nice
   before_filter do |controller|
     unless controller.current_user.admin?
-      flash['notice'] = _ "You must be an administrator to edit the notice groups"
-      redirect_from_last
+      controller.get_flash['notice'] = _ "You must be an administrator to edit the notice groups"
+      controller.redirect_from_last
     end
+  end
+
+  def get_flash
+    return self.flash
   end
   
   # GET /notice_groups

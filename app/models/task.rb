@@ -1179,19 +1179,18 @@ class Task < ActiveRecord::Base
         :paused_duration => 0,
     }.merge(params)
 
-      worklog = WorkLog.create_for_task(self, user, "", params)
-      worklog.save
+    worklog = WorkLog.create_for_task(self, user, "", params)
+    worklog.save
 
-      #deliver emails
-      recipients = task.notification_email_addresses(user)
-      if recipients.length > 0
-        begin
-          Notifications::deliver_changed(:reverted, self, user, recipients, params[:comment] || "")
-          Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
-        rescue
-        end
+    #deliver emails
+    recipients = self.notification_email_addresses(user)
+    if recipients.length > 0
+      begin
+        Notifications::deliver_changed(:closed, self, user, recipients, params[:comment] || "")
+        Worklog.create_for_task(self, user, _("Notification emails sent to") +" %s", recipients.join(", "))
+      rescue
       end
-      project.all_notice_groups.each { |ng| ng.send_task_notice(task, user) }
+    end
   end
 
   def open_task(user, params={})
@@ -1210,20 +1209,20 @@ class Task < ActiveRecord::Base
       worklog.save
 
       #deliver emails
-      recipients = task.notification_email_addresses(user)
+      recipients = self.notification_email_addresses(user)
       if recipients.length > 0
         begin
           Notifications::deliver_changed(:reverted, self, user, recipients, params[:comment] || "")
-          Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
+          Worklog.create_for_task(self, user, _("Notification emails sent to %s", recipients.join(", ")))
         rescue
         end
       end
-      project.all_notice_groups.each { |ng| ng.send_task_notice(task, user) }
+      project.all_notice_groups.each { |ng| ng.send_task_notice(self, user, :reverted) }
   end
 
   def self.create_for_user(user, project, params={})
     params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
-    params[:due_at] = TimeParser.date_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
+    params[:due_at] = TimeParser.datetime_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
     params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
     task = Task.new(params)
     task.set_task_num(user.company_id)
@@ -1237,7 +1236,7 @@ class Task < ActiveRecord::Base
     recipients = task.notification_email_addresses(user)
     if recipients.length > 0
       begin
-        Notifications::deliver_created(self, user, recipients, params[:comment] || "")
+        Notifications::deliver_created(task, user, recipients, params[:comment] || "")
         Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
       rescue
       end

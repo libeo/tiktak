@@ -16,9 +16,13 @@ class NoticeGroup < ActiveRecord::Base
 		return self.users.find(:all).collect{ |u| u.email }
 	end
 
-	def send_task_notice(task, user)
+	def send_task_notice(task, user, state=:created)
 		emails = merge_general_emails(self.get_emails)
-		Notifications::deliver_created(task, user, emails, "", Time.now, self.duration_format)
+    if state == :created
+      Notifications::deliver_created(task, user, emails, "", Time.now, self.duration_format)
+    else
+      Notifications::deliver_changed(state, task, user, emails, "", Time.now)
+    end
 	end
 
 	def send_project_notice(project, user)

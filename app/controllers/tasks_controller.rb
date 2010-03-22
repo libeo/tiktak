@@ -384,6 +384,7 @@ class TasksController < ApplicationController
 
       if @task.status < 2 && !@task.completed_at.nil?
         @task.completed_at = nil
+        @task.project.all_notice_groups.each { |ng| ng.send_task_notice(@task, current_user, :reverted) }
       end
 
       @task.scheduled_duration = @task.duration if @task.scheduled? && @task.duration != @old_task.duration
