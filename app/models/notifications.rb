@@ -21,7 +21,7 @@ class Notifications < ActionMailer::Base
   def created_project(project, user, adresses, note = "", sent_at = Time.now)
 	  recipients adresses
 	  subject "#{$CONFIG[:prefix]} #{_('Created')}: #{project.name} "
-	  reply_to = "project-#{project.id}@#{user.company.subdomain}.#{$CONFIG[:email_domain]}"
+	  reply_to "project-#{project.id}@#{user.company.subdomain}.#{$CONFIG[:email_domain]}"
 	  #body :project => project, :user => user, :note => note :reply_to 
 	  @project = project
 	  @user = user
