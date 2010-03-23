@@ -35,138 +35,31 @@
 <label for="work_log_body"><%=_ 'Notes' %></label>
 <%= f.text_area(:body, :rows => 10) %>
 <br/>
+<%= javascript_include_tag "durationUtils" %>
 <script type='text/javascript'>
   var startField = jQuery("#work_log_started_at");
   var endField = jQuery("#work_log_ended_at");
   var durationField = jQuery('#work_log_duration');
+  
   var durationFormat = <%= current_user.duration_format %>;
   var dateTimeFormat = Date.normalizeFormat("<%= "#{current_user.date_format} #{current_user.time_format}" %>");
-  var durationRegs = new Array(new RegExp("<%= duration_reg %>"),
-    new RegExp("((\\d+)w)? ?((\\d+)d)? ?((\\d+)h)? ?((\\d+)m)?"),
-      /((\d+):)?((\d+):)?((\d+):)?((\d{2}))/,
-      /\d+:\d{2}/,
-      /\d+\.\d{2}/
-  );
-  var dayDuration = <%= current_user.workday_duration.to_i %>;
+  var minsPerDay = <%= current_user.workday_duration.to_i %>;
   var daysPerWeek = <%= current_user.days_per_week %>;
+  var symbols = new Array();
+  symbols['w'] = "<%= _('w') %>";
+  symbols['d'] = "<%= _('d') %>";
+  symbols['h'] = "<%= _('h') %>";
+  symbols['m'] = "<%= _('m') %>";
 
-  
-  /**
-  * Transform a number of minutes into an array representing the equivalent number of weeks, days, hours, and minutes. The length of a day and the number of days per week are taken from the variables dayDUration and daysPerWeek.
-  array format :
-  * t['weeks'] = int,
-  * t['days'] = int,
-  * t['hours'] = int,
-  * t['minutes'] = int
-  **/
-  function numberToDuration(duration) {
-    var t = new Array();
-
-    t['weeks'] = Math.floor( duration / (dayDuration  * daysPerWeek) );
-    duration = duration % (dayDuration * daysPerWeek);
-    t['days'] = Math.floor( duration / dayDuration );
-    duration = duration % dayDuration
-    t['hours'] = Math.floor ( duration / 60 );
-    duration = duration % 60
-    t['minutes'] = duration;
-
-    return t;
-  }
-  
-  /**
-   * Returns a string representing a certain number of minutes defined by a specific format.
-   * Uses that variables dayDuration and daysPerWeek to calculat the number of days and weeks.
-   * Available formats :
-   * 1 : 1w 2d 3h 4m
-   * 2 : 1w2d3h4m
-   * 3 : 12:34
-   * 4 : 13.67
-   **/
-  function formatDuration(orig_duration, format) {
-    var result = "";
-    var t = numberToDuration(orig_duration);
-    
-    if (format == 0 || format == 1) {
-      //1w 2d 3h 4m || 1w2d3h4m
-      if (t['weeks'] != 0) result = t['weeks'] + "<%= _('w') %> ";
-      if (t['days'] != 0) result += t['days'] + "<%= _('d') %> ";
-      if (t['hours'] != 0) result += t['hours'] + "<%= _('h') %> ";
-      result += t['minutes'] + "<%= _('m') %> ";
-      if (format == 1) result = result.replace(" ", "");
-    } else if (format == 2) {
-      //1:2:3:04
-      if (t['weeks'] != 0) result = t['weeks'];
-      if (t['days'] != 0) result += ":" + t['days'];
-      result += ":" + jQuery.format('{0:02d}:{1:02d}',[t['hours'], t['minutes']]);
-      if (result.charAt(0) == ':') result = result.slice(1);
-    } else if (format == 3) {
-      //12:45
-      result = Math.floor(orig_duration / 60) + ":" + jQuery.format('{0:02d}',(orig_duration % 60));
-    } else if (format == 4) {
-      //13.67
-      result = (orig_duration / 60).toFixed(2);
-    }
-
-    return result;
-  }
-
-  function parseDuration(text, format) {
-    if (!format) format = 0;
-
-    var total = 0;
-    var match = null;
-
-    if (format == 0) {
-      var i = 0;
-      while (i < durationRegs.length) {
-        if (durationRegs[i].test(text)) {
-          format = i;
-          i = durationRegs.length;
-        }
-      }
-    }
-
-    if (text != null) {
-      text = text.toLowerCase().replace(/^ +| +$/, "");
-
-      if (format == 0 && durationRegs[0].test(text) || format == 1 && durationRegs[1].test(text) ) {
-        match = durationRegs[0].exec(text);
-        if (match[2] != null) total += parseInt(match[2]) * dayDuration * daysPerWeek;
-        if (match[4] != null) total += parseInt(match[4]) * dayDuration;
-        if (match[6] != null) total += parseInt(match[6]) * 60;
-        if (match[8] != null) total += parseInt(match[8]);
-      } else if (format == 2 && durationRegs[2].test(text) || format == 3 && durationRegs[3].test(text) ) {
-        var parts = text.split(":");
-        for (var i = parts.length; i > 0; i--) {
-          if (parts.length - i == 0) total += parseInt(parts[i - 1]);
-          else if (parts.length - i == 1) total += parseInt(parts[i - 1]) * 60;
-          else if (parts.length - i == 2) total += parseInt(parts[i - 1]) * dayDuration;
-          else if (parts.length - i == 3) total += parseInt(parts[i - 1]) * dayDUration * daysPerWeek;
-        }
-      } else if (format == 4 && durationRegs[4].test(text)) {
-        total = Math.floor(parseFloat(text) * 60);
-      } else if (!isNaN(parseInt(text))) {
-        total = parseInt(text);
-      }
-    }
-
-    return total;
-  }
-
-  function getDuration() {
-    var start = Date.parseExact(startField.val(), dateTimeFormat);
-    var end = Date.parseExact(endField.val(), dateTimeFormat);
-    return (end - start) / 1000 / 60
-  }
+  var converter = new DurationUtils(minsPerDay, daysPerWeek, durationFormat, dateTimeFormat, symbols);
 
   function updateDuration() {
-    var duration = getDuration();
-    durationField.val(formatDuration(duration, durationFormat));
+    var duration = converter.calculateDuration(startField.val(), endField.val());
+    durationField.val(converter.formatDuration(duration));
   }
-
   
   function updateEnd() {
-    var duration = parseDuration(durationField.val(), durationFormat);
+    var duration = converter.convertText(durationField.val());
     var start = Date.parseExact(startField.val(), dateTimeFormat)
     endField.val(start.add({minutes : duration}).toString(dateTimeFormat));
   }
@@ -186,19 +79,11 @@
     }
   });
   durationField.change( function() {
-    if (durationRegs[durationFormat].test(durationField.val())) {
-    updateEnd();
+    if (converter.isProperlyFormatted(durationField.val())) {
+      updateEnd();
     } else {
       alert("<%= _ "The duration is not formatted properly. Please correct the duration" %>");
     }
   });
     
 </script>
-<!--
-<script type='text/javascript'>
-	jQuery(document).ready(function(){
-			jQuery('#work_log_started_at').datepicker({dateFormat: '<%= current_user.dateFormat %>'});
-			jQuery('#work_log_ended_at').datepicker({dateFormat: '<%= current_user.dateFormat %>'});
-	});
-</script>
--->
