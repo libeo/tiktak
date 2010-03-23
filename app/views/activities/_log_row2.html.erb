@@ -2,7 +2,7 @@
     <td>
       <%= tz.utc_to_local(log.started_at).strftime(current_user.date_format + "<br />" + current_user.time_format) %>
       <% if log.log_type == EventLog::TASK_WORK_ADDED %>
-        <%= ' - ' + tz.utc_to_local(log.ended_at).strftime(current_user.time_format) + '(' + link_to(worked_nice(log.duration), { :controller => 'tasks', :action => 'edit_log', :id => log }) + ')' %>
+        <%= ' - ' + tz.utc_to_local(log.ended_at).strftime(current_user.time_format) + '(' + link_to(worked_nice(log.duration / 60), { :controller => 'tasks', :action => 'edit_log', :id => log }) + ')' %>
       <% end %>
     </td>
     <td><%= EventLog::EVENT_LABELS[log.log_type] ? _(EventLog::EVENT_LABELS[log.log_type]) : 'Unknown' %></td>
