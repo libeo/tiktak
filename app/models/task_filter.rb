@@ -347,6 +347,8 @@ class TaskFilter < ActiveRecord::Base
       return "work_logs.project_id"
     elsif class_type == "Customer"
       return "work_logs.customer_id"
+    elsif class_type == 'Client'
+      return 'work_logs.customer_id'
     elsif class_type == "Company"
       return "work_logs.company_id"
     elsif class_type == "Milestone"
