@@ -25,7 +25,7 @@ class TimeParser
     end
     date
   end
-  
+
   def self.date_from_params(user, params, key_name)
     res = Time.now.utc
 
@@ -76,13 +76,13 @@ class TimeParser
             end
           end
         end
-        
+
         if eng_total > total
           total = eng_total
         end
-        
+
       end
-      
+
       if total == 0
         if input.strip.match(/^\d+:\d{2}$/)
           times = input.split(':')
@@ -92,11 +92,10 @@ class TimeParser
             when 1 then total += time.to_i * 60
             when 2 then total += time.to_i * user.workday_duration
             when 3 then total += time.to_i * user.workday_duration * user.days_per_week
-		    end
-		  end
+            end
+          end
         elsif input.strip.match(/^\d+\.\d{2}$/)
-          total += input.strip.to_f * 60
-          total = total.to_i
+          total = (input.strip.to_f * 60).round
         end
       end
 
@@ -105,9 +104,9 @@ class TimeParser
       end
 
       total = total * 60 unless minutes
-      
+
     end
     total
   end
-  
+
 end
