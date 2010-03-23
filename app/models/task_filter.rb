@@ -331,6 +331,8 @@ class TaskFilter < ActiveRecord::Base
       return "task_tags.tag_id"
     elsif class_type == "Creator"
       return "tasks.creator_id"
+    elsif class_type == 'Client'
+      return "projects.customer_id"
     else
       return "#{ class_type.downcase }_id"
     end
