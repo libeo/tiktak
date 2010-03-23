@@ -947,8 +947,8 @@ class TasksController < ApplicationController
 
 		# parse some params
 		params[:work_log][:started_at] = date_from_params(params[:work_log], :started_at)
-        ended_at = date_from_params(params[:work_log], :ended_at)
-        params[:work_log].delete(:ended_at)
+    ended_at = date_from_params(params[:work_log], :ended_at)
+    params[:work_log].delete(:ended_at)
 		params[:work_log][:duration] = parse_time(params[:work_log][:duration])
 		params[:work_log][:comment] = !params[:work_log][:body].blank?
 

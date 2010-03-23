@@ -39,7 +39,7 @@ class TaskFiltersController < ApplicationController
 
     current_user.company.properties.each do |property|
       values = property.property_values.all(:conditions => [ "value like ?", "#{ @filter }%" ])
-      @to_list << [ property, property, values ] if values.any?
+      @to_list << [ property, 'PropertyValue', values ] if values.any?
     end
 
     @to_list << [ _("Other"), 'NoUser', _("Tasks with no users assigned") ] if _("Tasks with no users assigned").downcase.include? @filter
