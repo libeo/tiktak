@@ -3,30 +3,44 @@ require  File.join(File.dirname(__FILE__), '../../lib/misc')
 
 class Notifications < ActionMailer::Base
 
-  def created(task, user, recipients, note = "", sent_at = Time.now, duration_format = nil)
+  def created(task, user, recipients, note = "", options={})
+
+    options = {:sent_at => Time.now,
+      :duration_format => nil,
+      :subject => "#{$CONFIG[:prefix]} #{_('Created')}: #{task.issue_name} [#{task.project.name}] (#{(task.users.empty? ? _('Unassigned') : task.users.collect{|u| u.name}.join(', '))})",
+      :header => ""
+    }.merge(options)
+
     task.mark_as_unread(user)
     @task = task
-    @duration_format = duration_format if duration_format
+    @duration_format = options[:duration_format] if options[:duration_format]
  
-    @body       = {:task => task, :user => user, :note => note}
-    @subject    = "#{$CONFIG[:prefix]} #{_('Created')}: #{task.issue_name} [#{task.project.name}] (#{(task.users.empty? ? _('Unassigned') : task.users.collect{|u| u.name}.join(', '))})"
-
+    @body       = {:task => task, :user => user, :note => note, :header => options[:header]}
+    @subject    = options[:subject]
     @recipients = recipients
 
     @from       = "#{$CONFIG[:from]}@#{$CONFIG[:email_domain]}"
-    @sent_on    = sent_at
+    @sent_on    = options[:sent_at]
     @reply_to   = "task-#{task.task_num}@#{user.company.subdomain}.#{$CONFIG[:email_domain]}"
   end
 
-  def created_project(project, user, adresses, note = "", sent_at = Time.now)
+  def created_project(project, user, adresses, note = "", options={})
+
+    options = {:sent_at => Time.now,
+      :subject => "#{$CONFIG[:prefix]} #{_('Created')}: #{project.name}",
+      :header => ""
+    }.merge(options)
+
 	  recipients adresses
-	  subject "#{$CONFIG[:prefix]} #{_('Created')}: #{project.name} "
-	  reply_to "project-#{project.id}@#{user.company.subdomain}.#{$CONFIG[:email_domain]}"
-	  #body :project => project, :user => user, :note => note :reply_to 
-	  @project = project
-	  @user = user
-	  @note = note
-	  @sent_at = sent_at
+	  subject options[:subject]  
+    from "#{$CONFIG[:from]}@#{$CONFIG[:email_domain]}"
+    reply_to "project-#{project.id}@#{user.company.subdomain}.#{$CONFIG[:email_domain]}"
+	  body({:project => project, :user => user, :note => note, :header => options[:header], :sent_at => options[:sent_at]})
+
+	  #@project = project
+	  #@user = user
+	  #@note = note
+	  #@sent_at = sent_at
   end
 
   def changed(update_type, task, user, recipients, change, sent_at = Time.now)

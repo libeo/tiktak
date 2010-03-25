@@ -42,8 +42,12 @@ class NoticeGroupsController < ApplicationController
     p = params[:notice_group]
     notice.name = p[:name]
     notice.duration_format = p[:duration_format]
-    notice.set_projects(p[:projects]) if p[:projects] and p[:projects].size > 0 
-    notice.set_users(p[:users])
+    notice.message_header = p[:message_header]
+    notice.message_subject = p[:message_subject]
+    if notice.save
+      notice.set_projects(p[:projects]) if p[:projects] and p[:projects].size > 0 
+      notice.set_users(p[:users])
+    end
   end
 
   # POST /notice_groups

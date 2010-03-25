@@ -18,21 +18,29 @@ class NoticeGroup < ActiveRecord::Base
 
 	def send_task_notice(task, user, state=:created)
 		emails = merge_general_emails(self.get_emails)
+    options = {:duration_format => self.duration_format}
+    options[:subject] = self.template_transform(self.message_subject, [task, user]) if self.message_subject != ""
+    options[:header] = self.template_transform(self.message_header, [task, user]) if self.message_header != ""
+
     if state == :created
-      Notifications::deliver_created(task, user, emails, "", Time.now, self.duration_format)
+      Notifications::deliver_created(task, user, emails, "", options) 
     else
-      Notifications::deliver_changed(state, task, user, emails, "", Time.now)
+      Notifications::deliver_changed(state, task, user, emails, "", options)
     end
 	end
 
 	def send_project_notice(project, user)
 		emails = merge_general_emails(self.get_emails)
-		Notifications::deliver_created_project(project, user, emails)
+    options = {:subject => self.template_transform(self.message_subject, [project, user]),
+      :header => self.template_transform(self.message_header, [project, user]),
+      :duration_format => self.duration_format
+    }
+		Notifications::deliver_created_project(project, user, emails, "", options)
 	end
 
 	def self.get_general_groups(options={})
       options.delete(:conditions)
-      options = {:select => 'notice_groups.duration_format, users.email, users.id, users.name', :include => :users, :conditions => "notice_groups.id not in (select notice_group_id from notice_groups_projects)"}
+      options = {:select => 'notice_groups.message_header, notice_groups.message_subject, notice_groups.duration_format, users.email, users.id, users.name', :include => :users, :conditions => "notice_groups.id not in (select notice_group_id from notice_groups_projects)"}
       return NoticeGroup.find(:all, options)
 	end
 
@@ -57,5 +65,19 @@ class NoticeGroup < ActiveRecord::Base
 			self.users << u
 		end
 	end
+
+  def template_transform(template, elements)
+    result = template.dup
+    regex = Regexp.new(":::(((#{elements.map{|e|e.class.to_s.downcase}.join('|')})\\.)?(.+?)):::", Regexp::MULTILINE, 'u')
+    template.scan(regex) do |m|
+      if m[2]
+        element = elements.select{ |e| e.class.to_s.downcase == m[2] }.first
+        result.sub!(":::#{m[0]}:::", element.attributes[m[3]])
+      else
+        result.sub!(":::#{m[0]}:::", "")
+      end
+    end
+    return result
+  end
 
 end
