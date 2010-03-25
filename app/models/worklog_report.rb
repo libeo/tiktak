@@ -191,6 +191,7 @@ class WorklogReport
       sql << "(work_logs.approved = false or work_logs.approved is null)" if @type == WorklogReport::TIMESHEET or @type == WorklogReport::MERGED_TIMESHEET and params[:hide_approved].to_i > 0
       logs = @tf.work_logs(sql.join(" AND "))
       #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
+      debugger
     else
 
       tasks.each do |t|
@@ -295,10 +296,10 @@ class WorklogReport
     ########################
     merged_time = {}
     work_logs.group_by{ |work_log| work_log.user_id }.each do |user, wl|
-      wl.map do |i|
-        i.started_at -= i.started_at.sec
-        i.duration -= i.duration % 60
-      end
+      #wl.map do |i|
+      #  i.started_at -= i.started_at.sec
+      #  i.duration -= i.duration % 60
+      #end
       
       root = wl.shift
       while wl.size > 0
@@ -326,6 +327,7 @@ class WorklogReport
         end
       end
     end
+    debugger
 
     for w in work_logs
       case @type
@@ -394,7 +396,8 @@ class WorklogReport
       end
 
       @subtract_totals[rkey] ||= 0
-      @total += w.duration  - w.duration % 60
+      #@total += w.duration  - w.duration % 60
+      @total += w.duration
       last_w = w
       last_key = rkey
     end
