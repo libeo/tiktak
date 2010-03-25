@@ -338,19 +338,21 @@ END_OF_HTML
   # Returns a string of css style to color task using the
   # selected (in the session) coloring.
   ###
-  def color_style(task)
+  def color_style(task, background=nil)
     color_property = session[:colors].to_i
+    res = []
 
     if color_property > 0
       property = current_user.company.properties.detect { |p| p.id == color_property }
     else 
       property = current_user.company.properties.detect { |p| p.default_color }
     end
-
     value = task.property_value(property)
-    if value
-      return "border-left: 4px solid #{ value.color }; background: none;"
-    end
+
+    res << "border-left: 4px solid #{value.color}" if value
+    res << "background : #{background ? background : 'none'}"
+    
+    return res.join('; ')
   end
 
   ###
