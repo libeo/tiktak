@@ -12,7 +12,7 @@
 			<%= options_for_projects(@notice_group.projects) %>
 		</select>
 	</div>
-    <br />
+  <br />
 
 	<div class='group_users'>
 		<%= f.label :users %><br />
@@ -20,13 +20,30 @@
         options_for_select(User.find(:all).map { |u| [u.name, u.id] }, @notice_group.users.map { |u| u.id } ),
           :multiple => true, :size => 5 %>
 	</div>
-    <br />
+  <br />
 
-    <div class='duration_format'>
-      <%= f.label :duration_format %><br />
-      <%= f.select :duration_format, [ [_('1w 2d 3h 4m'), 0], [_('1w2d3h4m'), 1], [_('1:2:3:04'), 2], [_('59:04'), 3], [_('13.75'), 4] ] %>
-    </div>
-    <br />
+  <div class='duration_format'>
+    <%= f.label :duration_format %><br />
+    <%= f.select :duration_format, [ [_('1w 2d 3h 4m'), 0], [_('1w2d3h4m'), 1], [_('1:2:3:04'), 2], [_('59:04'), 3], [_('13.75'), 4] ] %>
+  </div>
+  
+  <h3><%=_("Custom Message") %></h3>
+  <p><%=_("You can customise the subject and the header of emails sent by a notice group by inserting markers. Example : 'Name of new task is :::task.name:::'")%></p>
+  <p><%=_("List of available markers:")%></p>
+  <p><%= Task.column_names.map { |t| "task.#{t}" }.join(', ') %></p>
+  <p><%= Project.column_names.map { |t| "project.#{t}" }.join(', ') %></p>
+  <p><%= User.column_names.map { |t| "user.#{t}" }.join(', ') %></p>
+  </p>
+
+  <div class='group_message_subject'>
+    <%= f.label :message_subject %><br />
+    <%= f.text_field :message_subject %>
+  </div>
+
+  <div class='group_message_header'>
+    <%= f.label :message_header %><br />
+    <%= f.text_area :message_header %>
+  </div>
 
   <p>
     <%= f.submit 'Create/Update' %>

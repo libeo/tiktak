@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100316212044) do
+ActiveRecord::Schema.define(:version => 20100325140911) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -285,6 +285,8 @@ ActiveRecord::Schema.define(:version => 20100316212044) do
     t.integer  "duration_format"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "message_subject", :default => ""
+    t.text     "message_header"
   end
 
   create_table "notice_groups_projects", :id => false, :force => true do |t|
@@ -827,10 +829,7 @@ ActiveRecord::Schema.define(:version => 20100316212044) do
     t.boolean  "can_approve_work_logs"
     t.integer  "default_project_id"
     t.string   "default_list_view",                        :default => "list_new"
-<<<<<<< HEAD:db/schema.rb
-=======
     t.float    "work_hours",                               :default => 75.0
->>>>>>> time_left:db/schema.rb
   end
 
   add_index "users", ["autologin"], :name => "index_users_on_autologin"
