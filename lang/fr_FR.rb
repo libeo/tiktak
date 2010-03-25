@@ -1,4 +1,5 @@
 Localization.define('fr_FR') do |l|
+ l.store "Time added lately", "Temps ajouté récemment"
  l.store "Task created", "Tâche créee"
  l.store "Task completed", "Tâche completée"
  l.store "Task deleted", "Tâche supprimée"

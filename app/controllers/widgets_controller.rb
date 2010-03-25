@@ -38,8 +38,8 @@ class WidgetsController < ApplicationController
     case @widget.widget_type
     when 11
       #Task filter
-      order, extra = @widget.order_by_sql
-      @items = @widget.filter.tasks(extra, :limit => @widget.number, :order => order, :include => TASK_ROW_INCLUDE, :select => TASK_ROW_SELECT)
+      order, extra, includes = @widget.order_by_sql
+      @items = @widget.filter.tasks(extra, :limit => @widget.number, :order => order, :include => TASK_ROW_INCLUDE + includes, :select => TASK_ROW_SELECT)
       
     when 0
       # Tasks
@@ -51,10 +51,10 @@ class WidgetsController < ApplicationController
       ]
       conditions << "users.id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
-      order, extra = @widget.order_by_sql
+      order, extra, includes = @widget.order_by_sql
       conditions << extra if extra.length > 0
       
-      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => TASK_ROW_INCLUDE, :order => order, :limit => @widget.number, :select => TASK_ROW_SELECT)
+      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => TASK_ROW_INCLUDE + includes, :order => order, :limit => @widget.number, :select => TASK_ROW_SELECT)
 
     when 1
       # Project List
