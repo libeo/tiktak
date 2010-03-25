@@ -1,5 +1,4 @@
 <% if session[:hide_deferred].to_i == 0 || task.active? -%>
-  <% debugger %>
 <div id="task_<%=task.id %>"
 <%
  depth ||= 1
