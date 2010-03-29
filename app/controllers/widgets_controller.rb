@@ -14,10 +14,12 @@ class WidgetsController < ApplicationController
   notifications.unread, notifications.user_id,
   customers.name, customers.company_id,
   milestones.name,
-  users.name, users.company_id, users.email'
+  users.name, users.company_id, users.email,
+  task_property_values.id,
+  property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
-  #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, {:task_owners => :user }, :notifications, {:task_property_values => [:property_value, :property]}]
-  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
+  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, {:task_owners => :user }, :notifications, {:task_property_values => [:property_value, :property]}]
+  #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
 
   def show
     begin
