@@ -296,13 +296,13 @@ class ProjectsController < ApplicationController
   end
 
   def list
-    @projects = current_user.projects.paginate(:all, 
-                                               #:order => 'customer_id',
-											   :order => 'customers.name, projects.name',
-                                               :page => params[:page],
-                                               :per_page => 100,
-                                               :include => [:customer],
-                                               :select => 'customers.id, customers.name, projects.name, projects.user_id, projects.created_at, projects.description');
+    #@projects = current_user.projects.paginate(:all, 
+    @projects = Project.paginate(:all,
+      :conditions => "projects.id in (#{current_project_ids_query})",
+      :order => 'customers.name, projects.name',
+      :page => params[:page],
+      :include => [:customer, :users],
+      :select => 'customers.id, customers.name, projects.name, projects.user_id, projects.created_at, projects.description, users.id, users.name');
     @completed_projects = current_user.completed_projects.find(:all)
   end
 end
