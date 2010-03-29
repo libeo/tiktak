@@ -12,7 +12,7 @@
     <% if @project.users.size > 0 %>
     <div>
       <div class="information-header"><%= _('Members') %></div>
-      <div class="information-value" style="float:left;"><%= @project.users.collect{|u| "<a href=\"/views/select_user/#{u.id}\" class=\"tooltip\" title=\"#{_('Tasks')}: #{u.tasks.count(:conditions => ["project_id=? AND completed_at IS NULL",@project.id])}\"  >#{h(u.name)}</a>"}.join(", ") %></div>
+      <div class="information-value" style="float:left;"><%= @project.users.collect{|u| "<a href=\"/views/select_user/#{u.id}\" class=\"tooltip\" >#{h(u.name)}</a>"}.join(", ") %></div>
     </div>
     <% end %>
     <div style="clear:both;"></div>
