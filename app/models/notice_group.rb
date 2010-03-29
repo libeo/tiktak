@@ -31,10 +31,10 @@ class NoticeGroup < ActiveRecord::Base
 
 	def send_project_notice(project, user)
 		emails = merge_general_emails(self.get_emails)
-    options = {:subject => self.template_transform(self.message_subject, [project, user]),
-      :header => self.template_transform(self.message_header, [project, user]),
-      :duration_format => self.duration_format
+    options = {:duration_format => self.duration_format
     }
+    options[:subject] = self.template_transform(self.message_subject, [project, user]) if self.message_subject != ""
+    options[:header] = self.template_transform(self.message_header, [project, user]) if self.message_header and self.message_header != ""
 		Notifications::deliver_created_project(project, user, emails, "", options)
 	end
 
