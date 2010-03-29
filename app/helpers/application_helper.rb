@@ -499,6 +499,7 @@ END_OF_HTML
   #  array.
   ###
   def pagination_links(objects, count = 100)
+    count = nil if objects.first.class.respond_to?(:per_page)
     will_paginate(objects, {
                     :per_page => count,
                     :next_label => _('Next') + ' &raquo;', 

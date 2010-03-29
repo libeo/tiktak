@@ -31,6 +31,10 @@ class Project < ActiveRecord::Base
     end
   }
 
+  def self.per_page
+    200
+  end
+
   def full_name
     "#{customer.name} / #{name}"
   end

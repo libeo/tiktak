@@ -6,25 +6,28 @@
     </td>
   </tr>
   <% if current_user.completed_projects.size > 0 %>
-  <tr><td align="right" class="project_completed" style="padding-right:1em;"><%= link_to _('%d completed project', current_user.completed_projects.size), :controller => 'projects', :action => 'list_completed' %></td></tr>
+    <tr><td align="right" class="project_completed" style="padding-right:1em;"><%= link_to _('%d completed project', current_user.completed_projects.size), :controller => 'projects', :action => 'list_completed' %></td></tr>
   <% end %>
+  <tr><td>
+      <%= pagination_links(@projects) %>
+  </td></tr>
   <tr>
     <td>
       <% client = nil
       for @project in @projects 
         if client != @project.customer.id
-      %>
-      <%= "</div>" unless client.nil? %>
-      <% client = @project.customer.id %>
-      <div id="<%=@project.customer.dom_id%>" class="client-block">
-	<div class="client-heading hoverrow">
-	  <div class="client-name"><%= "<a href=\"/views/select_client/#{@project.customer.id}\">#{h(@project.customer.name)}</a>" %></div>
-	</div>
-      <% end %>
+        %>
+        <%= "</div>" unless client.nil? %>
+        <% client = @project.customer.id %>
+        <div id="<%=@project.customer.dom_id%>" class="client-block">
+          <div class="client-heading hoverrow">
+            <div class="client-name"><%= "<a href=\"/views/select_client/#{@project.customer.id}\">#{h(@project.customer.name)}</a>" %></div>
+          </div>
+          <% end %>
 
-      <%= render :partial => "project" %>
+        <%= render :partial => "project" %>
       <% end %>
-      </div>
+        </div>
     </td>
   </tr>
   <tr>
