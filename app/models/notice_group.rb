@@ -1,6 +1,7 @@
 require  File.join(File.dirname(__FILE__), '../../lib/misc')
 
 class NoticeGroup < ActiveRecord::Base
+
 	belongs_to :companies
 	has_and_belongs_to_many :users
 	has_and_belongs_to_many :projects

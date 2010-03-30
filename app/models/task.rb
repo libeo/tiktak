@@ -11,6 +11,7 @@ require "active_record_extensions"
 class Task < ActiveRecord::Base
 
   include Misc
+  include TestTask
 
   belongs_to    :company
   belongs_to    :project
