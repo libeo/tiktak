@@ -1040,8 +1040,13 @@ class Task < ActiveRecord::Base
   end
 
   def unread?(user)
-    num = Task.find_by_sql("select count(task_owners.unread) as task_unread, count(notifications.unread) as notifications_unread from task_owners, notifications where (task_owners.unread = true and task_owners.user_id = #{user.id} and task_owners.task_id = #{self.id}) or (notifications.unread = true and notifications.user_id = #{user.id} and notifications.task_id = #{self.id})")
-    return num.length > 0
+    num = TaskOwner.find_by_sql("select id, unread, task_id, user_id, count(*) as count 
+    from task_owners 
+    where task_owners.task_id = #{self.id} and task_owners.user_id = #{user.id} and task_owners.unread = true").first.attributes['count'].to_i
+    num += Notification.find_by_sql("select count(*) as count 
+    from notifications 
+    where notifications.task_id = #{self.id} and notifications.user_id = #{user.id} and notifications.unread = true").first.attributes['count'].to_i
+    return num > 0
   end
   
   ####

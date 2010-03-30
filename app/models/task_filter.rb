@@ -198,10 +198,13 @@ class TaskFilter < ActiveRecord::Base
       'task_owners' => :watchers, 
       'dependencies_tasks' => :dependencies,
       'task_tags' => :tags,
-      'tags_tasks' => :tags}
+      'tags_tasks' => :tags,
+      'task_property_values' => {:task_property_values => [:property_value, :property]}
+    }
 
     fields = fields.split(/\s+/).map{ |i| i.split('.').first}.uniq.select { |f| f and f != 'tasks' }
     fields.delete 'projects' if fields.include? 'customers_projects'
+    fields.delete 'property_values' if fields.include? 'task_property_values'
 
     fields = fields.map do |f|
       if singular.include? f
