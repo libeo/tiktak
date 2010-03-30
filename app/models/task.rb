@@ -1039,22 +1039,32 @@ class Task < ActiveRecord::Base
     end
   end
 
-  ###
-  # Returns true if this task is marked as unread for user.
-  ###
   def unread?(user)
-    # TODO: if we merge owners and notifications into one table, should
-    # clean this up.
-    notifications = self.notifications + self.task_owners
-    unread = false
-
-    user_notifications = notifications.select { |n| n.user == user }
-    user_notifications.each do |n|
-      unread ||= n.unread?
-    end
-
-    return unread
+    num = TaskOwner.find_by_sql("select id, unread, task_id, user_id, count(*) as count 
+    from task_owners 
+    where task_owners.task_id = #{self.id} and task_owners.user_id = #{user.id} and task_owners.unread = true").first.attributes['count'].to_i
+    num += Notification.find_by_sql("select count(*) as count 
+    from notifications 
+    where notifications.task_id = #{self.id} and notifications.user_id = #{user.id} and notifications.unread = true").first.attributes['count'].to_i
+    return num > 0
   end
+  
+  ####
+  ## Returns true if this task is marked as unread for user.
+  ####
+  #def unread?(user)
+  #  # TODO: if we merge owners and notifications into one table, should
+  #  # clean this up.
+  #  notifications = self.notifications + self.task_owners
+  #  unread = false
+
+  #  user_notifications = notifications.select { |n| n.user == user }
+  #  user_notifications.each do |n|
+  #    unread ||= n.unread?
+  #  end
+
+  #  return unread
+  #end
 
   ###
   # Sets up any links to resources that should be attached to this
