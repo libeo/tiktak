@@ -1,0 +1,120 @@
+class Task
+  module Template
+    augmentation do
+
+      def done?
+        self.status > 1 && self.completed_at != nil
+      end
+
+      def done
+        self.status > 1
+      end
+
+      def ready?
+        self.dependencies.reject{ |t| t.done? }.empty?
+      end
+
+      def active?
+        self.hide_until.nil? || self.hide_until < Time.now.utc
+      end
+
+      def worked_on?
+        self.sheets.size > 0
+      end
+
+      def set_task_num(company_id = nil)
+        company_id ||= company.id
+
+        num = Task.maximum('task_num', :conditions => ["company_id = ?", company_id]) 
+        num ||= 0
+        num += 1 
+
+        @attributes['task_num'] = num
+      end
+
+      def time_left
+        res = 0
+        if self.due_at != nil
+          res = self.due_at - Time.now.utc
+        end
+        res
+      end
+
+      def overdue?
+        self.due_date ? (self.due_date.to_time <= Time.now.utc) : false
+      end
+
+      def scheduled_overdue?
+        self.scheduled_date ? (self.scheduled_date.to_time <= Time.now.utc) : false
+      end
+
+      def started?
+        worked_minutes > 0 || self.worked_on?
+      end
+
+      def due_date
+        if self.due_at?
+          self.due_at
+        elsif self.milestone_id.to_i > 0 && milestone && milestone.due_at?
+          milestone.due_at
+        else 
+          nil
+        end 
+      end
+
+      def scheduled_date
+        if self.scheduled?
+          if self.scheduled_at?
+            self.scheduled_at
+          elsif self.milestone
+            self.milestone.scheduled_date
+          end 
+        else 
+          if self.due_at?
+            self.due_at
+          elsif self.milestone
+            self.milestone.scheduled_date
+          end
+        end 
+      end 
+
+      def scheduled_due_at
+        if self.scheduled?
+          self.scheduled_at
+        else 
+          self.due_at
+        end 
+      end 
+
+      def scheduled_duration
+        if self.scheduled?
+          @attributes['scheduled_duration'].to_i
+        else 
+          self.duration.to_i
+        end 
+      end
+
+      def minutes_left
+        self.duration.to_i - self.worked_minutes 
+      end
+
+      def scheduled_minutes_left
+        d = self.scheduled_duration.to_i - self.worked_minutes 
+        d = 240 if d < 0 && self.scheduled_duration.to_i > 0
+        d = 0 if d < 0
+        d
+      end 
+
+      def overworked?
+        ((self.duration.to_i - self.worked_minutes) < 0 && (self.duration.to_i) > 0)
+      end
+
+      def due
+        due = self.due_at
+        due = self.milestone.due_at if(due.nil? && self.milestone_id.to_i > 0 && self.milestone)
+        due
+      end
+      
+    end
+  end
+end

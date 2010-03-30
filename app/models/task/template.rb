@@ -1,20 +1,8 @@
 class Task
   module Template
+    augmentation do
 
-    def included(klass)
-      klass.instance_eval do
-        klass.include InstanceMethods
-        klass.extend ClassMethods
-    end
-
-    module ClassMethods
 
     end
-
-    module InstanceMethods
-
-    end
-    
   end
-
 end
