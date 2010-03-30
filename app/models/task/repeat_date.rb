@@ -14,6 +14,39 @@ class Task
         ['21st', 'twentyfirst'], ['22nd', 'twentysecond'], ['23rd', 'twentythird'], ['24th', 'twentyfourth'], ['25th', 'twentyfifth'], ['26th', 'twentysixth'], ['27th', 'twentyseventh'], ['28th', 'twentyeight'], ['29th', 'twentyninth'], ['30th', 'thirtieth'], ['31st', 'thirtyfirst'],
 
       ]
+    
+      # Creates a clone of the current task to be used when creating repeated tasks
+      def repeat_task
+        task = self.clone
+        task.status = 0
+        task.project_id = self.project_id
+        task.company_id = self.company_id
+        task.creator_id = self.creator_id
+        task.set_tags(self.tags.collect{|t| t.name}.join(', '))
+        task.set_self_num(self.company_id)
+        task.milestone_id = self.milestone_id
+        task.due_at = task.next_repeat_date
+
+        task.save
+        task.reload
+
+        self.notifications.each do |w|
+          n = Notification.new(:user => w.user, :self => task)
+          n.save
+        end
+
+        self.task_owners.each do |o|
+          to = TaskOwner.new(:user => o.user, :self => task)
+          to.save
+        end
+
+        self.dependencies.each do |d|
+          task.dependencies << d
+        end
+
+        task.save
+      end
+      
 
       # Creates a textual representation of the next scheduled repeat date. Returns a blank string if there is no repeat date.
       # Examples :

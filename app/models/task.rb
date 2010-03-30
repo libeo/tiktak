@@ -14,6 +14,9 @@ class Task < ActiveRecord::Base
   augment RepeatDate
   augment Attributes
   augment Tags
+  augment TaskProperties
+  augment Assignments
+  augment ViewHelpers
 
   belongs_to    :company
   belongs_to    :project
@@ -75,8 +78,6 @@ class Task < ActiveRecord::Base
   def self.per_page
     25
   end
-
-
 
   def recalculate_worked_minutes
     self.worked_minutes = WorkLog.sum(:duration, :conditions => ["task_id = ?", self.id]).to_i / 60
@@ -276,108 +277,6 @@ class Task < ActiveRecord::Base
     end 
   end 
 
-  # Sets up custom properties using the given form params
-  def properties=(params)
-    task_property_values.clear
-
-    params.each do |prop_id, val_id|
-      next if val_id.blank?
-      task_property_values.build(:property_id => prop_id, :property_value_id => val_id)
-    end
-  end
-
-  def set_property_value(property, property_value)
-    # remove the current one if it exists
-    existing = task_property_values.detect { |tpv| tpv.property == property }
-    if existing and existing.property_value != property_value
-      task_property_values.delete(existing)
-    end
-
-    if property_value
-      # only create a new one if property_value is set
-      task_property_values.create(:property_id => property.id, :property_value_id => property_value.id)
-    end
-  end
-
-  # Returns the value of the given property for this task
-  def property_value(property)
-    return unless property
-
-    tpv = task_property_values.detect { |tpv| tpv.property.id == property.id }
-    tpv.property_value if tpv
-  end
-
-  ###
-  # This method will help in the migration of type id, priority and severity
-  # to use properties. It can be removed once that is done.
-  ###
-  def convert_attributes_to_properties(type, priority, severity)
-    old_value = Task.issue_types[attributes['type_id'].to_i]
-    copy_task_value(old_value, type)
-
-    old_value = Task.priority_types[attributes['priority'].to_i]
-    copy_task_value(old_value || 0, priority)
-
-    old_value = Task.severity_types[attributes['severity_id'].to_i]
-    copy_task_value(old_value || 0, severity)
-  end
-
-  ###
-  # This method will help in the migration of type id, priority and severity
-  # to use properties. It can be removed once that is done.
-  #
-  # Copies the severity, priority etc on the given task to the new
-  # property.
-  ###
-  def copy_task_value(old_value, new_property)
-    return if !old_value
-
-    matching_value = new_property.property_values.detect { |pv| pv.value == old_value }
-    set_property_value(new_property, matching_value) if matching_value
-  end
-
-  ###
-  # This method will help in the rollback of type, priority and severity 
-  # from properties.
-  # It can be removed after.
-  ###
-  def convert_properties_to_attributes
-    type = company.properties.detect { |p| p.name == "Type" }
-    severity = company.properties.detect { |p| p.name == "Severity" }
-    priority = company.properties.detect { |p| p.name == "Priority" }
-
-    self.type_id = Task.issue_types.index(property_value(type).to_s)
-    self.severity_id = Task.severity_types.invert[property_value(severity).to_s] || 0
-    self.priority = Task.priority_types.invert[property_value(priority).to_s] || 0
-  end
-
-  ###
-  # These methods replace the columns for these values. If people go ahead
-  # and change the default priority, etc values then they will return a 
-  # default value that shouldn't affect sorting.
-  ###
-  def priority
-    property_value_as_integer(company.priority_property, Task.priority_types.invert) || 0
-  end  
-  def severity_id
-    property_value_as_integer(company.severity_property, Task.severity_types.invert) || 0
-  end
-  def type_id
-    property_value_as_integer(company.type_property) || 0
-  end
-
-  ###
-  # Returns an int representing the given property.
-  # Pass in a hash of strings to ids to return those values, otherwise
-  # the index in the property value list is returned.
-  ###
-  def property_value_as_integer(property, mappings = {})
-    task_value = property_value(property)
-
-    if task_value
-      return mappings[task_value.value] || property.property_values.index(task_value)
-    end
-  end
 
   ###
   # Returns an int to use for sorting this task. See Company.rank_by_properties
@@ -385,33 +284,6 @@ class Task < ActiveRecord::Base
   ###
   def sort_rank
     @sort_rank ||= company.rank_by_properties(self)
-  end
-
-  ###
-  # A task is critical if it is in the top 20% of the possible
-  # ranking using the companys sort.
-  ###
-  def critical?
-    return false if company.maximum_sort_rank == 0
-
-    sort_rank.to_f / company.maximum_sort_rank.to_f > 0.80
-  end
-
-  ###
-  # A task is normal if it is not critical or low.
-  ###
-  def normal?
-    !critical? and !low?
-  end
-
-  ###
-  # A task is low if it is in the bottom 20% of the possible
-  # ranking using the companys sort.
-  ###
-  def low?
-    return false if company.maximum_sort_rank == 0
-
-    sort_rank.to_f / company.maximum_sort_rank.to_f < 0.20
   end
 
   ###
@@ -451,100 +323,6 @@ class Task < ActiveRecord::Base
     "#{locale_part}#{due_part}#{worked_part}#{config_part}"
   end 
 
-  ###
-  # Returns an array of all users setup as owners or
-  # watchers of this task.
-  ###
-  def all_related_users
-    recipients = []
-    recipients += users
-    recipients += watchers
-    recipients = recipients.uniq.compact
-
-    return recipients
-  end
-
-  ###
-  # Returns an array of email addresses of people who should be 
-  # notified about changes to this task.
-  ###
-  def notification_email_addresses(user_who_made_change = nil)
-    recipients = [ ]
-
-    if user_who_made_change and
-      user_who_made_change.receive_notifications?
-      recipients << user_who_made_change
-    end
-
-    recipients += all_related_users.select { |u| u.receive_notifications? }
-
-    # remove them if they don't want their own notifications. 
-    # do it here rather than at start of method in case they're 
-    # on the watchers list, etc
-    if user_who_made_change and 
-      !user_who_made_change.receive_own_notifications?
-      recipients.delete(user_who_made_change) 
-    end
-
-    emails = recipients.map { |u| u.email }
-
-    # add in notify emails
-    if !notify_emails.blank?
-      emails += notify_emails.split(",")
-    end
-    emails = emails.compact.map { |e| e.strip }
-
-    # and finally remove dupes 
-    emails = emails.uniq
-
-    return emails
-  end
-
-
-  ###
-  # Sets the task watchers for this task.
-  # Existing watchers WILL be cleared by this method.
-  ###
-  def set_watcher_ids(watcher_ids)
-    return if watcher_ids.nil?
-
-    self.notifications.destroy_all
-
-    watcher_ids.each do |id|
-      next if id.to_i == 0
-      user = company.users.find(id)
-      Notification.create(:user => user, :task => self)
-    end
-  end
-
-  ###
-  # Sets the owners of this task from owner_ids.
-  # Existing owners WILL  be cleared by this method.
-  ###
-  def set_owner_ids(owner_ids)
-    return if owner_ids.nil?
-
-    self.task_owners.destroy_all
-
-    owner_ids.each do |o|
-      next if o.to_i == 0
-      u = company.users.find(o.to_i)
-      TaskOwner.create(:user => u, :task => self)
-    end
-  end
-
-  ###
-  # Sets up any task owners or watchers from the given params.
-  # Any existings ones not in the given params will be removed.
-  ###
-  def set_users(params)
-    all_users = params[:users] || []
-    owners = params[:assigned] || []
-    watchers = all_users - owners
-
-    set_owner_ids(owners)
-    set_watcher_ids(watchers)
-  end
 
   ###
   # Sets the dependencies of this this from dependency_params.
@@ -576,97 +354,6 @@ class Task < ActiveRecord::Base
 
     self.save
   end
-
-  ###
-  # This method will mark any task_owners or notifications linked to
-  # this task notified IF they are in the given array of users.
-  # If not, that column will be set to false.
-  ###
-  def mark_as_notified_last_change(users)
-    notifications = self.notifications + self.task_owners
-    notifications.each do |n|
-      notified = users.include?(n.user)
-      n.update_attribute(:notified_last_change, notified)
-    end
-  end
-
-  ###
-  # Returns true if user should be set to be notified about this task
-  # by default.
-  ###
-  def should_be_notified?(user)
-    res = true
-    if self.new_record?
-      res = user.receive_notifications?
-    else
-      join = (task_owners + notifications).detect { |j| j.user == user }
-      res = (join and join.notified_last_change?)
-    end
-
-    return res
-  end
-
-  ###
-  # This method will mark this task as unread for any
-  # setup watchers or task owners.
-  # The exclude param should be a user or array of users whose unread
-  # status will not be updated. For example, the person who wrote a
-  # comment should probably be excluded.
-  ###
-  def mark_as_unread(exclude = [])
-    exclude = [ exclude ].flatten # make sure it's an array.
-
-    # TODO: if we merge owners and notifications into one table, should
-    # clean this up.
-    notifications = self.notifications + self.task_owners
-
-    notifications.each do |n|
-      n.update_attribute(:unread, true) if !exclude.include?(n.user)
-    end
-  end
-
-  ###
-  # Sets this task as read for user.
-  # If read is passed, and false, sets the task
-  # as unread for user.
-  ###
-  def set_task_read(user, read = true)
-    # TODO: if we merge owners and notifications into one table, should
-    # clean this up.
-    notifications = self.notifications + self.task_owners
-
-    user_notifications = notifications.select { |n| n.user == user }
-    user_notifications.each do |n|
-      n.update_attribute(:unread, !read)
-    end
-  end
-
-  def unread?(user)
-    num = TaskOwner.find_by_sql("select id, unread, task_id, user_id, count(*) as count 
-    from task_owners 
-    where task_owners.task_id = #{self.id} and task_owners.user_id = #{user.id} and task_owners.unread = true").first.attributes['count'].to_i
-    num += Notification.find_by_sql("select count(*) as count 
-    from notifications 
-    where notifications.task_id = #{self.id} and notifications.user_id = #{user.id} and notifications.unread = true").first.attributes['count'].to_i
-    return num > 0
-  end
-  
-  ####
-  ## Returns true if this task is marked as unread for user.
-  ####
-  #def unread?(user)
-  #  # TODO: if we merge owners and notifications into one table, should
-  #  # clean this up.
-  #  notifications = self.notifications + self.task_owners
-  #  unread = false
-
-  #  user_notifications = notifications.select { |n| n.user == user }
-  #  user_notifications.each do |n|
-  #    unread ||= n.unread?
-  #  end
-
-  #  return unread
-  #end
 
   ###
   # Sets up any links to resources that should be attached to this
@@ -723,36 +410,6 @@ class Task < ActiveRecord::Base
     @last_comment ||= self.work_logs.reverse.detect { |wl| wl.comment? }
   end
 
-  def repeat_task
-    task = self.clone
-    task.status = 0
-    task.project_id = self.project_id
-    task.company_id = self.company_id
-    task.creator_id = self.creator_id
-    task.set_tags(self.tags.collect{|t| t.name}.join(', '))
-    task.set_self_num(self.company_id)
-    task.milestone_id = self.milestone_id
-    task.due_at = task.next_repeat_date
-
-    task.save
-    task.reload
-
-    self.notifications.each do |w|
-      n = Notification.new(:user => w.user, :self => task)
-      n.save
-    end
-
-    self.task_owners.each do |o|
-      to = TaskOwner.new(:user => o.user, :self => task)
-      to.save
-    end
-
-    self.dependencies.each do |d|
-      task.dependencies << d
-    end
-
-    task.save
-  end
 
   def close_current_work_log(sheet)
     worklog = WorkLog.new({
