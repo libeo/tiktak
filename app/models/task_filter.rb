@@ -120,7 +120,7 @@ class TaskFilter < ActiveRecord::Base
       res << "(#{ sql })"
     else
       #Select tasks where user has been assigned to the task
-      res << "(users.user_id = #{ user.id })"
+      res << "(users.id = #{ user.id })"
     end
 
     # I don't think we need to include a condition to check against the company since a project does not belong to many companies
