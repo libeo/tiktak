@@ -109,8 +109,9 @@ class="task <%=classes%>" style="position:relative; <%= color_style(task, local_
        <%= "(#{worked_nice(task.worked_minutes)})" if( task.duration.to_i == 0 && task.worked_minutes > 0) -%>
      <% end -%>
      <%= "<span class=\"task_milestone\">[#{task.milestone.name}]</span>" unless task.milestone_id.to_i == 0 -%>
-   <% name = _("No one")
-   name = task.users.all(:select => 'users.name').collect{|u| u.name}.join(', ') unless task.task_owners.empty?
+   <%
+   name = task.users.all(:select => 'users.name').collect{|u| u.name}.join(', ')
+   name = _("No one") if name.length == 0
    %>
 
 
