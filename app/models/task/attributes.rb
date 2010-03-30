@@ -1,5 +1,6 @@
 class Task
-  module Template
+  # Module regrouping functions representing custom attributes or statuses for a task.
+  module Attributes
     augmentation do
 
       def done?

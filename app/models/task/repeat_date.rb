@@ -1,4 +1,9 @@
 class Task
+  # Module that regroups all functions dealing with operations on repeating tasks. 
+  # A repeating task represents a task that is created on a regular basis. 
+  # For example : Team meeting every first monday of the week.
+  # The 'repeat' field represents how much time has to pass before repeating a task.
+  # The functions in this module help to transform the repeat schedule into a human-readable form.
   module RepeatDate
     augmenation do
 
@@ -10,8 +15,8 @@ class Task
 
       ]
 
-      #Creates a textual represntation of the next scheduled repeat date. Returns a blank string if there is no repeat date
-      #Examples :
+      # Creates a textual representation of the next scheduled repeat date. Returns a blank string if there is no repeat date.
+      # Examples :
       # w: 1, next day-of-week: Every _Sunday_
       # m: 1, next day-of-month: On the _10th_ day of every month
       # n: 2, nth day-of-week: On the _1st_ _Sunday_ of each month
@@ -57,12 +62,12 @@ class Task
       end
 
 
-      #Returns a string representing the frequency at which the task must be repeated. Returns a blank string if there is not repeat date
-      #Examples :
-      #every 1st day
-      #every 2nd month
-      #every 3rd year
-      #every 4th week
+      # Returns a string representing the frequency at which the task must be repeated. Returns a blank string if there is no repeat date.
+      # Examples :
+      # every 1st day
+      # every 2nd month
+      # every 3rd year
+      # every 4th week
       def repeat_summary
         return "" if self.repeat.nil?
 
@@ -86,8 +91,8 @@ class Task
         end
       end
 
-      #Parses a textual representation of a repeat frequency (e.g every 1st week) into a a string representing the repeat parameters seperated by a column (e.g "every:1:week")
-      #TODO: confirm that the description si really the right format
+      # Parses a textual representation of a repeat frequency (e.g every 1st week) into a a string representing the repeat parameters seperated by a column (e.g "every:1:week")
+      # TODO: confirm that the description si really the right format
       def parse_repeat(r)
         # every monday
         # every 15th

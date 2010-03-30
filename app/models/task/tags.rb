@@ -1,11 +1,19 @@
 class Task
+  # Module that regroups all functions dealing witrh task tags.
+  # A tag represents a key word used to group tasks of similar nature together.
+  # A tag has a has_and_belongs_to_many relationship with tasks 
+  # (i.e. A tag can be associated to many tasks and a task can be grouped into many tags).
+  # Tags can be used by a user who whishes to organise tasks into peronalised groups.
   module Tags
     augmentation do
 
       ########################CLASS METHODS#################################
 
-      # { :clockingit => [ {:tasks => []} ] }
-
+      #{ :clockingit => [ {:tasks => []} ] }
+    
+      # Filter all tasks that are associated to tag.
+      # tag : a string representing the tag key word
+      # tasks : array of tasks that will be filtered
       def self.filter_by_tag(tag, tasks)
         matching = []
         tasks.each do | t |
@@ -16,6 +24,14 @@ class Task
         matching
       end
 
+      # Group tasks together using tags. 
+      # Tasks are grouped by creating a hash of arrays. 
+      # Each hash key represents a tag, and the array the list of tasks associated to the tag.
+      # This is a recursive function and is meant to be called by +Task.tag_groups+
+      # tasks : array of tasks to group
+      # tags : array tags to group by
+      # done_tags : an array of tags already processed when called recursively
+      # depth : integer representing the number of recursive calls
       def self.group_by_tags(tasks, tags, done_tags, depth)
         groups = { }
 
@@ -48,10 +64,25 @@ class Task
         end
       end
 
+      # Group tasks together using tags. 
+      # Tasks are grouped by creating a hash of arrays. 
+      # Each hash key represents a tag, and the array the list of tasks associated to the tag.
+      # company_id : id of the company
+      # tags : array of tags to group by
+      # tasks : tasks to group
       def self.tag_groups(company_id, tags, tasks)
         Task.group_by_tags(tasks,tags,[], 0)
       end
 
+      # Finds all tasks grouped using tag. Returns an array of tasks
+      # options : A hash with different options when searching for tasks.
+      # :filter_user => user id
+      # :company_id => company id
+      # :project_ids => array of project ids
+      # :filter_customer => customer id
+      # :filter_milestone => milestone id
+      # :filter_status => => status id
+      # :sort => sql ORDER BY
       def Task.tagged_with(tag, options = {})
         tags = []
         if tag.is_a? Tag
@@ -100,6 +131,8 @@ class Task
 
       ########################INSTACE METHODS#################################
       
+      # Associate the task to tag(s).
+      # tagstring : comma-seperated string of tags to associate with. If the tag does not exist it will be created
       def set_tags( tagstring )
         return false unless tagstring
         self.tags.clear
@@ -116,10 +149,14 @@ class Task
         true
       end
 
+      # Associate the task to tag(s).
+      # tagstring : comma-seperated string of tags to associate with. If the tag does not exist it will be created
       def set_tags=( tagstring )
         self.set_tags(tagstring)
       end
 
+      # Checks if the task is associated with tag
+      # tag : Tag of string representing tag key word
       def has_tag?(tag)
         name = tag.to_s
         self.tags.collect{|t| t.name}.include? name
