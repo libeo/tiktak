@@ -61,9 +61,9 @@ function DurationUtils(minsPerDay, daysPerWeek, durationFormat, dateTimeFormat, 
   };
 
   var formatTimeDuration = function(duration) {
-    var hours = (duration['weeks'] * daysPerWeek * minsPerDay +
-      duration['days'] * minsPerDay) / 60 + duration['hours'];
-    return jQuery.format('{0:01d}:{1:02d}',[hours, duration['minutes']]);
+    var totalMinutes = duration['weeks'] * daysPerWeek * minsPerDay +
+      duration['days'] * minsPerDay + duration['hours'] * 60 + duration['minutes'];
+    return jQuery.format('{0:01d}:{1:02d}',[totalMinutes / 60, totalMinutes % 60]);
   };
 
   var formatDecimalDuration = function(duration) {
