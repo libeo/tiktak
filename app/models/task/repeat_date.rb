@@ -5,7 +5,7 @@ class Task
   # The 'repeat' field represents how much time has to pass before repeating a task.
   # The functions in this module help to transform the repeat schedule into a human-readable form.
   module RepeatDate
-    augmenation do
+    augmentation do
 
       REPEAT_DATE = [
         [_('last')],

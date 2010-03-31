@@ -21,14 +21,23 @@ class Task < ActiveRecord::Base
   belongs_to    :company
   belongs_to    :project
   belongs_to    :milestone
-  has_many      :users, :through => :task_owners, :source => :user
-  has_many      :task_owners, :dependent => :destroy
+
+  #has_many      :users, :through => :task_owners, :source => :user
+  #has_many      :task_owners, :dependent => :destroy
+  #has_many      :notifications, :dependent => :destroy
+  #has_many      :watchers, :through => :notifications, :source => :user
+
+  has_many  :assignments
+  has_many  :users, :through => :assignments, :source => :user
+  has_many  :task_owners, :through => :assignments, :source => :user, :conditions => "assignments.assigned = true"
+  has_many  :notifications, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
+  has_many  :watchers, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
+  has_many  :notification_emails, :through => :assignments, :source => :user, :conditions => "assingnments.notified = true"
+
 
   has_many      :work_logs, :dependent => :destroy, :order => "started_at asc"
   has_many      :attachments, :class_name => "ProjectFile", :dependent => :destroy
 
-  has_many      :notifications, :dependent => :destroy
-  has_many      :watchers, :through => :notifications, :source => :user
 
   belongs_to    :creator, :class_name => "User", :foreign_key => "creator_id"
 

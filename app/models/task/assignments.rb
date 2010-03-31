@@ -3,55 +3,14 @@ class Task
     augmentation do
 
       ###
-      # Returns an array of all users setup as owners or
-      # watchers of this task.
-      ###
-      def all_related_users
-        recipients = []
-        recipients += users
-        recipients += watchers
-        recipients = recipients.uniq.compact
-
-        return recipients
-      end
-
-      ###
       # Returns an array of email addresses of people who should be 
       # notified about changes to this task.
       # user_who_made_change : User who modified the task (if any)
       ###
-      def notification_email_addresses(user_who_made_change = nil)
-        recipients = [ ]
-
-        if user_who_made_change and
-          user_who_made_change.receive_notifications?
-          recipients << user_who_made_change
-        end
-
-        recipients += all_related_users.select { |u| u.receive_notifications? }
-
-        # remove them if they don't want their own notifications. 
-        # do it here rather than at start of method in case they're 
-        # on the watchers list, etc
-        if user_who_made_change and 
-          !user_who_made_change.receive_own_notifications?
-          recipients.delete(user_who_made_change) 
-        end
-
-        emails = recipients.map { |u| u.email }
-
-        # add in notify emails
-        if !notify_emails.blank?
-          emails += notify_emails.split(",")
-        end
-        emails = emails.compact.map { |e| e.strip }
-
-        # and finally remove dupes 
-        emails = emails.uniq
-
-        return emails
+      def notification_email_addresses(user = nil)
+        recipients = self.users.all(:select => 'users.email', :conditions => 'users.receive_notifications = true').map { |u| u.email } 
+        recipients += self.notify_emails.split(',')
       end
-
 
       ###
       # Sets the task watchers for this task.
@@ -137,6 +96,13 @@ class Task
       # status will not be updated. For example, the person who wrote a
       # comment should probably be excluded.
       ###
+      def mark_as_unread(exclude = [])
+        exclude = [ exclude ].flatten.map { |e| e.id } # make sure it's an array.
+        modify = self.assignments.select { |a| !exclude.include? a.user_id }.map { |a| a.unread = true }
+        modify.map do |m|
+
+        end
+      end
       def mark_as_unread(exclude = [])
         exclude = [ exclude ].flatten # make sure it's an array.
 

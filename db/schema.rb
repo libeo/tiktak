@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100325140911) do
+ActiveRecord::Schema.define(:version => 20100331133911) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -24,6 +24,15 @@ ActiveRecord::Schema.define(:version => 20100325140911) do
   add_index "activities", ["company_id"], :name => "fk_activities_company_id"
   add_index "activities", ["customer_id"], :name => "fk_activities_customer_id"
   add_index "activities", ["user_id"], :name => "fk_activities_user_id"
+
+  create_table "assignments", :force => true do |t|
+    t.integer "task_id"
+    t.integer "user_id"
+    t.boolean "assigned",             :default => true
+    t.boolean "notified",             :default => true
+    t.boolean "unread",               :default => false
+    t.boolean "notified_last_change", :default => false
+  end
 
   create_table "chat_messages", :force => true do |t|
     t.integer  "chat_id"
@@ -69,6 +78,11 @@ ActiveRecord::Schema.define(:version => 20100325140911) do
 
   add_index "companies", ["name"], :name => "companies_name_index"
   add_index "companies", ["subdomain"], :name => "companies_subdomain_index", :unique => true
+
+  create_table "companies_cit_stx", :force => true do |t|
+    t.integer "company_id"
+    t.integer "rid_stx_company"
+  end
 
   create_table "custom_attribute_choices", :force => true do |t|
     t.integer  "custom_attribute_id"
@@ -298,16 +312,6 @@ ActiveRecord::Schema.define(:version => 20100325140911) do
     t.integer "notice_group_id"
     t.integer "user_id"
   end
-
-  create_table "notifications", :force => true do |t|
-    t.integer "task_id"
-    t.integer "user_id"
-    t.boolean "unread",               :default => false
-    t.boolean "notified_last_change", :default => true
-  end
-
-  add_index "notifications", ["task_id", "user_id"], :name => "index_notifications_on_task_id_user_id"
-  add_index "notifications", ["user_id", "task_id"], :name => "index_notifications_on_user_id_task_id"
 
   create_table "organizational_units", :force => true do |t|
     t.integer  "customer_id"
@@ -681,16 +685,6 @@ ActiveRecord::Schema.define(:version => 20100325140911) do
 
   add_index "task_filters", ["company_id"], :name => "fk_task_filters_company_id"
   add_index "task_filters", ["user_id"], :name => "fk_task_filters_user_id"
-
-  create_table "task_owners", :force => true do |t|
-    t.integer "user_id"
-    t.integer "task_id"
-    t.boolean "unread",               :default => false
-    t.boolean "notified_last_change", :default => true
-  end
-
-  add_index "task_owners", ["task_id", "user_id"], :name => "task_owners_task_id_user_id_index"
-  add_index "task_owners", ["user_id", "task_id"], :name => "task_owners_user_id_task_id_index"
 
   create_table "task_property_values", :force => true do |t|
     t.integer "task_id"
