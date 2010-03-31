@@ -19,7 +19,9 @@ class TaskFiltersController < ApplicationController
     customers = c.customers.all(:conditions => name_conds, :limit => limit)
     @to_list << [ _("Clients"), 'Client', customers ]
 
-    projects = c.projects.all(:conditions => name_conds, :limit => limit)
+    conds = name_conds.dup
+    conds[0] += " and id in (#{current_project_ids_query})"
+    projects = Project.all(:conditions => conds, :limit => limit)
     @to_list << [ _("Projects"), 'Project', projects ]
 
     users = c.users.all(:conditions => name_conds, :limit => limit)
