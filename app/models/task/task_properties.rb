@@ -142,62 +142,6 @@ class Task
         sort_rank.to_f / company.maximum_sort_rank.to_f < 0.20
       end
 
-      # String representing the task type
-      # (task, new feature, defect, improvement)
-      def issue_type
-        Task.issue_types[self.type_id.to_i]
-      end
-
-      # Array of possible task types (issues)
-      def self.issue_types
-        ["Task", "New Feature", "Defect", "Improvement"]
-      end
-
-      # String representing the task status
-      # (open, in progress, closed, won't fix, invalid, duplicate)
-      def status_type
-        Task.status_types[self.status]
-      end
-
-      # String representing a certain task status
-      # type : integer, task status
-      def self.status_type(type)
-        Task.status_types[type]
-      end
-
-      # Array of possible task statuses
-      def self.status_types
-        ["Open", "In Progress", "Closed", "Won't fix", "Invalid", "Duplicate"]
-      end
-
-      # String representing the task priority
-      # (Lowest, low, normal, high, urgent, critical)
-      def priority_type
-        Task.priority_types[self.priority]
-      end
-
-      # Hash of task priorities.
-      # keys : numerical representation, ranging from -2 to 3, of the priority. 
-      # Highest is more critical.
-      # values : String representation of the priority
-      def self.priority_types
-        {  -2 => "Lowest", -1 => "Low", 0 => "Normal", 1 => "High", 2 => "Urgent", 3 => "Critical" }
-      end
-
-      # String representing the task severity
-      # (trivial, minor, normal, major, cirical, blocker)
-      def severity_type
-        Task.severity_types[self.severity_id]
-      end
-
-      # Hash of task severities
-      # keys : numerical representation, ranging from -2 to 3, of the severity. 
-      # Highest is more severe
-      # values : String representation of the severity
-      def self.severity_types
-        { -2 => "Trivial", -1 => "Minor", 0 => "Normal", 1 => "Major", 2 => "Critical", 3 => "Blocker"}
-      end
-      
     end
   end
 end

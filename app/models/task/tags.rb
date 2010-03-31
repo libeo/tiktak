@@ -83,7 +83,7 @@ class Task
       # :filter_milestone => milestone id
       # :filter_status => => status id
       # :sort => sql ORDER BY
-      def self.tagged_with(tag, options = {})
+      def Task.tagged_with(tag, options = {})
         tags = []
         if tag.is_a? Tag
           tags = [tag.name]
