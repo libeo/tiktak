@@ -11,6 +11,7 @@ require "active_record_extensions"
 class Task < ActiveRecord::Base
 
   include Misc
+
   augment RepeatDate
   augment Attributes
   augment Tags
@@ -75,56 +76,30 @@ class Task < ActiveRecord::Base
     r.milestone.update_counts if r.milestone
   }
 
+  # used in the plugin will_paginate, represents the number of tasks to show on a page
   def self.per_page
     25
   end
 
+  # updates the total number of minutes worked on the task
   def recalculate_worked_minutes
     self.worked_minutes = WorkLog.sum(:duration, :conditions => ["task_id = ?", self.id]).to_i / 60
   end
 
-
-
-  def issue_type
-    Task.issue_types[self.type_id.to_i]
-  end
-
-  def Task.issue_types
-    ["Task", "New Feature", "Defect", "Improvement"]
-  end
-
-  def status_type
-    Task.status_types[self.status]
-  end
-
-  def Task.status_type(type)
-    Task.status_types[type]
-  end
-
-  def Task.status_types
-    ["Open", "In Progress", "Closed", "Won't fix", "Invalid", "Duplicate"]
-  end
-
-  def priority_type
-    Task.priority_types[self.priority]
-  end
-
-  def Task.priority_types
-    {  -2 => "Lowest", -1 => "Low", 0 => "Normal", 1 => "High", 2 => "Urgent", 3 => "Critical" }
-  end
-
-  def severity_type
-    Task.severity_types[self.severity_id]
-  end
-
-  def Task.severity_types
-    { -2 => "Trivial", -1 => "Minor", 0 => "Normal", 1 => "Major", 2 => "Critical", 3 => "Blocker"}
-  end
-
+  # Textual representation of a task (in essence, the task name)
   def to_s
     self.name
   end
 
+  # TODO: recheck how this function is used
+  # TODO: looks like its recursive but its not. used recursively somewhere else maybe ?
+  # Groups tasks by yielding an array [task, item]
+  # if the yield element is returned, then the task is kept in a temporary list.
+  # tasks are then grouped into a hash of arrays with the item as the key, and the tasks as the array.
+  # tasks : array tasks to group
+  # items : array of items to group by
+  # done_items : items to exclude from the items list
+  # depth : normally used to show the depth of the recursive stack call
   def Task.group_by(tasks, items, done_items = [], depth = 0)
     groups = OrderedHash.new
 
@@ -150,6 +125,11 @@ class Task < ActiveRecord::Base
     end
   end
 
+  # Searches all tasks using a key word.
+  # The key word is searched for in the tasks' title, description, and task number.
+  # user : current_user
+  # keys : array of key words to search for
+  # other_conditions : sql fragment to add at the end of the search query
   def self.search(user, keys, other_conditions=nil)
     tf = TaskFilter.new(:user => user)
 
@@ -292,10 +272,13 @@ class Task < ActiveRecord::Base
     end
   end
 
+  # Returns the last comment added to the task
   def last_comment
     @last_comment ||= self.work_logs.reverse.detect { |wl| wl.comment? }
   end
 
+  # Closes the current work log of the person working on the task
+  # sheet : Sheet of the person working on the task
   def close_current_work_log(sheet)
     worklog = WorkLog.new({
       :user => sheet.user,
@@ -313,6 +296,11 @@ class Task < ActiveRecord::Base
     worklog.save
   end
 
+  # Changes the tasks' status to 'closed' and executes all associated actions.
+  # Associated actions : create a repeat task if needed,
+  # add a work log showing who closed the task and when,
+  # deliver any notifications to the people following the task,
+  # deliver any notifications to notice groups
   def close_task(user, params={})
     old_status = self.status_type
     self.completed_at = Time.now.utc
@@ -347,6 +335,11 @@ class Task < ActiveRecord::Base
     end
   end
 
+  # Changes the tasks' status to 'open' and executes all associated actions.
+  # Associated actions : 
+  # add a work log showing who repoened the task and when,
+  # send any notifications to people following the task,
+  # send any notifications to notice groups.
   def open_task(user, params={})
     old_status = self.status_type
     self.update_attributes({:status => 0,
@@ -374,6 +367,20 @@ class Task < ActiveRecord::Base
       project.all_notice_groups.each { |ng| ng.send_task_notice(self, user, :reverted) }
   end
 
+  # Creates a new task and executes all associated actions.
+  # Associated actions : 
+  # add a work log showing who created the task and when,
+  # send any notifications to people following the task,
+  # send any notifications to notice groups.
+  # user : User who created the task
+  # project : Project in which the task was created
+  # params : optional hash with other task attributes to add during creation.
+  # suggested attributes to add :
+  # { :name => task name,
+  # :description => task description,
+  # :due_at => due date,
+  # :duration => estimated duration in seconds
+  # }
   def self.create_for_user(user, project, params={})
     params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
     params[:due_at] = TimeParser.datetime_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
@@ -435,4 +442,3 @@ end
 #  scheduled          :boolean(1)      default(FALSE)
 #  worked_minutes     :integer(4)      default(0)
 #
-
