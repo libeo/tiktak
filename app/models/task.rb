@@ -11,12 +11,6 @@ require "active_record_extensions"
 class Task < ActiveRecord::Base
 
   include Misc
-  augment RepeatDate
-  augment Attributes
-  augment Tags
-  augment TaskProperties
-  augment Assignments
-  augment ViewHelpers
 
   belongs_to    :company
   belongs_to    :project
@@ -26,30 +20,26 @@ class Task < ActiveRecord::Base
   #has_many      :task_owners, :dependent => :destroy
   #has_many      :notifications, :dependent => :destroy
   #has_many      :watchers, :through => :notifications, :source => :user
-
+  #
   has_many  :assignments
   has_many  :users, :through => :assignments, :source => :user
-  has_many  :task_owners, :through => :assignments, :source => :user, :conditions => "assignments.assigned = true"
-  has_many  :notifications, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
-  has_many  :watchers, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
-  has_many  :notification_emails, :through => :assignments, :source => :user, :conditions => "assingnments.notified = true"
+  has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
+  has_many  :watchers, :through => :assignments, :source => :user, :conditions => "assignments.notified = false and assignments.assigned = false"
+  has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => "User", :conditions => "assignments.assigned = true"
+  has_many  :notified_last_change, :through => :assignments, :source => :user, :conditions => "assignments.notified_last_change = true"
+  has_many  :unread_users, :through => :assignments, :source => :user, :conditions => 'assignments.unread = true'
 
-
-  has_many      :work_logs, :dependent => :destroy, :order => "started_at asc"
+  has_many      :work_logs, :order => "started_at asc"
   has_many      :attachments, :class_name => "ProjectFile", :dependent => :destroy
 
-
   belongs_to    :creator, :class_name => "User", :foreign_key => "creator_id"
-
   belongs_to    :old_owner, :class_name => "User", :foreign_key => "user_id"
 
   has_and_belongs_to_many  :tags, :join_table => 'task_tags'
-
   has_and_belongs_to_many  :dependencies, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "dependency_id", :foreign_key => "task_id", :order => 'dependency_id'
   has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id'
 
   has_many :task_property_values, :dependent => :destroy, :include => [ :property ]
-
   has_many :task_customers, :dependent => :destroy
   has_many :customers, :through => :task_customers, :order => "customers.name asc"
   adds_and_removes_using_params :customers
@@ -60,6 +50,13 @@ class Task < ActiveRecord::Base
   has_many      :sheets
   has_and_belongs_to_many :resources
 
+  augment RepeatDate
+  augment Attributes
+  augment Tags
+  augment TaskProperties
+  augment Assignments
+  augment ViewHelpers
+
   validates_length_of           :name,  :maximum=>200, :allow_nil => true
   validates_presence_of         :name
 
@@ -68,21 +65,36 @@ class Task < ActiveRecord::Base
 
   before_create :set_task_num
 
-  after_save { |r|
-    r.ical_entry.destroy if r.ical_entry
-    project = r.project
+  after_save do  |task|
+
+    task.ical_entry.destroy if task.ical_entry
+    project = task.project
     project.update_project_stats
     project.save
 
-    if r.project.id != r.project_id
+    if task.project.id != task.project_id
       # Task has changed projects, update counts of target project as well
-      p = Project.find(r.project_id)
+      p = Project.find(task.project_id)
       p.update_project_stats
       p.save
     end
 
-    r.milestone.update_counts if r.milestone
-  }
+    task.milestone.update_counts if task.milestone
+
+  end
+
+
+  after_create do |task|
+    recipients = task.all_notify_emails
+    if recipients.length > 0
+      begin
+        Notifications::deliver_created(task, task.creator, recipients, (task.work_logs.first and task.work_logs.first.comment? task.work_logs.first.body : "") )
+        Worklog.create_for_task(task, task.creator, _("Notification emails sent to %s", recipients.join(", ")))
+      rescue
+      end
+    end
+    task.project.all_notice_groups.each { |ng| ng.send_task_notice(task, task.creator) }
+  end
 
   def self.per_page
     25
@@ -394,17 +406,6 @@ class Task < ActiveRecord::Base
     task.users << user
 
     WorkLog.create_for_task(task, user, params[:comment] || "")
-
-    #deliver emails
-    recipients = task.notification_email_addresses(user)
-    if recipients.length > 0
-      begin
-        Notifications::deliver_created(task, user, recipients, params[:comment] || "")
-        Worklog.create_for_task(task, user, _("Notification emails sent to %s", recipients.join(", ")))
-      rescue
-      end
-    end
-    project.all_notice_groups.each { |ng| ng.send_task_notice(task, user) }
 
     return task
   end

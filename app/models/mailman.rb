@@ -204,13 +204,7 @@ class Mailman < ActionMailer::Base
     email_body = e.body.gsub(/<[^>]*>/,'')
 
     sent = []
-    task.task_owners.each do |n|
-      if n.notified_last_change? and n.user != user
-        Notifications::deliver_changed(:comment, task, e.user, n.user.email, email_body)
-        sent << n.user
-      end
-    end
-    task.notifications.each do |n|
+    task.assignments.each do |n|
       if n.notified_last_change? and n.user != user
         Notifications::deliver_changed(:comment, task, e.user, n.user.email, email_body)
         sent << n.user
@@ -223,7 +217,7 @@ class Mailman < ActionMailer::Base
       end
     end
 
-    task.mark_as_notified_last_change(sent)
+    task.notified_last_change = sent
     task.mark_as_unread(user)
   end
 

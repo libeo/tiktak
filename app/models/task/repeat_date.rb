@@ -30,14 +30,11 @@ class Task
         task.save
         task.reload
 
-        self.notifications.each do |w|
-          n = Notification.new(:user => w.user, :self => task)
-          n.save
-        end
-
-        self.task_owners.each do |o|
-          to = TaskOwner.new(:user => o.user, :self => task)
-          to.save
+        self.assignments.each do |a|
+          att = a.attributes
+          att.delete :id
+          att.delete :task_id
+          task.assignments.create(att)
         end
 
         self.dependencies.each do |d|

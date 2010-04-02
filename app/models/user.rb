@@ -16,14 +16,19 @@ class User < ActiveRecord::Base
   has_many      :all_projects, :through => :project_permissions, :order => "projects.customer_id, projects.name", :source => :project
   has_many      :project_permissions, :dependent => :destroy
   has_many      :pages, :dependent => :nullify
-  has_many      :tasks, :through => :task_owners
-  has_many      :task_owners, :dependent => :destroy
   has_many      :work_logs, :dependent => :destroy
   has_many      :work_log_notifications, :dependent => :destroy
   has_many      :shouts, :dependent => :nullify
 
-  has_many      :notifications, :dependent => :destroy
-  has_many      :notifies, :through => :notifications, :source => :task
+  #has_many      :notifications, :dependent => :destroy
+  #has_many      :notifies, :through => :notifications, :source => :task
+  #has_many      :task_owners, :dependent => :destroy
+  #has_many      :tasks, :through => :task_owners
+  
+  has_many  :tasks, :through => :assignments
+  has_many  :notifications, :through => :assignments, :conditions => 'assignments.notified = true'
+  has_many  :notifies, :through => :assignments, :conditions => 'assignments.notified = true', :source => :task
+  has_many  :task_owners, :through => :assignments, :conditions => 'assignments.assigned = true'
 
   has_many      :forums, :through => :moderatorships, :order => 'forums.name'
   has_many      :moderatorships, :dependent => :destroy
@@ -265,8 +270,7 @@ class User < ActiveRecord::Base
       res << "tasks.project_id in (#{ all_project_ids.join(",") })"
     end
 
-    res << "task_owners.user_id = #{ self.id }"
-    res << "notifications.user_id = #{ self.id }"
+    res << "assignments.user_id = #{ self.id }"
     
     res = res.join(" or ")
     return "(#{ res })"

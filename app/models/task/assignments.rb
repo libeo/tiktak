@@ -2,75 +2,124 @@ class Task
   module Assignments
     augmentation do
 
+      private
+
+      def update_assignment_properties(users, property, create_attributes, absolute = true)
+        update_assignment_properties_with_ids(users.map{|u|u.id}, property, create_attributes, absolute)
+      end
+
+      def update_assignment_properties_with_ids(user_ids, property, create_attributes, absolute = true)
+        self.assignments.all(:select => 'id, user_id, assigned, notified, notified_last_change').each do |a|
+          if user_ids.include?(a.user_id)
+            a.update_attributes(create_attributes)
+          elsif absolute == true
+            a.update_attribute(property, false)
+          end
+          user_ids.delete(a.user_id)
+        end
+        user_ids.each { |u| self.assignments.create(create_attributes.merge({:user_id => u})) }
+        self.assignments(true)
+      end
+
+      #def update_assignment_properties_with_ids(user_ids, property, create_attributes, absolute = true)
+      #  Assignment.update_all("assignments.#{property.to_s} = true", ["assignments.task_id = ? and assignments.user_id in (?)", self.id, user_ids])
+      #  Assignment.update_all("assignments.#{property.to_s} = false", ["assignments.task_id = ? and assignments.user_id not in (?)", self.id, user_ids]) if absolute
+      #  new = user_ids - self.assignments.all(:select => 'user_id').map { |a| a.user_id }
+      #  new.each { |u| self.assignments.create(create_attributes.merge({:user_id => u})) }
+      #  self.assignments(true)
+      #end
+
+      public
+
       ###
       # Returns an array of email addresses of people who should be 
       # notified about changes to this task.
       # user_who_made_change : User who modified the task (if any)
       ###
       def notification_email_addresses(user = nil)
-        recipients = self.users.all(:select => 'users.email', :conditions => 'users.receive_notifications = true').map { |u| u.email } 
-        recipients += self.notify_emails.split(',')
+        recipients = self.notified_users.all(:select => 'users.email', :conditions => 'users.receive_notifications = true').map { |u| u.email }
+        recipients.delete user if user and !user.receive_notifications?
+        recipients += self.notify_emails.split(',') if self.notify_emails
+        recipients
+      end
+      alias :all_notify_emails :notification_email_addresses
+
+      ###
+      # All users will be assigned to the task and will be notified of any changes to the task
+      ###
+      def notified_users=(users)
+        update_assignment_properties(users, :notified, {:notified => true, :assigned => false})
+        self.notified_users
+      end
+
+      def notification_ids=(user_ids)
+        update_assignment_properties_with_ids(user_ids, :notified, {:notified => true, :assigned => false})
+        self.notified_users
+      end
+
+      def add_notified_users(users)
+        update_assignment_properties(users, :notified, {:notified => true}, false)
+        self.notified_users
       end
 
       ###
-      # Sets the task watchers for this task.
-      # Existing watchers WILL be cleared by this method.
-      # watcher_ids : array of user ids
+      # All users will be assigned to the task and will be able to add work time to the task
       ###
-      def set_watcher_ids(watcher_ids)
-        return if watcher_ids.nil?
+      def assigned_users=(users)
+        update_assignment_properties(users, :assigned, {:notified => false, :assigned => true})
+        self.assigned_users
+      end
 
-        self.notifications.destroy_all
+      def assigned_user_ids=(user_ids)
+        update_assignment_properties_with_ids(user_ids, :assigned, {:notified => false, :assigned => true})
+        self.assigned_users
+      end
 
-        watcher_ids.each do |id|
-          next if id.to_i == 0
-          user = company.users.find(id)
-          Notification.create(:user => user, :task => self)
-        end
+      def add_assigned_users(users)
+        update_assignment_properties(users, :assigned, {:assigned => true}, false)
+        self.assigned_users
       end
 
       ###
-      # Sets the owners of this task from owner_ids.
-      # Existing owners WILL  be cleared by this method.
-      # owner_ids : array of user ids
+      # The notified_last_change flag is used to keep track of users who have been sucessfully notified of the last modifications on the task.
+      # All users will be set as have been notified
       ###
-      def set_owner_ids(owner_ids)
-        return if owner_ids.nil?
+      def notified_last_change=(users)
+        Assignment.update_all('notified = true, notified_last_change = true', ['task_id = ? and user_id in (?)', self.id, users.map { |u| u.id }])
+        Assignment.update_all('notified_last_change = false', ['task_id = ? and notified = false and user_id not in (?)', self.id, users.map { |u| u.id }])
+        new = self.assignments.all(:select => 'user_id').map { |a| a.user_id } - users.map { |u| u.id }
+        new.each { |n| self.assignments.create({:assigned => false, :notified => true, :notified_last_change => true, :user_id => n}) }
+        self.assignments(true)
+        self.notified_last_change
+      end
 
-        self.task_owners.destroy_all
+      def add_notified_last_change(users)
+        update_assignment_properties(users, :notified_last_change, {:assigned => false, :notified => true, :notified_last_change => true}, false)
+        self.notified_last_change
+      end
 
-        owner_ids.each do |o|
-          next if o.to_i == 0
-          u = company.users.find(o.to_i)
-          TaskOwner.create(:user => u, :task => self)
-        end
+      def add_notified_last_change_ids(user_ids)
+        update_assignment_properties_with_ids(user_ids, :notified_last_change, {:assigned => false, :notified => true, :notified_last_change => true}, false)
+        self.notified_last_change
       end
 
       ###
-      # Sets up any task owners or watchers from the given params.
-      # Any existings ones not in the given params will be removed.
-      # params : hash returned by ActionController::Base#params in the task controller
+      #
+      #
       ###
-      def set_users(params)
-        all_users = params[:users] || []
-        owners = params[:assigned] || []
-        watchers = all_users - owners
-
-        set_owner_ids(owners)
-        set_watcher_ids(watchers)
+      def unread_users=(users)
+        update_assignments_properties(users, :unread, {:unread => true})
+        self.unread_users
       end
 
-      ###
-      # This method will mark any task_owners or notifications linked to
-      # this task notified IF they are in the given array of users.
-      # If not, that column will be set to false.
-      ###
-      def mark_as_notified_last_change(users)
-        notifications = self.notifications + self.task_owners
-        notifications.each do |n|
-          notified = users.include?(n.user)
-          n.update_attribute(:notified_last_change, notified)
-        end
+      def unread_user_ids=(user_ids)
+        update_assignments_properties_with_ids(user_ids, :unread, {:unread => true})
+        self.unread_users
+      end
+
+      def add_unread_users(users)
+        update_assignments_properties(users, :unread, {:unread => true}, false)
+        self.unread_users
       end
 
       ###
@@ -78,41 +127,25 @@ class Task
       # by default.
       ###
       def should_be_notified?(user)
-        res = true
-        if self.new_record?
-          res = user.receive_notifications?
-        else
-          join = (task_owners + notifications).detect { |j| j.user == user }
-          res = (join and join.notified_last_change?)
-        end
-
-        return res
+        return self.new_record? ? user.receive_notifications? : self.notified_users.exists?(user.id)
       end
 
       ###
       # This method will mark this task as unread for any
-      # setup watchers or task owners.
+      # setup watchers or task assigned_users.
       # The exclude param should be a user or array of users whose unread
       # status will not be updated. For example, the person who wrote a
       # comment should probably be excluded.
       ###
       def mark_as_unread(exclude = [])
         exclude = [ exclude ].flatten.map { |e| e.id } # make sure it's an array.
-        modify = self.assignments.select { |a| !exclude.include? a.user_id }.map { |a| a.unread = true }
-        modify.map do |m|
-
+        if exclude.length > 0
+          modify = self.assignments.all(:conditions => ['user_id not in (?)', exclude], :select => 'id, unread')
+        else
+          modify = self.assignments.all(:select => 'id, unread')
         end
-      end
-      def mark_as_unread(exclude = [])
-        exclude = [ exclude ].flatten # make sure it's an array.
-
-        # TODO: if we merge owners and notifications into one table, should
-        # clean this up.
-        notifications = self.notifications + self.task_owners
-
-        notifications.each do |n|
-          n.update_attribute(:unread, true) if !exclude.include?(n.user)
-        end
+        modify.each { |m| m.update_attribute(:unread, true) }
+        self.assignments(true)
       end
 
       ###
@@ -120,44 +153,20 @@ class Task
       # If read is passed, and false, sets the task
       # as unread for user.
       ###
-      def set_task_read(user, read = true)
-        # TODO: if we merge owners and notifications into one table, should
-        # clean this up.
-        notifications = self.notifications + self.task_owners
-
-        user_notifications = notifications.select { |n| n.user == user }
-        user_notifications.each do |n|
-          n.update_attribute(:unread, !read)
+      def set_task_read(users, read = true)
+        users = [ users ].flatten.map { |u| u.id }
+        self.assignments.all(:conditions => ['user_id in (?)', users]).each do |a|
+          a.update_attribute(:unread, !read)
         end
+        self.assignments(true)
       end
 
+      ###
+      # Returns true if this task is marked as unread for user.
+      ###
       def unread?(user)
-        num = TaskOwner.find_by_sql("select id, unread, task_id, user_id, count(*) as count 
-        from task_owners 
-        where task_owners.task_id = #{self.id} and task_owners.user_id = #{user.id} and task_owners.unread = true").first.attributes['count'].to_i
-        num += Notification.find_by_sql("select count(*) as count 
-        from notifications 
-        where notifications.task_id = #{self.id} and notifications.user_id = #{user.id} and notifications.unread = true").first.attributes['count'].to_i
-        return num > 0
+        self.assignments.exists?(['unread = true and user_id = ?', user.id])
       end
-      
-      ####
-      ## Returns true if this task is marked as unread for user.
-      ####
-      #def unread?(user)
-      #  # TODO: if we merge owners and notifications into one table, should
-      #  # clean this up.
-      #  notifications = self.notifications + self.task_owners
-      #  unread = false
-
-      #  user_notifications = notifications.select { |n| n.user == user }
-      #  user_notifications.each do |n|
-      #    unread ||= n.unread?
-      #  end
-
-      #  return unread
-      #end
-      
 
     end
   end

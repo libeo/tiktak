@@ -109,7 +109,7 @@ class TaskShortlistController < ApplicationController
       self.swap_work
     end
 
-    task = Task.find(params[:id], :conditions => ["task_owners.user_id = ? or tasks.project_id in (#{current_project_ids_query})", current_user.id], :include => :task_owners)
+    task = Task.find(params[:id], :conditions => ["(assignments.user_id = ? and assignments.assigned = true) or tasks.project_id in (#{current_project_ids_query})", current_user.id], :include => :assignments)
     if task
       @current_sheet = Sheet.new({
         :task => task,

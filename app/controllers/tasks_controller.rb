@@ -226,7 +226,9 @@ class TasksController < ApplicationController
       session[:last_project_id] = @task.project_id
       session[:last_task_id] = @task.id
 
-      @task.set_users(params)
+      @task.user_ids = params[:users]
+      @task.assigned_user_ids = params[:assigned]
+
       @task.set_dependency_attributes(params[:dependencies], current_project_ids)
       @task.set_resource_attributes(params[:resource])
       @task.create_work_log(params[:work_log], current_user)
@@ -316,14 +318,11 @@ class TasksController < ApplicationController
     @repeat.save
     @repeat.reload
 
-    task.notifications.each do |w|
-      n = Notification.new(:user => w.user, :task => @repeat)
-      n.save
-    end
-
-    task.task_owners.each do |o|
-      to = TaskOwner.new(:user => o.user, :task => @repeat)
-      to.save
+    task.assignments.each do |a|
+      att = a.attributes
+      att.delete :id
+      att.delete :task_id
+      Assignment.create(att)
     end
 
     task.dependencies.each do |d|
@@ -376,7 +375,9 @@ class TasksController < ApplicationController
         @task.repeat = nil
       end
 
-      @task.set_users(params)
+      @task.user_ids = params[:users]
+      @task.assigned_user_ids = params[:assigned]
+
       @task.set_dependency_attributes(params[:dependencies], current_project_ids)
       @task.set_resource_attributes(params[:resource])
       @task.create_work_log(params[:work_log], current_user)
@@ -1113,7 +1114,7 @@ class TasksController < ApplicationController
         old_users = @task.users.collect{ |u| u.id}.sort.join(',')
         old_users = "0" if old_users.nil? || old_users.empty?
 
-        @task.task_owners.destroy_all
+        @task.assignments.destroy_all
         if @group > 0
           u = User.find(@group, :conditions => ["company_id = ?", current_user.company_id])
           to = TaskOwner.new(:user => u, :task => @task)
@@ -1413,7 +1414,7 @@ class TasksController < ApplicationController
     end
 
     user = current_user.company.users.find(params[:user_id])
-    @task.notifications.build(:user => user)
+    @task.add_notified_user(user)
     
     render(:partial => "notification", :locals => { :notification => user, :assign => true })
   end
@@ -1488,7 +1489,7 @@ class TasksController < ApplicationController
       end
     end
 
-    task.mark_as_notified_last_change(all_users)
+    task.notified_last_change = all_users
     task.mark_as_unread(current_user)
   end
 

@@ -90,8 +90,8 @@ class TaskFilter < ActiveRecord::Base
     @display_count = nil if force_recount
 
     count_conditions = []
-    count_conditions << "(task_owners.unread = 1 and task_owners.user_id = #{ user.id })" 
-    count_conditions << "(task_owners.id is null)"
+    count_conditions << "(assignments.unread = 1 and assignments.user_id = #{ user.id })" 
+    count_conditions << "(assignments.id is null)"
 
     sql = count_conditions.join(" or ")
     sql = "(#{ sql })"
@@ -181,8 +181,8 @@ class TaskFilter < ActiveRecord::Base
   end
 
   def to_include
-    to_include = [ :tags, :sheets, :todos, :dependencies, {:task_owners => :user},
-      :milestone, :notifications, :watchers, 
+    to_include = [ :tags, :sheets, :todos, :dependencies, :assigned_users,
+      :milestone, :assignments, 
       :customers, :task_property_values ]
     to_include << { :company => :properties }
     to_include << { :project => :customer }
@@ -194,8 +194,6 @@ class TaskFilter < ActiveRecord::Base
     singular = %w(sheets todos milestones)
     special = {'companies' => { :company => :properties}, 
       'customers_projects' => {:project => :customer}, 
-      'watchers_tasks' => :watchers, 
-      'task_owners' => :watchers, 
       'dependencies_tasks' => :dependencies,
       'task_tags' => :tags,
       'tags_tasks' => :tags,
@@ -228,13 +226,13 @@ class TaskFilter < ActiveRecord::Base
     cna = qualifiers.select { |q| q.qualifiable_type == 'CreatorNoAssignment' }
     if cna.length > 0
       res << "tasks.creator_id IN (#{cna.map{ |c| c.qualifiable.id }.join(',')})"
-      res << "tasks.id not in (select task_owners.task_id from task_owners)"
+      res << "tasks.id not in (select assignments.task_id from assignments)"
     end
 
     qualifiers.each do |q|
       case q.qualifiable_type
       when 'NoUser'
-        res << "tasks.id not in (select task_owners.task_id from task_owners)"
+        res << "tasks.id not in (select assignments.task_id from assignments)"
       when 'TaskNumber'
         res << "tasks.task_num = #{q.qualifiable_id}"
       end

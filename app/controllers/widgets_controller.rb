@@ -10,15 +10,14 @@ class WidgetsController < ApplicationController
   projects.name,
   projects.company_id,
   tags.name,
-  task_owners.unread, task_owners.user_id,
-  notifications.unread, notifications.user_id,
+  assignments.unread, assignments.user_id,
   customers.name, customers.company_id,
   milestones.name,
   users.name, users.company_id, users.email,
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
-  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, {:task_owners => :user }, :notifications, {:task_property_values => [:property_value, :property]}]
+  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}]
   #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
 
   def show
@@ -269,7 +268,7 @@ class WidgetsController < ApplicationController
     when 6
       # Comments
       if @widget.mine?
-        @items = WorkLog.find(:all, :select => "work_logs.*", :joins => "INNER JOIN tasks ON work_logs.task_id = tasks.id INNER JOIN task_owners ON work_logs.task_id = task_owners.task_id", :conditions => ["work_logs.project_id IN (#{current_project_ids}) AND (work_logs.log_type = ? OR work_logs.comment = 1) AND task_owners.user_id = ?", EventLog::TASK_COMMENT, current_user.id], :order => "started_at desc", :limit => @widget.number)
+        @items = WorkLog.find(:all, :select => "work_logs.*", :joins => "INNER JOIN tasks ON work_logs.task_id = tasks.id INNER JOIN assignments ON work_logs.task_id = assignments.task_id", :conditions => ["work_logs.project_id IN (#{current_project_ids}) AND (work_logs.log_type = ? OR work_logs.comment = 1) AND assignments.user_id = ?", EventLog::TASK_COMMENT, current_user.id], :order => "started_at desc", :limit => @widget.number)
       else 
         @items = WorkLog.find(:all, :select => "work_logs.*", :joins => "INNER JOIN tasks ON work_logs.task_id = tasks.id", :conditions => ["work_logs.project_id IN (#{current_project_ids}) AND (work_logs.log_type = ? OR work_logs.comment = 1)", EventLog::TASK_COMMENT], :order => "started_at desc", :limit => @widget.number)
       end
