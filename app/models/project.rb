@@ -31,6 +31,24 @@ class Project < ActiveRecord::Base
     end
   }
 
+  PRESET_PERMS = {
+    :user => [true] * 5 + [false] * 5,
+    :full => [true] * 10,
+    :work => [true] * 3 + [false] * 7
+  }
+  
+  def add_users_with_permissions(users, perms=:user)
+    users = [ users ].flatten
+    words = %w(comment work report create edit reassign prioritize close grant milestone).map{ |w| ('can_' + w).to_sym }
+    perms = PRESET_PERMS[perms] unless perms.is_a? Array
+
+    users.each do |user|
+      pp = self.project_permissions.find(:first, :conditions => {:user_id => user.id}) ||
+        self.project_permissions.build({:user_id => user.id})
+      pp.update_attributes(Hash[*words.zip(perms).flatten])
+    end
+  end
+
   def self.per_page
     200
   end
