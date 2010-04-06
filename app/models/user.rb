@@ -413,6 +413,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def format_duration(minutes)
+    return format_duration(minutes, self.duration_format, self.workday_duration, self.days_per_week)
+  end
+
 end
 
 #These classes used for their 'qualifiable' property that is used when showing qualifiers underneath the task filter

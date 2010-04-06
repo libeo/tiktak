@@ -24,6 +24,7 @@ class Task < ActiveRecord::Base
   has_many  :assignments
   has_many  :users, :through => :assignments, :source => :user
   has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
+  has_many  :recipient_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true and users.receive_notifications = true"
   has_many  :watchers, :through => :assignments, :source => :user, :conditions => "assignments.notified = false and assignments.assigned = false"
   has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => "User", :conditions => "assignments.assigned = true"
   has_many  :notified_last_change, :through => :assignments, :source => :user, :conditions => "assignments.notified_last_change = true"
@@ -50,6 +51,9 @@ class Task < ActiveRecord::Base
   has_many      :sheets
   has_and_belongs_to_many :resources
 
+  attr_reader :modified_associations
+  attr_reader :modified_dependencies
+
   augment RepeatDate
   augment Attributes
   augment Tags
@@ -65,35 +69,139 @@ class Task < ActiveRecord::Base
 
   before_create :set_task_num
 
-  after_save do  |task|
+  after_save do |task|
 
     task.ical_entry.destroy if task.ical_entry
+
     project = task.project
     project.update_project_stats
     project.save
 
-    if task.project.id != task.project_id
-      # Task has changed projects, update counts of target project as well
-      p = Project.find(task.project_id)
-      p.update_project_stats
-      p.save
-    end
-
     task.milestone.update_counts if task.milestone
+
+    task.completed_at = Time.now.utc if task.status > 1 and task.completed_at.nil?
+
+    next_repeat = task.next_repeat_date
+    task.repeat_task if next_repeat and Time.now.utc >= next_repeat
 
   end
 
+  before_update do |task|
+    task.modified_associations
+    task.modified_dependencies
+  end
 
-  after_create do |task|
-    recipients = task.all_notify_emails
-    if recipients.length > 0
+  after_create :create_callback
+  after_update :update_callback
+
+
+  #Called on EXISTING records
+  def update_callback
+    worklog = self.create_worklog_for_modifications
+    self.deliver_notifications(self.updated_by, worklog)
+  end
+
+  #Called on NEW records
+  def create_callback
+    if self.recipient_users.length > 0
       begin
-        Notifications::deliver_created(task, task.creator, recipients, (task.work_logs.first and task.work_logs.first.comment? task.work_logs.first.body : "") )
-        Worklog.create_for_task(task, task.creator, _("Notification emails sent to %s", recipients.join(", ")))
+        Notifications::deliver_created(self, self.creator, self.all_notify_emails, (self.work_logs.first and self.work_logs.first.comment? ? self.work_logs.first.body : "") )
+        self.notified_last_change = self.recipient_users
+        self.mark_as_unread(self.recipient_users)
+
+        worklog = Worklog.create_for_task(self, self.creator, _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", ")))
+        worklog.users = self.recipient_users
+        worklog.save
       rescue
       end
     end
-    task.project.all_notice_groups.each { |ng| ng.send_task_notice(task, task.creator) }
+    self.project.all_notice_groups.each { |ng| ng.send_task_notice(self, self.creator) }
+  end
+
+  #Called on EXISTING and NEW records
+  def save_callback
+  end
+
+  #TODO: translate worklog.log_type into notification state
+  def deliver_notifications(user, worklog)
+    if self.recipient_users.length > 0
+      begin
+        Notifications::deliver_changed(self, user, self.all_notify_emails, worklog.comment? ? worklog.body : "") )
+        self.notified_last_change = self.recipient_users
+        self.mark_as_unread(self.recipient_users)
+
+        worklog = Worklog.create_for_task(self, user, _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", ")))
+        worklog.users = self.recipient_users
+        worklog.save
+      rescue
+      end
+    end
+    self.project.all_notice_groups.each { |ng| ng.send_user_notice(self, user) }
+  end
+
+  def create_worklog_for_modifications
+    body = []
+    self.changes do |attr, values|
+      if ['project_id', 'duration', 'milestone_id', 'due_at', 'status'].include? attr
+        case attr
+        when 'project_id'
+          body << "<strong>Project</strong>: #{self.project_was.name} -> #{self.project.name}"
+        when 'duration'
+          body << "<strong>Estimate</strong>: #{self.updated_by.format_duration(values.first)} -> #{self.updated_by.format_duration(values.last)}"
+        when 'milestone_id'
+          before = self.milestone_was ? self.milestone_was.name : 'none'
+          after = self.milestone ? self.milestone.name : 'none'
+          body << "<strong>Milestone</strong>: #{before} -> #{after}"
+        when 'due_at'
+          before = self.due_at_was ? self.updated_by.tz.utc_to_local(values.first).strftime_localized("%A, %d %B %Y") : 'none'
+          before = self.due_at ? self.updated_by.tz.utc_to_local(values.last).strftime_localized("%A, %d %B %Y") : 'none'
+          body << "<strong>Due</strong>: #{before} -> #{after}"
+        when 'status'
+          body << "<strong>Status</strong>: #{self.status_types[values.first]} -> #{self.status_types[values.last]}"
+        end
+      else
+        body << "<strong>#{attr.capitalize}</strong>: #{values.first} -> #{values.last}"
+      end
+    end
+
+    if self.modified_associations.length > 0
+      body << "<strong>Assignment</strong>: #{self.users.map { |u| u.name }.join(', ')}"
+    else
+      body << "<strong>Assignment</strong>: None"
+    end
+
+    if self.modified_dependencies.length > 0
+      body << "<strong>Dependencies</strong>: #{self.dependencies.map { |d| d.name }.join(', ')}"
+    else
+      body << "<strong>Dependencies</strong>: None"
+    end
+
+    body << self.work_logs.last.body if self.work_logs.last and self.work_logs.last.comment?
+    worklog = Worklog.create_for_self(self, self.updated_by, self.all_notify_emails, body.join("\n"))
+
+    if self.status.changed?
+      if self.status > 2
+        worklog.log_type = EventLog::TASK_COMPLETED
+      else
+        worklog.log_type = EventLog::TASK_REVERTED
+      end
+    end
+
+    return worklog
+  end
+
+  def modified_associations
+    unless @modified_associations
+      @modified_associations = self.associations.select { |a| a.new? or a.changed? }
+    end
+    @modified_associtations
+  end
+
+  def modified_dependencies
+    unless @modified_dependencies
+      @modified_dependencies = self.dependencies.select { |a| a.new? or a.changed? }
+    end
+    @modified_dependencies
   end
 
   def self.per_page
@@ -103,8 +211,6 @@ class Task < ActiveRecord::Base
   def recalculate_worked_minutes
     self.worked_minutes = WorkLog.sum(:duration, :conditions => ["task_id = ?", self.id]).to_i / 60
   end
-
-
 
   def issue_type
     Task.issue_types[self.type_id.to_i]
