@@ -7,6 +7,9 @@ class User < ActiveRecord::Base
            :validate => false)
   include CustomAttributeMethods
 
+  has_one   :perm_template
+  accepts_nested_attributes_for :perm_template
+
   belongs_to    :company
   belongs_to    :customer
   belongs_to    :default_user_permission
