@@ -1,5 +1,5 @@
 class Task
-  # Module that regroups all functions dealing witrh task tags.
+  # Module that regroups all functions dealing with task tags.
   # A tag represents a key word used to group tasks of similar nature together.
   # A tag has a has_and_belongs_to_many relationship with tasks 
   # (i.e. A tag can be associated to many tasks and a task can be grouped into many tags).
@@ -83,7 +83,7 @@ class Task
       # :filter_milestone => milestone id
       # :filter_status => => status id
       # :sort => sql ORDER BY
-      def Task.tagged_with(tag, options = {})
+      def self.tagged_with(tag, options = {})
         tags = []
         if tag.is_a? Tag
           tags = [tag.name]

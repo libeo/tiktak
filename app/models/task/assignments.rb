@@ -104,8 +104,9 @@ class Task
       end
 
       ###
-      #
-      #
+      # Unread users are users who have not read the notification sent. 
+      # A star will appear next to the task in task listings for unread notifications
+      # This function sets the unread flag for the specified users
       ###
       def unread_users=(users)
         update_assignments_properties(users, :unread, {:unread => true})

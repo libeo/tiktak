@@ -16,14 +16,14 @@ class Task
       ]
     
       # Creates a clone of the current task to be used when creating repeated tasks
-      def repeat_task(repeat_string)
+      def repeat_task
         task = self.clone
         task.status = 0
         task.project_id = self.project_id
         task.company_id = self.company_id
         task.creator_id = self.creator_id
         task.set_tags(self.tags.collect{|t| t.name}.join(', '))
-        task.set_self_num(self.company_id)
+        task.set_task_num(self.company_id)
         task.milestone_id = self.milestone_id
         task.due_at = task.next_repeat_date
 

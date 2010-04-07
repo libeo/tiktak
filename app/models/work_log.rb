@@ -19,6 +19,7 @@ class WorkLog < ActiveRecord::Base
   has_many    :work_log_notifications, :dependent => :destroy
   has_many    :users, :through => :work_log_notifications
 
+  validates_presence_of :task_id
   
   after_update { |r|
     r.ical_entry.destroy if r.ical_entry
@@ -36,6 +37,12 @@ class WorkLog < ActiveRecord::Base
     end
   
   }
+
+  before_create do |worklog|
+    worklog.started_at = Time.now.utc unless worklog.started_at
+    worklog.project_id = worklog.task.project_id unless worklog.project_id
+    worklog.company_id = worklog.task.company_id unless worklog.company_id
+  end
 
   after_create { |r|
     l = r.create_event_log
