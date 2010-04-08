@@ -4,6 +4,16 @@ class Task
 
       private
 
+      def add_assignment(assignment)
+        @new_assignments ||= []
+        @new_assignments << assignment
+      end
+
+      def remove_assignment(assignment)
+        @removed_assignments ||= []
+        @removed_assignments << assignment
+      end
+
       def update_assignment_properties(users, property, create_attributes, absolute = true)
         update_assignment_properties_with_ids(users.map{|u|u.id}, property, create_attributes, absolute)
       end

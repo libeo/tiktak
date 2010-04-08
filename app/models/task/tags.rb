@@ -154,6 +154,7 @@ class Task
       def set_tags=( tagstring )
         self.set_tags(tagstring)
       end
+      alias :tags= :set_tags=
 
       # Checks if the task is associated with tag
       # tag : Tag of string representing tag key word

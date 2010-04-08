@@ -3,4 +3,6 @@ class Assignment < ActiveRecord::Base
   belongs_to :task
 
   named_scope :unread, :conditions => { :unread => true }
+
+  private 
 end

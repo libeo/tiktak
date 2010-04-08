@@ -3,7 +3,7 @@ require "active_record_extensions"
 # A task
 #
 # Belongs to a project, milestone, creator
-# Has many tags, users (through task_owners), tags (through task_tags),
+# Has many tags, users (through assignments), tags (through task_tags),
 #   dependencies (tasks which should be done before this one) and 
 #   dependants (tasks which should be done after this one),
 #   todos, and sheets
@@ -21,7 +21,7 @@ class Task < ActiveRecord::Base
   #has_many      :notifications, :dependent => :destroy
   #has_many      :watchers, :through => :notifications, :source => :user
   #
-  has_many  :assignments
+  has_many  :assignments, :after_create => :add_assignment, :after_remove => :remove_assignment
   has_many  :users, :through => :assignments, :source => :user
   has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
   has_many  :recipient_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true and users.receive_notifications = true"
@@ -37,8 +37,8 @@ class Task < ActiveRecord::Base
   belongs_to    :old_owner, :class_name => "User", :foreign_key => "user_id"
 
   has_and_belongs_to_many  :tags, :join_table => 'task_tags'
-  has_and_belongs_to_many  :dependencies, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "dependency_id", :foreign_key => "task_id", :order => 'dependency_id'
-  has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id'
+  has_and_belongs_to_many  :dependencies, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "dependency_id", :foreign_key => "task_id", :order => 'dependency_id', :after_add => :add_dependency, :after_remove => :remove_dependency
+  has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id', :after_add => :add_dependant, :after_remove, :remove_dependant
 
   has_many :task_property_values, :dependent => :destroy, :include => [ :property ]
   has_many :task_customers, :dependent => :destroy
@@ -51,8 +51,16 @@ class Task < ActiveRecord::Base
   has_many      :sheets
   has_and_belongs_to_many :resources
 
-  attr_reader :modified_associations
-  attr_reader :modified_dependencies
+  accepts_nested_attributes_for :task_property_values
+  accepts_nested_attributes_for :assignments
+  accepts_nested_attributes_for :work_logs
+  accepts_nested_attributes_for :attachments
+  accepts_nested_attributes_for :dependencies
+  accepts_nested_attributes_for :dependants
+  accepts_nested_attributes_for :todos
+
+  attr_writer :modified_dependencies
+  attr_writer :modified_dependants
 
   augment RepeatDate
   augment Attributes
@@ -74,15 +82,30 @@ class Task < ActiveRecord::Base
 
   after_save :save_callback
 
-  before_update do |task|
-    task.modified_associations
-    task.modified_dependencies
-  end
-
   after_create :create_callback
   after_update :update_callback
 
   private
+
+  def add_dependency(dependency)
+    @new_dependencies ||= []
+    @new_dependencies << dependency
+  end
+
+  def remove_dependency(dependency)
+    @removed_dependencies ||= []
+    @removed_dependencies << dependency
+  end
+
+  def add_dependant(dependant)
+    @new_dependants ||= []
+    @new_dependants << dependant
+  end
+
+  def remove_dependant(dependant)
+    @removed_dependants ||= []
+    @removed_dependants << dependant
+  end
 
   #Called on EXISTING and NEW records
   def save_callback
@@ -98,6 +121,14 @@ class Task < ActiveRecord::Base
 
     next_repeat = self.next_repeat_date
     self.repeat_task if next_repeat and Time.now.utc >= next_repeat
+
+    self.dependants.each do |d|
+      d.modified_dependencies << self
+    end
+
+    self.dependencies.each do |d|
+      d.modified_dependants << self
+    end
   end
 
   #Called on EXISTING records
@@ -131,6 +162,11 @@ class Task < ActiveRecord::Base
   end
 
   public
+
+  def has_changed?
+    self.changed? or @new_associations or @removed_associations or @new_dependencies or @removed_dependencies or @new_dependants or @removed_dependants or
+    self.assignments.select { |a| a.changed? }.length > 0
+  end
 
   def deliver_notifications(user, worklog, event_type=:updated)
     if self.recipient_users.length > 0
@@ -173,7 +209,7 @@ class Task < ActiveRecord::Base
       end
     end
 
-    if self.modified_associations.length > 0
+    if self.assignments.select { |a| a.assigned? and a.changed? }.length > 0 or !@new_assignments.nil? or !@deleted_assignments.nil?
       body << "<strong>Assignment</strong>: #{self.users.length > 0 ? self.users.map { |u| u.name }.join(', ') : 'None'}"
       event_type = :reassigned
     end
@@ -212,17 +248,15 @@ class Task < ActiveRecord::Base
   end
 
   def modified_associations
-    unless @modified_associations
-      @modified_associations = self.associations.select { |a| a.new? or a.changed? }
-    end
-    @modified_associtations
+    @modified_associations ||= self.associations.select { |a| a.new? or a.changed? }
   end
 
   def modified_dependencies
-    unless @modified_dependencies
-      @modified_dependencies = self.dependencies.select { |a| a.new? or a.changed? }
-    end
-    @modified_dependencies
+    @modified_dependencies ||= self.dependencies.select { |d| d.new? or d.changed? }
+  end
+
+  def modified_dependants
+    @modified_dependants ||= self.dependants.select { |d| d.new? or d.changed? }
   end
 
   def self.per_page
@@ -446,12 +480,7 @@ class Task < ActiveRecord::Base
     params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
     params[:due_at] = TimeParser.datetime_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
     params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
-    task = Task.new(params)
-    result = task.save
-    return result unless result
-    task.users << user
-
-    return task
+    Task.create(params)
   end
 
 end
