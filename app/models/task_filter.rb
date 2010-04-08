@@ -236,7 +236,6 @@ class TaskFilter < ActiveRecord::Base
       when 'NoUser'
         res << "tasks.id not in (select task_owners.task_id from task_owners)"
       when 'TaskNumber'
-        debugger
         res << "tasks.task_num = #{q.qualifiable_id}"
       end
     end

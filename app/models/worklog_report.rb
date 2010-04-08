@@ -191,7 +191,6 @@ class WorklogReport
       sql << "(work_logs.approved = false or work_logs.approved is null)" if @type == WorklogReport::TIMESHEET or @type == WorklogReport::MERGED_TIMESHEET and params[:hide_approved].to_i > 0
       logs = @tf.work_logs(sql.join(" AND "))
       #logs = @tf.work_logs_paginated(sql.join(" AND "), params[:page])
-      debugger
     else
 
       tasks.each do |t|
@@ -327,7 +326,6 @@ class WorklogReport
         end
       end
     end
-    debugger
 
     for w in work_logs
       case @type

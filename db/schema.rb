@@ -349,14 +349,14 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
   add_index "pages", ["user_id"], :name => "fk_pages_user_id"
 
   create_table "perm_templates", :force => true do |t|
-    t.boolean  "can_comment",    :default => false
-    t.boolean  "can_work",       :default => false
-    t.boolean  "can_report",     :default => false
+    t.boolean  "can_comment",    :default => true
+    t.boolean  "can_work",       :default => true
+    t.boolean  "can_report",     :default => true
+    t.boolean  "can_close",      :default => true
     t.boolean  "can_create",     :default => false
     t.boolean  "can_edit",       :default => false
     t.boolean  "can_reassign",   :default => false
     t.boolean  "can_prioritize", :default => false
-    t.boolean  "can_close",      :default => false
     t.boolean  "can_grant",      :default => false
     t.boolean  "can_milestone",  :default => false
     t.datetime "created_at"
