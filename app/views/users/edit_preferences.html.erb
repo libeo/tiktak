@@ -2,10 +2,6 @@
   <legend><%=_ 'Preferences' %></legend>
   
 <% form_for @user, :url => {:action => 'update_preferences', :id => @user.id} do |user_form| %>
-  <% debugger %>
-  <% user_form.fields_for :perm_template do |p_field| %>
-    <% debugger %>
-  <% end %>
   <%= render :partial => "preferences", :locals => {:user_form => user_form} %>
   <label>&nbsp;</label>
   <%= submit_tag _("Save"), :class => 'nolabel' %>

@@ -195,9 +195,11 @@ class ProjectsController < ApplicationController
       permission.user_id = user.id
       permission.project_id = @project.id
       permission.company_id = current_user.company_id
-      permission.can_comment = 1
-      permission.can_work = 1
-      permission.can_close = 1
+      if current_user.create_projects?
+        permission.update_attributes(current_user.perm_template.permissions)
+      else
+        permission.update_attributes({:can_work => true, :can_comment => true, :can_close => true})
+      end
       permission.save
     else
       permission = ProjectPermission.find(:first, :conditions => ["user_id = ? AND project_id = ? AND company_id = ?", params[:user_id], params[:id], current_user.company_id])

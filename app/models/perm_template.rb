@@ -13,7 +13,7 @@ class PermTemplate < ActiveRecord::Base
 
   def permissions
     perms = self.attributes
-    perms.delete_if { |key, value| key =~ /_id$/ }
+    perms.delete_if { |key, value| key =~ /id$/ or ['updated_at'].include? key }
     perms
   end
 

@@ -40,21 +40,21 @@
 <% if @user.create_projects? %>
   <label for="user_perm_template"><%= _ 'Default permissions for people added to a project' %></label>
   <% user_form.fields_for :perm_template do |perm_fields| %>
-    <div style='clear:right;' />
-    <table style='float:left;'>
-      <tr>
-        <% perms = ['comment', 'work', 'close', 'create', 'edit', 'reassign', 'prioritize', 'milestone', 'report', 'grant']
-        perms.each do |perm|%>
-          <th><%= _(perm) %> </th>
-        <% end %>
-      </tr>
-      <tr>
-        <% perms.each do |perm| %>
-          <td><%= perm_fields.check_box 'can_'+perm %></td>
-        <% end %>
-      </tr>
-    </table>
-
+    <div class='perm_template'>
+      <table>
+        <tr>
+          <% perms = ['comment', 'work', 'close', 'create', 'edit', 'reassign', 'prioritize', 'milestone', 'report', 'grant']
+          perms.each do |perm|%>
+            <th><%= _(perm) %> </th>
+          <% end %>
+        </tr>
+        <tr>
+          <% perms.each do |perm| %>
+            <td><%= perm_fields.check_box 'can_'+perm %></td>
+          <% end %>
+        </tr>
+      </table>
+    </div>
   <% end %>
 <% end %>
 </fieldset>
