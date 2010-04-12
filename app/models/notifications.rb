@@ -7,7 +7,7 @@ class Notifications < ActionMailer::Base
 
     options = {:sent_at => Time.now,
       :duration_format => nil,
-      :subject => "#{$CONFIG[:prefix]} #{_('Created')}: #{task.issue_name} [#{task.project.name}] (#{(task.users.empty? ? _('Unassigned') : task.users.collect{|u| u.name}.join(', '))})",
+      :subject => "#{$CONFIG[:prefix]} #{_('Created')}: #{task.issue_name} [#{task.project.name}] (#{(task.assigned_users.empty? ? _('Unassigned') : task.users.collect{|u| u.name}.join(', '))})",
       :header => ""
     }.merge(options)
 

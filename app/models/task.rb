@@ -21,14 +21,24 @@ class Task < ActiveRecord::Base
   #has_many      :notifications, :dependent => :destroy
   #has_many      :watchers, :through => :notifications, :source => :user
   #
-  has_many  :assignments, :after_create => :add_assignment, :after_remove => :remove_assignment
-  has_many  :users, :through => :assignments, :source => :user
-  has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true"
+  has_many  :assignments, :after_add => :mark_new_assignment, :after_remove => :mark_removed_assignment
+  has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
+    :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
+
+  has_many  :users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
+    :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
+
+  has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true", 
+    :before_add => :reject_if_already_notified, :after_add => :add_notified_users
+
+  has_many  :notified_last_change, :through => :assignments, :source => :user, :conditions => "assignments.notified_last_change = true",
+    :before_add => :reject_if_already_notified_last_change, :after_add => :add_notified_last_change
+
   has_many  :recipient_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true and users.receive_notifications = true"
   has_many  :watchers, :through => :assignments, :source => :user, :conditions => "assignments.notified = false and assignments.assigned = false"
-  has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => "User", :conditions => "assignments.assigned = true"
-  has_many  :notified_last_change, :through => :assignments, :source => :user, :conditions => "assignments.notified_last_change = true"
-  has_many  :unread_users, :through => :assignments, :source => :user, :conditions => 'assignments.unread = true'
+
+  has_many  :unread_users, :through => :assignments, :source => :user, :conditions => 'assignments.unread = true',
+    :before_add => :reject_if_already_unread, :after_add => :add_unread_users
 
   has_many      :work_logs, :order => "started_at asc"
   has_many      :attachments, :class_name => "ProjectFile", :dependent => :destroy
@@ -37,8 +47,8 @@ class Task < ActiveRecord::Base
   belongs_to    :old_owner, :class_name => "User", :foreign_key => "user_id"
 
   has_and_belongs_to_many  :tags, :join_table => 'task_tags'
-  has_and_belongs_to_many  :dependencies, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "dependency_id", :foreign_key => "task_id", :order => 'dependency_id', :after_add => :add_dependency, :after_remove => :remove_dependency
-  has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id', :after_add => :add_dependant, :after_remove, :remove_dependant
+  has_and_belongs_to_many  :dependencies, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "dependency_id", :foreign_key => "task_id", :order => 'dependency_id', :after_add => :mark_new_dependency, :after_remove => :mark_removed_dependency
+  has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id', :after_add => :mark_new_dependant, :after_remove=> :mark_removed_dependant
 
   has_many :task_property_values, :dependent => :destroy, :include => [ :property ]
   has_many :task_customers, :dependent => :destroy
@@ -46,6 +56,7 @@ class Task < ActiveRecord::Base
   adds_and_removes_using_params :customers
 
   has_one       :ical_entry
+  belongs_to :updated_by, :class_name => "User"
 
   has_many      :todos, :order => "completed_at IS NULL desc, completed_at desc, position"
   has_many      :sheets
@@ -59,8 +70,7 @@ class Task < ActiveRecord::Base
   accepts_nested_attributes_for :dependants
   accepts_nested_attributes_for :todos
 
-  attr_writer :modified_dependencies
-  attr_writer :modified_dependants
+  attr_reader :new_assignments
 
   augment RepeatDate
   augment Attributes
@@ -87,22 +97,22 @@ class Task < ActiveRecord::Base
 
   private
 
-  def add_dependency(dependency)
+  def mark_new_dependency(dependency)
     @new_dependencies ||= []
     @new_dependencies << dependency
   end
 
-  def remove_dependency(dependency)
+  def mark_removed_dependency(dependency)
     @removed_dependencies ||= []
     @removed_dependencies << dependency
   end
 
-  def add_dependant(dependant)
+  def mark_new_dependant(dependant)
     @new_dependants ||= []
     @new_dependants << dependant
   end
 
-  def remove_dependant(dependant)
+  def mark_removed_dependant(dependant)
     @removed_dependants ||= []
     @removed_dependants << dependant
   end
@@ -121,14 +131,6 @@ class Task < ActiveRecord::Base
 
     next_repeat = self.next_repeat_date
     self.repeat_task if next_repeat and Time.now.utc >= next_repeat
-
-    self.dependants.each do |d|
-      d.modified_dependencies << self
-    end
-
-    self.dependencies.each do |d|
-      d.modified_dependants << self
-    end
   end
 
   #Called on EXISTING records
@@ -139,9 +141,16 @@ class Task < ActiveRecord::Base
     elsif status < 2 and self.completed_at
       self.completed_at = nil
     end
+    self.send_notifications
 
-    worklog, event_type = self.create_event_worklog
-    self.deliver_notifications(self.updated_by, worklog, event_type)
+  end
+
+  def send_notifications
+    if self.has_changed?
+      worklog, event_type = self.create_event_worklog
+      self.deliver_notification_emails(self.updated_by, worklog, event_type)
+      @new_assignments, @removed_assignments, @new_dependencies, @removed_dependencies, @new_dependants, @removed_dependants = [nil] * 6
+    end
   end
 
   #Called on NEW records
@@ -164,11 +173,11 @@ class Task < ActiveRecord::Base
   public
 
   def has_changed?
-    self.changed? or @new_associations or @removed_associations or @new_dependencies or @removed_dependencies or @new_dependants or @removed_dependants or
-    self.assignments.select { |a| a.changed? }.length > 0
+    self.changed? or !@new_assignments.nil? or !@removed_assignments.nil? or !@new_dependencies.nil? or !@removed_dependencies.nil? or !@new_dependants.nil? or !@removed_dependants.nil? or
+    self.assignments.select { |a| a.changed? or a.new_record? }.length > 0
   end
 
-  def deliver_notifications(user, worklog, event_type=:updated)
+  def deliver_notification_emails(user, worklog, event_type=:updated)
     if self.recipient_users.length > 0
       begin
         body = worklog.comment? ? worklog.body.gsub(/<[^>]*>/, '') : ''
@@ -182,7 +191,7 @@ class Task < ActiveRecord::Base
       rescue
       end
     end
-    self.project.all_notice_groups.each { |ng| ng.send_user_notice(self, user) }
+    #self.project.all_notice_groups.each { |ng| ng.send_task_notice(self, user) }
   end
 
   def create_event_worklog
@@ -209,30 +218,31 @@ class Task < ActiveRecord::Base
       end
     end
 
-    if self.assignments.select { |a| a.assigned? and a.changed? }.length > 0 or !@new_assignments.nil? or !@deleted_assignments.nil?
-      body << "<strong>Assignment</strong>: #{self.users.length > 0 ? self.users.map { |u| u.name }.join(', ') : 'None'}"
+    if self.assignments.select { |a| a.new_record? or a.changed? }.length > 0 or !@new_assignments.nil? or !@removed_assignments.nil?
+      body << "<strong>Assignment</strong>: #{self.assigned_users.length > 0 ? self.users.map { |u| u.name }.join(', ') : 'None'}"
       event_type = :reassigned
     end
 
-    if self.modified_dependencies.length > 0
+    if self.dependencies.select { |d| d.changed?  or d.new_record? }.length > 0 or @new_dependencies or @removed_dependencies
       body << "<strong>Dependencies</strong>: #{self.dependencies.length > 0 ? self.dependencies.map { |d| d.name }.join(', ') : 'None'}"
     end
 
     #Since work logs will soon be nested into tasks, work_logs are saved before the task.
     #Thus, if the user just added a comment, it should be the last work log added to the task
-    if body.length > 0 and self.work_logs.last.comment?
-
-      worklog = self.work_logs.last
+    if body.length == 0 and self.work_logs.last.comment?
+      body = [self.work_logs.last.comment]
       update_type = :comment
+    end
 
-    else
+    #Create event work log only if something was modified. Body contais a list of things that have been modified
+    worklog = nil
+    if body.length > 0
 
       defaults = {
         :log_type => EventLog::TASK_MODIFIED,
       }
-      worklog = Worklog.create_for_task(self, self.updated_by, self.all_notify_emails, body.join("\n"), defaults)
-      if self.status.changed?
-        update_type = :status
+      worklog = WorkLog.create_for_task(self, self.updated_by, body.join("\n"), defaults)
+      if self.status_changed?
         if self.status < 2
           worklog.log_type = EventLog::TASK_REVERTED
           update_type = :reverted
@@ -245,18 +255,6 @@ class Task < ActiveRecord::Base
     end
 
     return worklog, event_type
-  end
-
-  def modified_associations
-    @modified_associations ||= self.associations.select { |a| a.new? or a.changed? }
-  end
-
-  def modified_dependencies
-    @modified_dependencies ||= self.dependencies.select { |d| d.new? or d.changed? }
-  end
-
-  def modified_dependants
-    @modified_dependants ||= self.dependants.select { |d| d.new? or d.changed? }
   end
 
   def self.per_page

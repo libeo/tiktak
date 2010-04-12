@@ -2,19 +2,44 @@ class Task
   module Assignments
     augmentation do
 
-      private
-
-      def add_assignment(assignment)
+      def mark_new_assignment(assignment)
         @new_assignments ||= []
         @new_assignments << assignment
       end
 
-      def remove_assignment(assignment)
+      def mark_removed_assignment(assignment)
         @removed_assignments ||= []
         @removed_assignments << assignment
       end
 
+      def changed_assigned_users? 
+        self.assignments.select { |a| a.assigned? and (a.changed? or a.new_record?) }.length > 0 or !@new_assignments.nil? or !@removed_assignments.nil?
+      end
+
+      private
+
+      def reject_if_already_assigned(user)
+        throw "User already assigned" if self.assigned_users.exists?(user.id)
+      end
+
+      def reject_if_already_notified(user)
+        throw "User already notified" if self.notified_users.exists?(user.id)
+      end
+
+      def reject_if_already_notified(user)
+        throw "User already notified" if self.notified_users.exists?(user.id)
+      end
+
+      def reject_if_already_notified_last_change(user)
+        throw "User already notified of last change" if self.notified_last_change.exists?(user.id)
+      end
+
+      def reject_if_already_unread(user)
+        throw "User already unread" if self.unread_users.exists?(user.id)
+      end
+
       def update_assignment_properties(users, property, create_attributes, absolute = true)
+        users = [users].flatten
         update_assignment_properties_with_ids(users.map{|u|u.id}, property, create_attributes, absolute)
       end
 
@@ -22,12 +47,20 @@ class Task
         self.assignments.all(:select => 'id, user_id, assigned, notified, notified_last_change').each do |a|
           if user_ids.include?(a.user_id)
             a.update_attributes(create_attributes)
+            self.mark_new_assignment(a)
           elsif absolute == true
             a.update_attribute(property, false)
           end
           user_ids.delete(a.user_id)
         end
-        user_ids.each { |u| self.assignments.create(create_attributes.merge({:user_id => u})) }
+
+        user_ids.each do |u| 
+          self.mark_new_assignment(self.assignments.create(create_attributes.merge({:user_id => u})))
+          #self.assignments.create(create_attributes.merge({:user_id => u}))
+        end
+        #send notifications that assignments have changed
+        self.send_notifcations
+        #refresh assignments to include also those that have been created
         self.assignments(true)
       end
 
@@ -59,17 +92,17 @@ class Task
       ###
       def notified_users=(users)
         update_assignment_properties(users, :notified, {:notified => true, :assigned => false})
-        self.notified_users
+        self.notified_users(true)
       end
 
       def notification_ids=(user_ids)
         update_assignment_properties_with_ids(user_ids, :notified, {:notified => true, :assigned => false})
-        self.notified_users
+        self.notified_users(true)
       end
 
       def add_notified_users(users)
         update_assignment_properties(users, :notified, {:notified => true}, false)
-        self.notified_users
+        self.notified_users(true)
       end
 
       ###
@@ -77,17 +110,17 @@ class Task
       ###
       def assigned_users=(users)
         update_assignment_properties(users, :assigned, {:notified => false, :assigned => true})
-        self.assigned_users
+        self.assigned_users(true)
       end
 
       def assigned_user_ids=(user_ids)
         update_assignment_properties_with_ids(user_ids, :assigned, {:notified => false, :assigned => true})
-        self.assigned_users
+        self.assigned_users(true)
       end
 
       def add_assigned_users(users)
-        update_assignment_properties(users, :assigned, {:assigned => true}, false)
-        self.assigned_users
+        update_assignment_properties(users, :assigned, {:assigned => true, :notified => false})
+        self.assigned_users(true)
       end
 
       ###
@@ -105,12 +138,12 @@ class Task
 
       def add_notified_last_change(users)
         update_assignment_properties(users, :notified_last_change, {:assigned => false, :notified => true, :notified_last_change => true}, false)
-        self.notified_last_change
+        self.notified_last_change(users)
       end
 
       def add_notified_last_change_ids(user_ids)
         update_assignment_properties_with_ids(user_ids, :notified_last_change, {:assigned => false, :notified => true, :notified_last_change => true}, false)
-        self.notified_last_change
+        self.notified_last_change(users)
       end
 
       ###
@@ -120,17 +153,17 @@ class Task
       ###
       def unread_users=(users)
         update_assignments_properties(users, :unread, {:unread => true})
-        self.unread_users
+        self.unread_users(users)
       end
 
       def unread_user_ids=(user_ids)
         update_assignments_properties_with_ids(user_ids, :unread, {:unread => true})
-        self.unread_users
+        self.unread_users(users)
       end
 
       def add_unread_users(users)
         update_assignments_properties(users, :unread, {:unread => true}, false)
-        self.unread_users
+        self.unread_users(users)
       end
 
       ###
