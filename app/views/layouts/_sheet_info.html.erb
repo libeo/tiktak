@@ -11,8 +11,18 @@
 -%>
 <div id="clock_time">
   <div id="clock_image">
-    <% link_to( image_tag 'general/img_co_icon-clock-top.png' :title => t(:save_time) )%>
-
+    <%= link_to( image_tag 'general/img_co_icon-clock-top.png' :title => t(:save_time), task_stop_work_path )%>
+  </div>
+  <div id="clock_text">
+    <p class="task">
+      <%= link_to task.issue_name + ' - ' + task.project_name + ' / ' + task.full_tags, task_path(task) %>
+    </p>
+    <p class="time">
+      <span class="task_time"><%=worked_nice(@current_sheet.duration/60) %></span>
+      <span class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :url => task_cancel_work_ajax_path,
+        :confirm => t(:confirm_cancel_work) %></span>
+    </p>
+  </div>
 </div>
 
 

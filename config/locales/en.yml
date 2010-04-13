@@ -4,4 +4,6 @@
 en:
   hello: "Hello world"
   save_time : "Save time"
+  cancel_worked_time : "Cancel time worked"
+  confirm_cancel_work : "Really cancel time ?"
 
