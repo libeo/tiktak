@@ -67,6 +67,7 @@ Rails::Initializer.run do |config|
   config.gem 'RedCloth', :version => '4.2.2'
   config.gem 'rmagick', :lib => 'RMagick'
   config.gem 'gchartrb', :version => '0.8', :lib => 'google_chart'
+  config.gem 'i18n'
 
   # Gems used for automated testing
   config.gem "thoughtbot-shoulda", :lib => "shoulda", :source => "http://gems.github.com"
