@@ -20,10 +20,15 @@ class Task < ActiveRecord::Base
   #has_many      :task_owners, :dependent => :destroy
   #has_many      :notifications, :dependent => :destroy
   #has_many      :watchers, :through => :notifications, :source => :user
-  #
+
+  augment AssignmentsNew
   has_many  :assignments, :after_add => :mark_new_assignment, :after_remove => :mark_removed_assignment
+
+  #has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
+  #  :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
+  #
   has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
-    :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
+    :extend => [AssignmentProperties, UserAssignments]
 
   has_many  :users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
     :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
@@ -76,7 +81,7 @@ class Task < ActiveRecord::Base
   augment Attributes
   augment Tags
   augment TaskProperties
-  augment Assignments
+  #augment Assignments
   augment ViewHelpers
 
   validates_length_of           :name,  :maximum=>200, :allow_nil => true
