@@ -175,6 +175,7 @@ class ApplicationController < ActionController::Base
       
       # Set current locale
       Localization.lang(current_user.locale || 'en_US')
+      I18n.locale = current_user.locale[0,2].downcase
       
       # Update session with new filters, if they don't already exist
       session[:filter_severity] ||= "-10"
