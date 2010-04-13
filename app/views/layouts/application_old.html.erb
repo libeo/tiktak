@@ -1,69 +1,48 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
   <head>
-  <%= javascript_include_merged :base %>
-  
-  <!-- Is this still useful ? -->
+	<%= javascript_include_merged :base %>
 	<%= yield :tinymce %>
-	<%= yield :tinymce_init %>
 
 	<%= javascript_include_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
 	<%= javascript_include_tag "swfobject" %>
 
-  <%= stylesheet_link_merged :base %>
-  <%= stylesheet_link_tag 'general' %>
-  <%= stylesheet_link_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
-  <%= javascript_include_tag "builder" if ['activities'].include? controller.controller_name %>
-
+	<%= stylesheet_link_merged :base %>
+	<%= stylesheet_link_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
+	<%= javascript_include_tag "builder" if ['activities'].include? controller.controller_name %>
 	<% if ['activities'].include? controller.controller_name %>
 	  <%= javascript_include_tag "portal" %>
 	  <!--[if IE]><%= javascript_include_tag "excanvas" %><![endif]-->
 	  <%= javascript_include_tag "flotr" %>
-  <% end %>
-
-  <%= stylesheet_link_tag "print", { :media => "print" } %>
-
+	<% end %>
+	<%= yield :tinymce_init %>
+	<%= stylesheet_link_tag "print", { :media => "print" } %>
 	<%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
 
-  <!-- TODO: move this into worklog view -->
 	<%= stylesheet_link_tag "/javascripts/jscalendar-1.0/calendar-blue.css" %>
 	<%= javascript_include_tag "jscalendar-1.0/calendar.js" %>
 	<%= javascript_include_tag "jscalendar-1.0/lang/calendar-en.js" %>
 	<%= javascript_include_tag "jscalendar-1.0/calendar-setup.js" %>
 
 	<title><%= $CONFIG[:productName] %></title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	  <% @internal = current_user.company.internal_customer %>
 
-  <!-- TODO : is this still used ? -->
-  <% @internal = current_user.company.internal_customer %>
 	<style type="text/css">
 	<% if !@internal.nil? && !@internal.css.nil? && @internal.css.length > 0 %>
-    <%= @internal.css %>
-  <% end %>
-
+	<%= @internal.css %>
+	<% end %>
 	<% unless current_user.option_floating_chat %>
 	#presence {
 		  position:relative;
 	}
-  <% end %>
-  </style>
+	<% end %>
+	</style>
 </head>
-<body>
-<div id="container">
-<div id="loading" class="loading"><%= image_tag('spinner.gif', :border => 0) %></div>
-<div id="tip" class='tip'><table border="0"><tr><td style="" id="message"><br/></td></tr></table></div>
-<div id="passive-chat-container" style="display:none;"><table width="100%" cellspacing="0"><tbody id="passive-chat"></tbody></table></div>
-
-<%= render :partial => 'header' %>
-
-<div id="top">
-  <div id="row_1">
-    <div id="logo">
-      <img src="images/img_co_logo.png" alt="SYS-TECH Technologies de l'information libres" title="SYS-TECH Technologies de l'information libres" />
-          </div>
-
-  </div>
-
+<body id="body">
+	<div id="loading" style="z-index: 1000; position:absolute; right: 10px; top: 10px; width:70px; height:20px; color: white; padding:6px; display: none; "><%= image_tag('spinner.gif', :border => 0) %></div>
+	<div id="tip" style="position:absolute;top:250px;left:250px;visibility:hidden;max-width:600px;"><table border="0"><tr><td style="" id="message"><br/></td></tr></table></div>
+	<div id="passive-chat-container" style="display:none;"><table width="100%" cellspacing="0"><tbody id="passive-chat"></tbody></table></div>
 
 	<div id="menu"><%= render(:partial => "layouts/menu") %></div>
 	<div id="globalMenu"><div id="tabmenu"><%= render(:partial => "layouts/tabmenu")%></div></div>
