@@ -22,28 +22,6 @@ class Task < ActiveRecord::Base
   #has_many      :watchers, :through => :notifications, :source => :user
 
   augment AssignmentsNew
-  has_many  :assignments, :after_add => :mark_new_assignment, :after_remove => :mark_removed_assignment
-
-  #has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
-  #  :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
-  #
-  has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
-    :extend => [AssignmentProperties, UserAssignments]
-
-  has_many  :users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
-    :after_add => :add_assigned_users, :before_add => :reject_if_already_assigned, :after_remove => :send_assigned_user_notifications
-
-  has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true", 
-    :before_add => :reject_if_already_notified, :after_add => :add_notified_users
-
-  has_many  :notified_last_change, :through => :assignments, :source => :user, :conditions => "assignments.notified_last_change = true",
-    :before_add => :reject_if_already_notified_last_change, :after_add => :add_notified_last_change
-
-  has_many  :recipient_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true and users.receive_notifications = true"
-  has_many  :watchers, :through => :assignments, :source => :user, :conditions => "assignments.notified = false and assignments.assigned = false"
-
-  has_many  :unread_users, :through => :assignments, :source => :user, :conditions => 'assignments.unread = true',
-    :before_add => :reject_if_already_unread, :after_add => :add_unread_users
 
   has_many      :work_logs, :order => "started_at asc"
   has_many      :attachments, :class_name => "ProjectFile", :dependent => :destroy
@@ -81,7 +59,6 @@ class Task < ActiveRecord::Base
   augment Attributes
   augment Tags
   augment TaskProperties
-  #augment Assignments
   augment ViewHelpers
 
   validates_length_of           :name,  :maximum=>200, :allow_nil => true
@@ -146,7 +123,7 @@ class Task < ActiveRecord::Base
     elsif status < 2 and self.completed_at
       self.completed_at = nil
     end
-    self.send_notifications
+    send_notifications
 
   end
 
@@ -178,8 +155,11 @@ class Task < ActiveRecord::Base
   public
 
   def has_changed?
-    self.changed? or !@new_assignments.nil? or !@removed_assignments.nil? or !@new_dependencies.nil? or !@removed_dependencies.nil? or !@new_dependants.nil? or !@removed_dependants.nil? or
-    self.assignments.select { |a| a.changed? or a.new_record? }.length > 0
+    self.changed? or 
+    (@new_assignments and @new_assignments.select{|n|n.assigned?}.length > 0) or
+    (@removed_assignments and @removed_assignments.select{|n|n.assigned?}.length > 0) or
+    @new_dependencies or @removed_dependencies or
+    @new_dependants or @removed_dependants
   end
 
   def deliver_notification_emails(user, worklog, event_type=:updated)
