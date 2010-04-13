@@ -1,2 +1,4 @@
 fr:
   save_time : "Enregistrement du temps"
+  cancel_worked_time : "Annuler le temps fait"
+  confirm_cancel_work : "Êtes-vous sûr de vouloir annuler le temps ?"
