@@ -1,8 +1,34 @@
-<%= stylesheet_link_tag 'general' %>
+<%= stylesheet_link_tag 'header' %>
+<div id="container">
+  <div id="top">
+    <div id="row_1">
 
-<div id="top">
-  <div id="row_1">
-    <div id="logo">
-      <%= image_tag 'img_co_logo' :title => "SYS-TECH Technologies de l'information libres"  %>
+      <!-- TODO: integrate custom logo ? -->
+      <div id="logo">
+        <%= image_tag 'header/img_co_logo.png', :title => "SYS-TECH Technologies de l'information libres"  %>
+      </div>
+
+      <!-- Sheet, info on the task currently active -->
+      <div id="sheet_info">
+        <%= render :partial => 'layouts/sheet_info' %>
+      </div>
+
+      <!-- Login info and buttons to open the shortlist and user preferences -->
+      <%= render :partial => 'layouts/login_info' %>
     </div>
-    <%= render :partial => 'layouts/sheet_info' %>
+
+    <div id="row_2">
+
+      <!-- Main menu -->
+      <%= render :partial => 'layouts/tab_menu' %>
+
+      <!-- Counter indicating time left in work period -->
+      <div id="time_left">
+        <%= render :partial => 'layouts/time_left' %>
+      </div>
+
+      <!-- Search box -->
+      <%= render :partial => 'layouts/search' %>
+    </div>
+  </div>
+</div>
