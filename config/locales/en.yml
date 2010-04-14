@@ -2,8 +2,33 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #General
+  close : "Close"
+  #Header
   hello: "Hello world"
   save_time : "Save time"
+  resume_time : "Resume time"
   cancel_worked_time : "Cancel time worked"
   confirm_cancel_work : "Really cancel time ?"
+  worked_today : "worked today"
+  user_preferences: "Edit user preferences"
+  logout : "Log out"
+  time_left : "You have"
+  to_work : "work time left"
+  search : "Search"
+  #Tab menu
+  tutorial : "Tutorial"
+  overview : "Overview"
+  tasks : "Tasks"
+  add_task : "Create new task"
+  timeline : "Timeline"
+  reports : "Reports"
+  wiki : "Wiki"
+  chat : "Chat"
+  formus : "Forums"
+  files : "Files"
+  projects : "Projects"
+  resources : "Resources"
+  add_widget : "New widget"
+  add_project : "New project"
 

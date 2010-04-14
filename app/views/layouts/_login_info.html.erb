@@ -1,3 +1,17 @@
-<%= h(current_user.name + " / " + current_user.company.name) %><br />
-<small><%=tz.now.strftime("#{current_user.time_format} #{current_user.date_format}")%></small> 
-<%= "<small>[#{online_users} #{_('Online')}]</small>" %>
+<div id="tools">
+  <div id="tools_act_window">
+    <!-- Shortlist link -->
+    <%= link_to_function image_tag('header/img_co_icon-act-window.png'), 
+    "javascript: var timerwindow=window.open('#{request.protocol}#{request.host_with_port}/login/shortlist_auth/#{current_user.autologin}',
+      '', 'resizable=1, toolbar=0, location=0, status=0, menubar=0, scrollbars=1, width=300, heoght=650');
+      timerwindow.focus();", 
+      {:title => t(:shortlist_window), :alt => t(:shortlist_window)} %>
+  </div>
+  <div id="tools_parameters">
+    <%= link_to image_tag('header/img_co_icon-parameters.png', :alt => t(:user_preferences), :title => t(:user_preferences)), {:controller => 'users', :action => 'edit_preferences'} %>
+  </div>
+  <div id="tools_connexion">
+    <div class="username"><%= current_user.name %></div>
+    <div class="deconnection"><%= link_to t(:logout), {:controller => 'login', :action => 'logout'} %></div>
+  </div>
+</div>

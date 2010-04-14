@@ -1,0 +1,224 @@
+@charset "UTF-8";
+
+/**
+  *Styles de l'entête
+  */
+
+#top {
+	height:95px;
+	background:url(../../images/header/img_co_bg-top.jpg) repeat-x;
+}
+	
+	/*Rangée supérieure*/
+	
+	#row_1 {
+		height:64px;
+	}
+	
+		#logo {
+			padding:13px 0 0 15px;
+			width:188px;
+			background:url(../../images/header/img_co_sep-top.jpg) no-repeat right top;
+			float:left;
+		}
+		
+		/*Le bloc d'infos*/
+
+    .time_spent {
+      color: #FFFFFF;
+      font-size: 1.08em;
+      overflow: hidden;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+		
+		#sheet_info {
+			float:left;
+			padding:17px 0 0 18px;
+		}
+		
+			#sheet_info #clock_image {
+				float:left;
+				padding:2px 8px 0 0;
+			}
+			
+			#sheet_info #clock_text {
+				float:left;
+			}
+			
+				#sheet_info #clock_text .task a {
+					font-size:1.08em;
+					color:#fff;
+					text-decoration:none;
+          /* added by greg to truncate with 3 dots */
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+				}
+				
+				#sheet_info #clock_text .task a:hover {
+					text-decoration:underline;
+				}
+				
+				#sheet_info #clock_text .time {
+					margin-top:3px;
+				}
+				
+					#sheet_info #clock_text .time .task_time {
+						color:#bdbdbd;
+						margin-right:5px;
+					}
+					
+					#sheet_info #clock_text .time .task_cancel a{
+						color:#ffc2a9;
+						text-decoration:none;
+						background:url(../images/header/img_co_icon-cancel.png) no-repeat left 1px;
+						padding-left:16px;
+					}
+					
+					#sheet_info #clock_text .time .task_cancel a:hover {
+						text-decoration:underline;
+					}
+					
+		/*Le bloc utilitaires*/
+						
+		#tools {
+			float:right;
+			-webkit-border-bottom-left-radius:5px;
+			-moz-border-radius-bottomleft:5px;
+			border-bottom-left-radius:5px;
+			background:url(../images/header/img_co_bg-tools.jpg) repeat-x left top;
+			height:33px;
+		}
+		
+			#tools #tools_act_window {
+				float:left;
+				padding:9px 10px 5px 10px;
+				background:url(../images/header/img_co_sep-tools.jpg) no-repeat right top;
+			}
+			
+			#tools #tools_parameters {
+				float:left;
+				padding:8px 11px 4px 10px;
+				background:url(../images/header/img_co_sep-tools.jpg) no-repeat right top;
+			}
+			
+			#tools #tools_connexion {
+				font-family:Verdana, Arial, sans-serif;
+				font-size:0.92em;
+				color:#fff;
+				float:left;
+				padding:7px 12px 0 12px;
+			}
+			
+				#tools #tools_connexion .username {
+					font-weight:bold;
+					float:left;
+					background:url(../images/header/img_co_sep-username.jpg) no-repeat right top;
+					padding-right:11px;
+					margin:2px 6px 0 0;
+				}
+				
+				#tools #tools_connexion .deconnection {
+					float:left;
+				}
+				
+					#tools #tools_connexion .deconnection a{
+						float:left;
+						text-decoration:none;
+						color:#fff;
+						background:url(../images/header/img_co_btn-deconnexion.png) no-repeat right top;
+						padding:2px 23px 0 0;
+						height:18px;
+					}
+					
+					#tools #tools_connexion .deconnection a:hover {
+						text-decoration:underline;
+					}
+		
+	/*Rangée inférieure*/
+		
+	#row_2 {
+		position:relative;
+	}
+		
+		/*Menu*/
+		
+		#tabs {
+			float:left;
+			margin:4px 0 0 10px;
+		}
+		
+			#tabs li {
+				float:left;
+				list-style:none;
+			}
+			
+				#tabs li a {
+					float:left;
+					height:20px;
+					-webkit-border-top-left-radius:5px;
+					-moz-border-radius-topleft:5px;
+					border-top-left-radius:5px;
+					-webkit-border-top-right-radius:5px;
+					-moz-border-radius-topright:5px;
+					border-top-right-radius:5px;
+					padding:7px 6px 0 6px;
+					margin:0 5px 0 0;
+					text-decoration:none;
+					color:#000;
+					font-weight:bold;
+					background:#e1e1e1 url(../images/header/img_co_bg-tabs.jpg) repeat-x bottom left;
+				}
+				
+				#tabs li a:hover {
+					text-decoration:underline;
+				}
+				
+				#tabs li.select a {
+					background:#fff;
+				}
+				
+		/*Le bloc qui rappelle le temps qu'il reste à faire*/
+				
+		#time_left {
+			margin-left:50.3%;
+			position:absolute;
+			text-align:right;
+		}
+		
+			#time_left .text {
+				color:#b1b1b1;
+			}
+			
+			#time_left .remind {
+				color:#acc849;
+				font-weight:bold;
+				font-size:2.25em;
+				line-height:18px;
+				margin-left:3px;
+			}
+			
+		/*Le bloc recherche*/
+			
+		#search {
+			float:right;
+			background:#fff;
+			margin-right:10px;
+		}
+		
+			#search .search_input {
+				border:none;
+				background:url(../images/header/img_co_bg-search.jpg) no-repeat left top;
+				height:17px;
+				vertical-align:top;
+				padding:4px 0 0 23px;
+				width:133px;
+			}
+			
+			#search .search_submit {
+				background:#fff url(../images/header/img_co_btn-search.jpg) no-repeat;
+				border:none;
+				width:22px;
+				height:21px;
+			}

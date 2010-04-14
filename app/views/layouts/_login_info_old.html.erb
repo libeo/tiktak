@@ -1,0 +1,3 @@
+<%= h(current_user.name + " / " + current_user.company.name) %><br />
+<small><%=tz.now.strftime("#{current_user.time_format} #{current_user.date_format}")%></small> 
+<%= "<small>[#{online_users} #{_('Online')}]</small>" %>

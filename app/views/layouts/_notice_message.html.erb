@@ -1,0 +1,5 @@
+<div class="notice">
+  <p id="msg"><%= flash['notice'] %></p>
+  <%= link_to_function image_tag('general/img_co_icon-close-green.jpg', :alt => t(:close), :title => t(:close) ), "jQuery('#flash').fadeOut(500);" %>
+</div>
+<div class="clear"></div>

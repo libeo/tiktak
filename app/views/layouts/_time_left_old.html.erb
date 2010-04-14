@@ -9,6 +9,5 @@
   left /= 60
 
 %>
-<span class="text"><%= t(:time_left) %></span>
-<span class="remind"><%= worked_nice(left.to_i) %></span>
-<span class="text"><%= t(:to_work) %></span>
+<span><%= _('You have') %> <span class='time_left'><%= worked_nice(left.to_i) %></span> <%= _('work hours left') %></span>
+

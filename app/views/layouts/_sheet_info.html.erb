@@ -1,64 +1,35 @@
 <% if @current_sheet && @current_sheet.task -%>
-<%
-   task = Task.find(@current_sheet.task_id, :conditions => ["tasks.company_id = ?", current_user.company_id], :include => [:project] )
-   info = []
-   info << "#{worked_nice(task.worked_minutes + @current_sheet.duration / 60)}" if task.worked_minutes > 0 || task.duration.to_i > 0
-   info << "#{worked_nice(task.duration)}" if task.duration.to_i > 0
+  <%
+    task = Task.find(@current_sheet.task_id, :conditions => ["tasks.company_id = ?", current_user.company_id], :include => [:project] )
+    info_string = worked_nice(@current_sheet.duration/60)
+    if task.duration.to_i > 0
+      info_string += "(#{worked_nice(task.worked_minutes + @current_sheet.duration/60)}"
+      info_string += " / #{worked_nice(task.duration)})"
+    end
+  %>
 
-   info_string = " (#{info.join(" / ")})" if info.size > 0
-   info_string ||= ""
+    <div id="clock_image">
+      <% if @current_sheet.paused? %>
+        <%= link_to_remote image_tag("time_resume.png", :title => t(:resume_time), :alt => t(:resume_time)), :url => {:controller => 'tasks', :action => 'pause_work_ajax'}, 
+          :loading => "showProgress();", :complete => "hideProgress();" %>
+      <% else %>
+        <%= link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), {:controller => 'tasks', :action => 'stop_work'} %>
+      <% end %>
+    </div>
 
--%>
-<div id="clock_time">
-  <div id="clock_image">
-    <%= link_to( image_tag 'general/img_co_icon-clock-top.png' :title => t(:save_time), task_stop_work_path )%>
-  </div>
-  <div id="clock_text">
-    <p class="task">
-      <%= link_to task.issue_name + ' - ' + task.project_name + ' / ' + task.full_tags, task_path(task) %>
-    </p>
-    <p class="time">
-      <span class="task_time"><%=worked_nice(@current_sheet.duration/60) %></span>
-      <span class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :url => task_cancel_work_ajax_path,
-        :confirm => t(:confirm_cancel_work) %></span>
-    </p>
-  </div>
-</div>
+    <div id="clock_text">
+      <p class="task">
+      <%= link_to task.issue_name + ' - ' + task.project.name + ' / ' + task.full_tags, {:controller => 'tasks', :action => 'edit', :id => task.id} %>
+      </p>
+      <p class="time">
+        <span class="task_time"><%= info_string %></span>
+        <span class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'tasks', :action => 'cancel_work_ajax' },
+          :confirm => t(:confirm_cancel_work), :loading => "showProgress();", :complete => "hideProgress();" %></span>
+      </p>
+    </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <%= link_to( image_tag("time_add.png", :border => 0, :class => "tooltip", :title => _("Done working on <b>%s</b> for now.", task.name) ), {:controller => 'tasks', :action => 'stop_work'} )  -%>
-  <%= link_to( task.issue_name + " - " + task.project.name + " / " + task.full_tags, :controller => 'tasks', :action => 'edit', :id => task ) %> <br />
-  <%= link_to_remote image_tag("time_delete.png", :border => 0, :title => _("Cancel working on <b>%s</b>.", task.name), :class => "tooltip"),
-          :url => { :controller => 'tasks', :action => 'cancel_work_ajax', :id => task },
-          :loading => "showProgress();",
-          :complete => "hideProgress();",
-          :confirm => _("Really abort work?")
-            -%>
-  <% if @current_sheet.paused? %>
-    <%= link_to_remote image_tag("time_resume.png", :border => 0, :title => _("Resume working on <b>%s</b>.", task.name), :class => "tooltip"),
-        :url => { :controller => 'tasks', :action => 'pause_work_ajax', :id => task },
-        :loading => "showProgress();",
-        :complete => "hideProgress();" -%> [<%= _('Paused') %>]
-  <% else %>
-  <% end %>
-  <%= worked_nice(@current_sheet.duration/60) -%><%= info_string -%><%= " - " if total_today > 0 %>
-<% end %>
-<% if total_today > 0 %>
+<% else %>
   
-  <p style="padding-top:6px;"> <%= distance_of_time_in_words(total_today.minutes) %> <%=_ 'worked today'%> </p>
-<% end %>
+    <p class="time_spent"><%= distance_of_time_in_words(total_today.minutes) + ' ' + t(:worked_today) %></p>
 
+<% end %>

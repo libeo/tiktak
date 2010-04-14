@@ -1,19 +1,75 @@
-.loading {
-  z-index: 1000;
-  position:absolute;
-  right: 10px;
-  top: 10px;
-  width:70px;
-  height:20px;
-  color: white;
-  padding:6px;
-  display: none; 
+@charset "UTF-8";
+
+/**
+  *Styles de base
+  */
+
+* {
+	margin:0;
+	padding:0;
 }
 
-.tip {
-  position:absolute;
-  top:250px;
-  left:250px;
-  visibility:hidden;
-  max-width:600px;
+body {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:0.75em;
 }
+
+img {
+	border:none;
+}
+
+.clear {
+	clear:both;
+}
+
+#container {
+	min-width:960px;
+}
+
+/**
+  *Styles du contenu de la page
+  */
+			
+#content {
+	padding:20px 20px 0 20px;
+}
+
+#loading {
+  position : absolute;
+  z-index : 9;
+  display: none;
+}
+
+  /* Flash Notice */
+	/*Message*/
+
+  .notice {
+		background:#eaf9cd url(../images/general/img_co_icon-green.png) no-repeat 8px center;
+		-webkit-border-radius:8px;
+		-moz-border-radius:8px;
+		border-radius:8px;
+		border:1px solid #cdde92;
+		padding:15px 10px 13px 10px;
+		margin-bottom:22px;
+	}
+	
+		.notice p {
+			font-size:1.08em;
+			color:#365300;
+			font-weight:bold;
+			margin-left:38px;
+			float:left;
+		}
+		
+		.notice img {
+			float:right;
+			margin-right:5px;
+		}
+		
+	.widget_large {}
+	
+	.widget_small {
+		margin-top:24px;
+		float:left;
+		width:50%;
+	}
