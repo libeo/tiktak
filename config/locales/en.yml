@@ -5,7 +5,7 @@ en:
   #General
   close : "Close"
   #Header
-  hello: "Hello world"
+  shortlist_window : "Bookmark this link to quickly open the Timer window"
   save_time : "Save time"
   resume_time : "Resume time"
   cancel_worked_time : "Cancel time worked"

@@ -2,6 +2,7 @@ fr:
   #General
   close : "Fermer"
   #Header
+  shortlist_window : "Ajoutez ce lien à vos favoris pour accéder rapidement à la Fenêtre d'activité"
   save_time : "Enregistrement du temps"
   resume_time : "Poursuivre le temps"
   cancel_worked_time : "Annuler le temps fait"
