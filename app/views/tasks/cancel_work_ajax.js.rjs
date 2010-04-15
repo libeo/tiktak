@@ -8,8 +8,8 @@ page << "jQuery('#worklog_body').val('');"
 page << "}"
 
 
-page << "if(jQuery('#menu_info')) {"
-page.replace_html "menu_info", :partial => "layouts/sheet_info"
+page << "if(jQuery('#sheet_info')) {"
+page.replace_html "sheet_info", :partial => "layouts/sheet_info"
 page << "}"
 
 page << "if(jQuery('#shortlist-legend')) {"

@@ -3,9 +3,13 @@
   <div id="top">
     <div id="row_1">
 
-      <!-- TODO: integrate custom logo ? -->
+      <!-- Logo top left -->
       <div id="logo">
-        <%= image_tag 'header/img_co_logo.png', :title => "SYS-TECH Technologies de l'information libres"  %>
+        <% if !@internal.nil? && @internal.logo? %>
+          <%= tag("img", {:src => "/clients/show_logo/#{@internal.id}"} ) %>
+        <% else %>
+          <%= image_tag 'header/img_co_logo.png', :title => "SYS-TECH Technologies de l'information libres"  %>
+        <% end %>
       </div>
 
       <!-- Sheet, info on the task currently active -->

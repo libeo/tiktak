@@ -50,10 +50,6 @@
 					font-size:1.08em;
 					color:#fff;
 					text-decoration:none;
-          /* added by greg to truncate with 3 dots */
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
 				}
 				
 				#sheet_info #clock_text .task a:hover {

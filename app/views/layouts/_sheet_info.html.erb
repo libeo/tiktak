@@ -19,7 +19,10 @@
 
     <div id="clock_text">
       <p class="task">
-      <%= link_to task.issue_name + ' - ' + task.project.name + ' / ' + task.full_tags, {:controller => 'tasks', :action => 'edit', :id => task.id} %>
+      <% truncate_length = 45
+        task_label = task.issue_name + ' - ' + task.project.name + "#{task.full_tags unless task.full_tags.empty?}"
+        task_label = task_label[0,truncate_length] + '...' if task_label.length > truncate_length %>
+      <%= link_to task_label, {:controller => 'tasks', :action => 'edit', :id => task.id} %>
       </p>
       <p class="time">
         <span class="task_time"><%= info_string %></span>
