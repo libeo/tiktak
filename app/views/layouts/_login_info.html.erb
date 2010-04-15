@@ -3,7 +3,7 @@
     <!-- Shortlist link -->
     <%= link_to_function image_tag('header/img_co_icon-act-window.png'), 
     "javascript: var timerwindow=window.open('#{request.protocol}#{request.host_with_port}/login/shortlist_auth/#{current_user.autologin}',
-      '', 'resizable=1, toolbar=0, location=0, status=0, menubar=0, scrollbars=1, width=300, heoght=650');
+      '', 'resizable=1, toolbar=0, location=0, status=0, menubar=0, scrollbars=1, width=300, height=650');
       timerwindow.focus();", 
       {:title => t(:shortlist_window), :alt => t(:shortlist_window)} %>
   </div>

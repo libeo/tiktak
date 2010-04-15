@@ -58,12 +58,15 @@ img {
 			color:#365300;
 			font-weight:bold;
 			margin-left:38px;
-			float:left;
+			/* TEMPORARY REMOVE until full maquette is integrated */
+      /* float:left; */
 		}
 		
 		.notice img {
 			float:right;
 			margin-right:5px;
+      /* TEMPORARY ADD until full maquette is integrated */
+      margin-top:-15px;
 		}
 		
 	.widget_large {}

@@ -1131,7 +1131,25 @@ a.description {
   color:#666666;
   z-index:100;
   overflow:hidden;
+  position:absolute;
+  top:250px;
+  left:250px;
+  visibility:hidden;
+  max-width:600px;
 }
+
+#loading {
+  z-index: 1000;
+  position:absolute;
+  right: 10px;
+  top: 10px;
+  width:70px;
+  height:20px;
+  color: white;
+  padding:6px;
+  display: none;
+}
+ 
 
 #message { 
   background-color:#ffffff;
