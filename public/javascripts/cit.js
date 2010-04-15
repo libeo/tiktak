@@ -51,8 +51,8 @@ function tip(myEvent,tip){
   else if (document.documentElement && document.documentElement.scrollTop){
     scrollposY = document.documentElement.scrollTop;
   }
-  else if (document.getElementById("body").scrollTop){
-    scrollposY = document.getElementById("body").scrollTop;
+  else if (document.getElementById("content").scrollTop){
+    scrollposY = document.getElementById("content").scrollTop;
   }
 
 

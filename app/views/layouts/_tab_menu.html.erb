@@ -10,7 +10,7 @@
     menu << [:wiki, {:controller => 'wiki', :action => 'show'}] if current_user.company.show_wiki?
     menu << [:chat, {:controller => 'shout', :action => 'list'}] if current_user.company.show_chat?
     menu << [:forums, forum_path] if current_user.company.show_forum?
-    menu << [:files, {:controller => 'project_list', :action => 'list'}]
+    menu << [:files, {:controller => 'project_files', :action => 'list'}]
     menu << [:projects, {:controller => 'projects', :action => 'list'}, [[:add_project, {:controller => 'projects', :action => 'new'}]] ]
     menu << [:resources, resources_path] if current_user.use_resources?
     %>
