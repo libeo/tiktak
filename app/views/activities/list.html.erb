@@ -1,23 +1,11 @@
 <div id="widget_panel">
-  <table width="100%" cellpadding=0 cellspacing=0 id="content" >
-    <tr>
-      <td valign="top" align="left" id="left_col">
-        <div id="widget_col_0">
-        </div>
-      </td>
-      <td valign="top" align="left" id="right_col">
-        <div id="widget_col_1">
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" id="bottom_col" colspan="2">
-        <div id="widget_col_2">
-        </div>
-      </td>
-    </tr>
-  </table>
-  <br />
+  <!-- IMPORTANT : the widget_col_x ids are important because this is what Xilinus.Portal uses to identify in which column to add a widget. e.g portal.add(widget, 2) will add code to 'widget_col_2' -->
+  <div id="widget_col_0" class="widget_large">
+  </div>
+  <div id="widget_col_1" class="widget_small widget_small_1">
+  </div>
+  <div id="widget_col_2" class="widget_small widget_small_2">
+  </div>
 </div>
 
 <script type="text/javascript" language="javascript" charset="utf-8">
@@ -35,9 +23,17 @@ function onOutWidget(portal, widget) {
    
 var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
 
-<% current_user.widgets.each do |@widget| %>
-var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
+<% current_user.widgets.each do |widget| %>
+/*
+   Xilinus.Widget(className, id)
+   className : html class of the generated DIVs (title, content, footer)
+   3 divs are generated : <div class='widget_title'>, <div class='widget_content'>, <div class='widget_footer'>
+   TODO: find out more
+   id : html id of the generated DIVs (title, content, footer)
+ */
+var widget = new Xilinus.Widget("widget", "<%=widget.dom_id%>");
 
+//TODO : try and put the html code into a partial or define it somewhere
 var title = '<div style="float:right;display:none;" class="widget-menu"><a href="#" onclick="jQuery.getScript(\'/widgets/edit/<%=@widget.id%>\'); return false;;"><img src="/images/configure.png" border="0"/></a><a href="#" onclick="if( confirm(\'Really delete widget?\') ){jQuery.getScript(\'/widgets/destroy/<%=@widget.id%>\'); return false; }"><img src="/images/delete.png" border="0"/></a></div>';
 title += '<div><%= link_to_remote("&nbsp;", {:url => { :controller => 'widgets', :action => 'toggle_display', :id => @widget.id }, :loading => "showProgress();", :complete => "hideProgress();" }, { :class => (@widget.collapsed? ? "widget-collapsed" : "widget-open"), :id => "indicator-#{@widget.dom_id}" }).gsub(/'/,'\\\\\'') %>';
 title += '<%= render(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join %></div>';
