@@ -1,8 +1,20 @@
-<div class="widget_header">
-  <%= link_to_remote image_tag('widgets/img_co_icon-open.png', :alt => t(:open_widget), :title => t(:open_widget)),
-        { :url => {:controller => 'widgets', :action => 'toggle_display', :id => widget.id },
-            :loading => 'showProgress();', :complete => 'hideProgress();' },
-      { :id => "indicator-#{widget.dom_id}" } %>
-  <span class="name"><%= widget.name %></span>
-  <span class="type"> - <%= widget.type_text %></span>
-</div>
+<%= link_to_remote image_tag('widget/img_co_icon-open.png', :alt => t(:open_widget), :title => t(:open_widget)),
+      { :url => {:controller => 'widgets', :action => 'toggle_display', :id => widget.id },
+          :loading => 'showProgress();', :complete => 'hideProgress();' },
+    { :id => "indicator-#{widget.dom_id}" } %>
+<span class="name"><%= widget.name %></span>
+<span class="type"> - <%= widget.type_text %></span>
+
+<%= link_to( image_tag('widget/img_co_icon-rss.jpg', :alt => t(:subscribe_rss), :title => t(:subscribe_rss)), 
+  {:controller => 'feeds', :action => 'rss', :id => current_user.uuid, :widget => widget} ) if widget.rss_capable? %>
+
+<%= link_to( image_tag("calendar.png", :title => t(:ical_subscribe)), 
+  {:controller => 'feeds', :action => 'ical_all', :id => current_user.uuid} ) if widget.ical_capable? %>
+
+<a href="#" onclick="jQuery.getScript('/widgets/edit/<%=@widget.id%>'); return false;">
+  <img src="/images/configure.png" border="0"/>
+</a>
+
+<a href="#" onclick="if( confirm('Really delete widget?') ){jQuery.getScript('/widgets/destroy/<%=@widget.id%>'); return false; }">
+  <img src="/images/delete.png" border="0"/>
+</a>

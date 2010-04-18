@@ -6,7 +6,18 @@ class Widget < ActiveRecord::Base
   belongs_to :user
   belongs_to :filter, :class_name => "TaskFilter"
 
+  RSS_CAPABLE_TYPES = [0, 2, 11]
+  ICAL_CAPABLE_TYPES = [2]
+
   validates_presence_of :name
+
+  def rss_capable?
+    RSS_CAPABLE_TYPES.include? self.widget_type
+  end
+
+  def ical_capable?
+    ICAL_CAPABLE_TYPES.include? self.widget_type
+  end
 
   def name_and_type
     res = ""

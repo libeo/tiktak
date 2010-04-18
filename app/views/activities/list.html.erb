@@ -1,11 +1,12 @@
+<%= stylesheet_link_tag 'widget' %>
 <div id="widget_panel">
   <div id="widget_col_0" class="widget_large">
 
   </div>
-  <div id="widget_col_1" class="widget_smalli widget_small_1">
+  <div id="widget_col_1" class="widget_small widget_small_1">
 
   </div>
-  <div id="widget_col_2" class="widget_smalli widget_small_2">
+  <div id="widget_col_2" class="widget_small widget_small_2">
 
   </div>
 </div>
@@ -13,6 +14,7 @@
 <script type="text/javascript" language="javascript" charset="utf-8">
 // <![CDATA[
 
+/*
 function onOverWidget(portal, widget) {
   // show the widget menu
   jQuery("#" + widget._getId() + " .widget-menu").show();
@@ -21,15 +23,18 @@ function onOverWidget(portal, widget) {
 function onOutWidget(portal, widget) {
   // hide the widget menu (not the whole widget!)
   jQuery("#" + widget._getId() + " .widget-menu").hide();
-}
-   
-var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
+  }
+*/
+
+//var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
+var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order"});
 
 <% current_user.widgets.each do |@widget| %>
 
   var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
-  var title = "<%= escape_javascript(render :partial => 'widgets/widget_title_old', :locals => {:widget => @widget}) %>";
+  var title = "<%= escape_javascript(render :partial => 'widgets/widget_title', :locals => {:widget => @widget}) %>";
 
+  //HTML inserted in title is encapsulated in a <div id='header-widgets_#{id}' class='widget_title widget_draggable'>
   widget.setTitle(title);
   widget.setContent('<span class="optional"><br/><%= _'Loading...'%></span>');
   portal.add(widget, <%=@widget.column%>);
