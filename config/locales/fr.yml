@@ -1,4 +1,7 @@
 fr:
+  #Widget
+  open_widget : "Afficher"
+  close_widget : "Fermer"
   #General
   close : "Fermer"
   #Header
