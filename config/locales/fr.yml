@@ -1,4 +1,9 @@
 fr:
+  #Widget
+  open_widget : "Afficher"
+  close_widget : "Fermer"
+  subscribe_rss : "Suivre le fil rss de ce widget"
+  subscribe_ical : "Suivre le file iCal de vos projets. Pour un fil personnel, remplacez 'ical_all' par 'ical' dans l'adresse. Vous pouvez aussi ajouter '?mode=tasks' pour filtrer seulement les tâches, mode=logs' pour seulement les plages de temps, ou '?mode=milestones' pour les jalons."
   #General
   close : "Fermer"
   #Header

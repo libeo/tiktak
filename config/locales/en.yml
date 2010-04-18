@@ -2,6 +2,11 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #Widgets
+  open_widget : "Show"
+  close_widget : "Close"
+  subscribe_rss : "Subscribe to this widgets' rss feed"
+  subscribe_ical : "Subscribe to the iCal feed for your projects. For a personal feed, replace 'ical_all' with 'ical' in the URL. You can also append '?mode=tasks' for only tasks, '?mode=logs' for only work logs, or '?mode=milestones' for just milestones."
   #General
   close : "Close"
   #Header
