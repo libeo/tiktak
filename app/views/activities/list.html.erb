@@ -1,23 +1,13 @@
 <div id="widget_panel">
-  <table width="100%" cellpadding=0 cellspacing=0 id="content" >
-    <tr>
-      <td valign="top" align="left" id="left_col">
-        <div id="widget_col_0">
-        </div>
-      </td>
-      <td valign="top" align="left" id="right_col">
-        <div id="widget_col_1">
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" id="bottom_col" colspan="2">
-        <div id="widget_col_2">
-        </div>
-      </td>
-    </tr>
-  </table>
-  <br />
+  <div id="widget_col_0" class="widget_large">
+
+  </div>
+  <div id="widget_col_1" class="widget_smalli widget_small_1">
+
+  </div>
+  <div id="widget_col_2" class="widget_smalli widget_small_2">
+
+  </div>
 </div>
 
 <script type="text/javascript" language="javascript" charset="utf-8">
@@ -36,16 +26,15 @@ function onOutWidget(portal, widget) {
 var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
 
 <% current_user.widgets.each do |@widget| %>
-var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
 
-var title = '<div style="float:right;display:none;" class="widget-menu"><a href="#" onclick="jQuery.getScript(\'/widgets/edit/<%=@widget.id%>\'); return false;;"><img src="/images/configure.png" border="0"/></a><a href="#" onclick="if( confirm(\'Really delete widget?\') ){jQuery.getScript(\'/widgets/destroy/<%=@widget.id%>\'); return false; }"><img src="/images/delete.png" border="0"/></a></div>';
-title += '<div><%= link_to_remote("&nbsp;", {:url => { :controller => 'widgets', :action => 'toggle_display', :id => @widget.id }, :loading => "showProgress();", :complete => "hideProgress();" }, { :class => (@widget.collapsed? ? "widget-collapsed" : "widget-open"), :id => "indicator-#{@widget.dom_id}" }).gsub(/'/,'\\\\\'') %>';
-title += '<%= render(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join %></div>';
+  var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
+  var title = "<%= escape_javascript(render :partial => 'widgets/widget_title_old', :locals => {:widget => @widget}) %>";
 
-widget.setTitle(title);
-widget.setContent('<span class="optional"><br/><%= _'Loading...'%></span>');
-portal.add(widget, <%=@widget.column%>);
-<%= "jQuery('#content_#{@widget.dom_id}').hide();" if @widget.collapsed? %> 
+  widget.setTitle(title);
+  widget.setContent('<span class="optional"><br/><%= _'Loading...'%></span>');
+  portal.add(widget, <%=@widget.column%>);
+  <%= "jQuery('#content_#{@widget.dom_id}').hide();" if @widget.collapsed? %> 
+
 <% end %>
 
 <% widgets = (current_user.widgets.select{ |w| !w.collapsed? } +

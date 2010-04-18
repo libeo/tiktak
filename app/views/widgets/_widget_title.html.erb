@@ -1,0 +1,8 @@
+<div class="widget_header">
+  <%= link_to_remote image_tag('widgets/img_co_icon-open.png', :alt => t(:open_widget), :title => t(:open_widget)),
+        { :url => {:controller => 'widgets', :action => 'toggle_display', :id => widget.id },
+            :loading => 'showProgress();', :complete => 'hideProgress();' },
+      { :id => "indicator-#{widget.dom_id}" } %>
+  <span class="name"><%= widget.name %></span>
+  <span class="type"> - <%= widget.type_text %></span>
+</div>
