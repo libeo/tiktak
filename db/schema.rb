@@ -136,6 +136,11 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
 
   add_index "customers", ["company_id", "name"], :name => "customers_company_id_index"
 
+  create_table "customers_cit_stx", :force => true do |t|
+    t.integer "customer_id"
+    t.integer "rid_stx_company"
+  end
+
   create_table "default_user_permissions", :force => true do |t|
     t.integer  "user_id"
     t.integer  "company_id"
