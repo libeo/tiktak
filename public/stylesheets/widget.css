@@ -1,3 +1,8 @@
+
+.widget_box_dragged {
+  border: 3px dashed red;
+}
+
 .widget_large {}
 
 .widget_small {
