@@ -1,5 +1,5 @@
 <%= stylesheet_link_tag 'widget' %>
-<div id="widget_panel">
+<div id="widget_panel" style="width:100%;">
   <!-- IMPORTANT : the widget_col_x ids are important because this is what Xilinus.Portal uses to identify in which column to add a widget. e.g portal.add(widget, 2) will add code to 'widget_col_2' -->
   <div id="widget_col_0" class="widget_large">
   </div>
@@ -25,7 +25,19 @@ function onOutWidget(portal, widget) {
 */
 
 //var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
-var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order"});
+
+function onStartDrag() {
+  jQuery('#widget_col_0').addClass('widget_box_dragged');
+  jQuery('#widget_col_1').addClass('widget_box_dragged');
+  jQuery('#widget_col_2').addClass('widget_box_dragged');
+}
+
+function onEndDrag() {
+  jQuery('#widget_col_0').removeClass('widget_box_dragged');
+  jQuery('#widget_col_1').removeClass('widget_box_dragged');
+  jQuery('#widget_col_2').removeClass('widget_box_dragged');
+}
+var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
 
 <% current_user.widgets.each do |@widget| %>
 
