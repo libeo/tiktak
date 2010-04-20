@@ -1,27 +1,49 @@
-<div class="task_entry">
+<% depth ||= 1 %>
+<div class="task_entry" id="<%= task.dom_id %>">
   <div class="col_entry_icon">
-    <% if @current_sheet and @current_sheet.task_id = task.id %>
+    <% if @current_sheet and @current_sheet.task_id == task.id %>
       <%= link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
-        :url => { :controller => 'task', :action => 'stop_work', :id => task.id, :depth => depth } %>
-    <% elsif   %>
-      <%= link_to image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
-        :url => { :controller => 'task', :action => 'start_work_ajax', :id => task.id, :depth => depth } %>
+        { :controller => 'tasks', :action => 'stop_work', :id => task.id, :depth => depth } %>
+    <% elsif current_user.can?(task.project, 'work') %>
+      <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
+        :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id, :depth => depth }, :loading => 'showProgress();', :complete => 'hideProgress();' %>
     <% end %>
   </div>
   <div class="col_entry_time_task">
     <div class="entry_task">
-      <span class="entry_no"> No. <%= task.task_num %></span>
-      <span class="entry_task_text"><%= link_to task.name, :controller => 'task', :action => 'edit', :id => task.task_num %></span>
+      <span class="entry_no">#<%= task.task_num %></span>
+
+      <span class="entry_task_text"><%= link_to_task(task) %></span>
       <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
       / <%= worked_nice(task.duration) %>)</span>
     </div>
     <div class="entry_project"><%= task.full_name_without_links %></div>
   </div>
   <div class="col_entry_tools">
-    <%= image_tag 'task/img_co_icon-todo.png', :alt => t(:todo), :title => t(:todo) %>
-    <%= image_tag 'task/img_co_icon-classify.png', :alt => t(:close_task), :title => t(:close_task) %>
-    <% if current_user.admin? and task.closed? %>
-      <%= image_tag 'task/img_co_icon-archive.png', :alt => t(:archive_task), :title => t(:archive_task) %>
+
+    <% todo_tooltip = ""
+      task.todos.each do |todo|
+        todo_tooltip += "<tr><td>#{todo.done? ? '+' : '-'}</td><td>#{todo.name}</td></tr>"
+      end
+    %>
+    <%= image_tag 'task/img_co_icon-todo.png', {:alt => t(:todo)}.merge(tooltip_options(todo_tooltip)) %>
+
+    <% if current_user.can?(task.project, 'close') -%>
+      <% if task.open? -%>
+        <%= link_to_remote image_tag( 'task/img_co_icon-classify.png', :alt => t(:close_task), :title => t(:close_task) ),
+          :loading => 'showProgres();', :complete => 'hideProgress();', :success => t(:confirm_close),
+          :url => {:controller => 'tasks', :action => 'ajax_check', :id => task.id} %>
+      <% else %>
+        <%= image_tag 'task/img_co_icon-reopen.png', :alt => t(:open_task), :title => t(:open_task) %>
+      <% end %>
+    <% end %>
+
+    <% if current_user.admin? and task.closed? %> 
+      <% unless task.hidden? %>
+        <%= image_tag 'task/img_co_icon-archive.png', :alt => t(:archive_task), :title => t(:archive_task) %>
+      <% else %>
+        <%= image_tag 'task/img_co_icon-unarchive.png', :alt => t(:unarchive_task), :title => t(:unarchive_task) %>
+      <% end %>
     <% end %>
   </div>
   <div class="clear"></div>

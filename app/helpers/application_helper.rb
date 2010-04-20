@@ -6,6 +6,10 @@ module ApplicationHelper
 
   include Misc
 
+  def tooltip_options(html)
+    html = "<table cellpadding='0' cellspacing='0'><tr><td>" + h(html) + "</td></tr></table>"
+    return {:class => 'tooltip', :title => h(html)}
+  end
 
   def online_users
     current_users.size

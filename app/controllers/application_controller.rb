@@ -391,7 +391,8 @@ class ApplicationController < ActionController::Base
   # If highlight keys is given, that text will be highlighted in 
   # the link.
   def link_to_task(task, truncate = true, highlight_keys = [])
-    link = "<strong>#{task.issue_num}</strong> "
+    #link = "<strong>#{task.issue_num}</strong> "
+    link = ""
 
     url = url_for(:id => task.task_num, :controller => 'tasks', :action => 'edit')
 
@@ -401,7 +402,7 @@ class ApplicationController < ActionController::Base
                         :user => current_user)
     title = highlight_all(title, highlight_keys)
 
-    html = { :class => "tooltip#{task.css_classes}", :title => title }
+    html = { :class => "tooltip", :title => title }
     text = truncate ? task.name : self.class.helpers.truncate(task.name, 80)
     text = highlight_all(text, highlight_keys)
     

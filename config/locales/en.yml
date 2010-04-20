@@ -5,6 +5,10 @@ en:
   #Task
   stop_task : "Stop working on the task"
   start_task : "Start working on the task"
+  close_task : "Close task"
+  open_task : "Reopen task"
+  archive_task : "Archive task"
+  unarchive_task : "Reopen task"
   #Widgets
   open_widget : "Show"
   close_widget : "Close"
