@@ -1,4 +1,7 @@
 fr:
+  #Task
+  stop_task : "Arrêter la tâche"
+  start_task : "Démarrer la tâche"
   #Widget
   open_widget : "Afficher"
   close_widget : "Fermer"

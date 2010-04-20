@@ -413,6 +413,14 @@ class Task < ActiveRecord::Base
     ["Open", "In Progress", "Closed", "Won't fix", "Invalid", "Duplicate"]
   end
 
+  def closed?
+    task.status > 1
+  end
+
+  def open?
+    task.status < 2
+  end
+
   def priority_type
     Task.priority_types[self.priority]
   end

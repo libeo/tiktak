@@ -2,6 +2,9 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #Task
+  stop_task : "Stop working on the task"
+  start_task : "Start working on the task"
   #Widgets
   open_widget : "Show"
   close_widget : "Close"
