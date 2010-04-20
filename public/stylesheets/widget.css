@@ -42,116 +42,31 @@
             vertical-align:middle;
         }
         
-    /*L'entrée du widget*/	
     
-    .widget_entry {
-        font-size:0.92em;
-        padding:0 0 5px 0;
-        border-bottom:1px solid #e2e2e2;
-    }
-    
-    .widget_small_2 .widget_entry, .widget_small_2 .widget_title {
+    .widget_small_2 .task_entry, .widget_small_2 .widget_title {
         margin-left:10px;
     }
     
-    .widget_small_1 .widget_entry, .widget_small_1 .widget_title {
+    .widget_small_1 .task_entry, .widget_small_1 .widget_title {
         margin-right:10px;
     }
         
-        /*Tout ce qui a trait au bloc de tâche*/
         
-        .widget_entry .col_entry_task {
-            float:left;
-            width:90%;
-            position:relative;
-        }
-        
-        .widget_small .widget_entry .col_entry_task {
+        .widget_small .task_entry .col_entry_task {
             width:85%;
         }
             
-            /*L'icône de l'horloge*/
-            
-            .widget_entry .col_entry_icon {
-                float:left;
-                padding:7px 4px 0 4px;
-                position:absolute;
-            }
         
-                .widget_entry .col_entry_icon img {
-                    vertical-align:middle;
-                }
-                
-            .widget_entry .col_entry_time_task {
-                padding:9px 0 0 0;
-                margin-left:35px;
-            }
-                
-                /*Le no, la tâche et le temps*/
-                
-                .widget_entry .col_entry_time_task .entry_task {
-                    font-weight:bold;
-                    float:left;
-                }
-                
-                    .widget_entry .entry_no {
-                        font-weight:bold;
-                        margin:0 3px 0 0;
-                        color:#000;
-                    }
-                    
-                    .widget_entry .entry_task_text a {
-                        margin-right:3px;
-                        color:#335600;
-                        text-decoration:none;
-                    }
-                    
-                    .widget_entry .entry_task_text a:hover {
-                        text-decoration:underline;
-                    }
-                
-                    .widget_entry .col_entry_time_task .entry_time {
-                        margin:0 10px 0 0;
-                        color:#000;
-                        font-weight:normal;
-                        display:inline-block;
-                    }
-                
-                    .widget_entry .col_entry_time_task .entry_time .entry_time_exceeded {
-                        color:#b8121a;
-                        font-weight:bold;
-                    }
-                
-                /*Le projet et le client*/
-                
-                .widget_entry .col_entry_time_task .entry_project {
-                    font-size:0.91em;
-                    color:#b4b4b4;
-                    float:left;
-                }
-            
-        /*Les icones reliées aux tâches*/
-        
-        .widget_entry .col_entry_tools {
-            float:right;
-            width:10%;
-            text-align:right;
-            padding:7px 0 0 0;
-        }
-        
-        .widget_small .widget_entry .col_entry_tools {
+        .widget_small .task_entry .col_entry_tools {
             width:15%;
         }
         
-            .widget_entry .col_entry_tools img {
-                margin:0 3px 0 3px;
-            }
 /**
 *Hack CSS pour Safari 3.0 et Chrome
 */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-.widget_entry .col_entry_time_task .entry_project {
-    padding-top:3px;
-}
+  .task_entry .col_entry_time_task .entry_project {
+      padding-top:3px;
+  }
 }

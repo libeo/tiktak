@@ -1,5 +1,5 @@
 if @task
-  page.replace ".#{@task.dom_id}", :partial => "task_row", :locals => {:task => @task, :depth => params[:depth].to_i || 0 }
+  page.replace "##{@task.dom_id}", :partial => "task_row", :locals => {:task => @task, :depth => params[:depth].to_i || 0 }
 end
 
 page << "if(jQuery('#work-log')) {"
@@ -9,7 +9,7 @@ page << "}"
 
 
 page << "if(jQuery('#sheet_info')) {"
-page.replace_html "sheet_info", :partial => "layouts/sheet_info"
+page.replace_html "sheet_info", :partial => "header/sheet_info"
 page << "}"
 
 page << "if(jQuery('#shortlist-legend')) {"

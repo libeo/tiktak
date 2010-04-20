@@ -414,11 +414,11 @@ class Task < ActiveRecord::Base
   end
 
   def closed?
-    task.status > 1
+    self.status > 1
   end
 
   def open?
-    task.status < 2
+    self.status < 2
   end
 
   def priority_type

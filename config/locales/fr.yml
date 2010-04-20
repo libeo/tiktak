@@ -1,7 +1,12 @@
 fr:
   #Task
+  todo : "À Faire"
   stop_task : "Arrêter la tâche"
   start_task : "Démarrer la tâche"
+  close_task : "Fermer la tâche"
+  open_task : "Ouvrir la tâche"
+  archive_task : "Archiver la tâche"
+  unarchive_task : "Restaurer la tâche"
   #Widget
   open_widget : "Afficher"
   close_widget : "Fermer"
