@@ -27,16 +27,17 @@ function onOutWidget(portal, widget) {
 //var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
 
 function onStartDrag() {
-  jQuery('#widget_col_0').addClass('widget_box_dragged');
-  jQuery('#widget_col_1').addClass('widget_box_dragged');
-  jQuery('#widget_col_2').addClass('widget_box_dragged');
+  jQuery('#widget_col_0').addClass('widget_col_delimiter');
+  jQuery('#widget_col_1').addClass('widget_col_delimiter');
+  jQuery('#widget_col_2').addClass('widget_col_delimiter');
 }
 
 function onEndDrag() {
-  jQuery('#widget_col_0').removeClass('widget_box_dragged');
-  jQuery('#widget_col_1').removeClass('widget_box_dragged');
-  jQuery('#widget_col_2').removeClass('widget_box_dragged');
+  jQuery('#widget_col_0').removeClass('widget_col_delimiter');
+  jQuery('#widget_col_1').removeClass('widget_col_delimiter');
+  jQuery('#widget_col_2').removeClass('widget_col_delimiter');
 }
+
 var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
 
 <% current_user.widgets.each do |@widget| %>

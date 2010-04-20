@@ -1,6 +1,14 @@
 
-.widget_box_dragged {
-  border: 3px dashed red;
+.widget_col_delimiter {
+  border: 1px dashed gray;
+}
+
+.widget_ghost {
+  background: #FFF;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  position: relative;
+  border: 3px dashed #F00;
 }
 
 .widget_large {}
