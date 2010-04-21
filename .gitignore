@@ -20,6 +20,7 @@ public/javascripts/base_*.js
 public/javascripts/portal_*.js
 public/stylesheets/base_*.css
 public/stylesheets/portal_*.css
+db/schema.rb
 tmp
 .DS_Store
 .buildpath
