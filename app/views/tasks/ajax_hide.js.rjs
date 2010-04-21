@@ -1,0 +1,2 @@
+page.visual_effect :fade, @task.dom_id, :duration => 2.0
+page.call "UpdateDnD"

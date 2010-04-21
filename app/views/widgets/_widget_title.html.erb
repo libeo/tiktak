@@ -3,7 +3,6 @@
           :loading => 'showProgress();', :complete => 'hideProgress();' },
     { :id => "indicator-#{widget.dom_id}" } %>
 <span class="name"><%= widget.name %></span>
-<span class="type"> - <%= widget.type_text %></span>
 
 <%= link_to( image_tag('widget/img_co_icon-rss.jpg', :alt => t(:subscribe_rss), :title => t(:subscribe_rss)), 
   {:controller => 'feeds', :action => 'rss', :id => current_user.uuid, :widget => widget} ) if widget.rss_capable? %>

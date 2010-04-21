@@ -3,6 +3,9 @@
 
 en:
   #Task
+  confirm_archive : "Are you sure you want to archive this task ?"
+  confirm_close : "Are you sure you want to close this task ?"
+  todo : "Todo"
   stop_task : "Stop working on the task"
   start_task : "Start working on the task"
   close_task : "Close task"

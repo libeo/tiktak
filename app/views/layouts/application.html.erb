@@ -13,6 +13,7 @@
   <%= stylesheet_link_merged :base %>
   <!-- general css that can be used everywhere in the site -->
   <%= stylesheet_link_tag 'general' %>
+  <%= stylesheet_link_tag 'task' %>
   <%= stylesheet_link_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
   <%= javascript_include_tag "builder" if ['activities'].include? controller.controller_name %>
 
