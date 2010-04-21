@@ -573,8 +573,6 @@ class TasksController < ApplicationController
       worklog.body = ""
       worklog.save
     end
-
-    render :nothing => true
   end
 
   def create_attachments(task)
@@ -652,7 +650,6 @@ class TasksController < ApplicationController
       worklog.body = ""
       worklog.save
     end
-    render :nothing => true
   end
 
 

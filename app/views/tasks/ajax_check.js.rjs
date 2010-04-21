@@ -1,8 +1,8 @@
 if session[:history] && session[:history][0] == '/search/search'
   page.replace "task_#{@task.id}", :partial => "search/search_task", :locals => {:task => @task}
-  page.visual_effect(:highlight, "task_#{@task.id}", :duration => 2.0)
+  page.visual_effect(:highlight, @task.dom_id, :duration => 2.0)
 else
-  page << "jQuery('.#{@task.dom_id}').hide('slow');"
+  page << "jQuery('##{@task.dom_id}').hide('slow');"
 end
 
 if session[:history] && session[:history][0] == '/activities/list'
