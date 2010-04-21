@@ -51,7 +51,8 @@ class WidgetsController < ApplicationController
         "(tasks.completed_at is null or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
         "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
       ]
-      conditions << "users.id = #{current_user.id}" if @widget.mine?
+      #conditions << "tasks.id in (select task_id from task_owners where task_owners.user_id = #{current_user.id})" if @widget.mine?
+      conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
       order, extra, includes = @widget.order_by_sql
       conditions << extra if extra.length > 0

@@ -318,7 +318,7 @@ class TaskFilter < ActiveRecord::Base
   # class_type
   def column_name_for(class_type)
     if class_type == "User"
-      return "users.id"
+      return "task_owners.user_id"
     elsif class_type == 'Creator'
       return 'tasks.creator_id'
     elsif class_type == "Project"

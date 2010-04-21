@@ -19,8 +19,10 @@
       <div class="entry_task">
         <span class="entry_no">#<%= task.task_num %></span>
         <span class="entry_task_text"><%= link_to_task(task) %></span>
-        <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
-        / <%= worked_nice(task.duration) %>)</span>
+        <% if current_user.option_tracktime? %>
+          <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
+            / <%= worked_nice(task.duration) %>)</span>
+        <% end %>
       </div>
       <div class="entry_project"><%= task.full_name_without_links %></div>
     </div>

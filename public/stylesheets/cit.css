@@ -32,7 +32,7 @@ a:hover {
   text-decoration: underline;
 }
 
-.task-row:hover, .milestone:hover, .hoverrow:hover, .scheduleDay:hover, .scheduleToday:hover, .scheduleDue:hover {
+.milestone:hover, .hoverrow:hover, .scheduleDay:hover, .scheduleToday:hover, .scheduleDue:hover {
   background-color: #e0e0ff !IMPORTANT;
 }
 
@@ -123,9 +123,6 @@ h4 {
 }
 #left_menu .section ul li .small {
     font-size: 75%;
-}
-#left_menu .task_filters .unread {
-    font-weight: bold;
 }
 
 .shout_body {
@@ -219,70 +216,12 @@ body, p, ol, ul, td, tr {
   width: auto;
 }
 
-.task {
-  font-size: 13px;
-}
-
 .task-name {
   float: left;
 }
 
-.task input {
-  margin: 0 0 1px 0px;
-}
-
-.task_done input {
-  margin: 0 0 1px 0px;
-}
-
-.task_active input {
-  margin: 0 0 1px 0px;
-}
-
 .in_progress {
   font-style: italic;
-}
-
-.task.unread .task-name a {
-  font-weight: bold;
-}
-
-
-.unread_icon {
-  cursor: pointer;
-  float: left;
-  margin-left: -75px;
-  margin-top: 4px;
-}
-  
-.unread_icon a {
-  display: block;
-  width: 12px;
-  height: 12px;
-
-  background-image: url(../images/unread.png);
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-}
-
-.unread .unread_icon a	{ background-position: top left; }
-
-.unread_icon span {
-  display: none;
-}
-
-
-.closed {
-
-}
-
-.task-icon img {
-    height: 16px;
-    width: 16px;
-    float:left;
-    padding-top:1px;
-    padding-right:2px;
-    padding-left:2px;
 }
 
 .invalid {
@@ -313,12 +252,6 @@ legend {
 input.checkbox { 
   vertical-align: middle;
   margin-top:2px;
-}
-
-.task_done {
-  color: #a6a6a6;
-  background-color: #fbfbfb;
-  font-size: 10px;
 }
 
 .optional {
@@ -422,9 +355,6 @@ input, textarea {
   border: 1px solid #dcdcdc;
 /*  background: #FFFFFF url(/images/bg.png) repeat-x 0 0 ; */
 }
-
-input.button { border: auto; }
-
 
 fieldset label {
   float: left;
@@ -639,8 +569,8 @@ input.button {
   border: none;
 }
 
-.otheruser {
-  color: #333333;
+.task {
+  font-size: 13px;
 }
 
 .due_distant {
@@ -1115,17 +1045,6 @@ div.auto_complete {
   padding-left: 4px;
 }
 
-.description
-{
-  color: #5e6b71;
-  font-size: 10px;
-}
-
-a.description {
-  color: #5e6b71;
-  font-weight: normal;
-}
-
 #tip { 
   color:#666666;
   z-index:100;
@@ -1179,38 +1098,6 @@ a.description {
   text-align: left;
 }
 
-
-#content div.task
-{
-  margin-left: 8px;
-  border-left: solid 4px #b0d295;
-  clear: both;
-  font-size: 11px;
-  min-height: 2.3em;
-  margin-bottom: 2px;
-  background: url(/images/pri_normal_bkg.png) repeat-y;
-}
-
-
-#content div.task_done {
-  border-left: solid 4px #EEEEEE;
-}
-
-#content div.task_active_others {
-  color: #000000;
-  background-color: #ecfeec;
-}
-
-#content div.task_active {
-  color: #000000;
-  background-color: #ececfe;
-}
-
-#content div.task_paused {
-  color: #000000;
-  background-color: #F3F3F3;
-}
-
 #content div.task_crit_pri {
   border-left: solid 4px #FF6666;
   background: url(/images/pri_crit_bkg.png) repeat-y;
@@ -1236,18 +1123,10 @@ a.description {
   background: url(/images/pri_lowest_bkg.png) repeat-y;
 }
 
-#content div.task-row {
-  min-height: 2.3em;
-}
-
 /* Looks like widget css */
 
 #left_col {
   min-width: 50%;
-}
-
-.handle, .widget_draggable {
-          cursor: move;
 }
 
 .content_body {
@@ -1402,9 +1281,6 @@ li.help {
   margin: 0;
 }
 
-.task_info {
-  font-size: 9px;
-}
 
 #tutorial .welcome {
   padding: 1em;
@@ -1454,12 +1330,14 @@ li.help {
 #reports .row_header {
   color: #000000;
   font-weight: bold;
+  padding: 2px 2px 2px 2px;
 }
 
 #reports .column_header {
   color: #000000;
   font-size: smaller;
   text-align: center;
+  padding: 2px 2px 2px 2px;
 }
 
 #reports .row_heading {
@@ -1472,15 +1350,12 @@ li.help {
 #reports .row_value {
   color: #000000;
   border-left: 1px solid #CCCCCC;
-  text-align: right;
+  text-align: left;
   vertical-align: top;
+  padding: 4px 4px 4px 4px;
 }
 
 #reports .audit {
-  text-align: left;
-}
-
-#reports .task {
   text-align: left;
 }
 
@@ -1755,17 +1630,7 @@ h4 {
   display: none;
 }
 
-.override_filter {
-  background-color: #ececec;
-}
 
-.override_filter a, .override_filter small, .override_filter .description {
-  color: #a6a6a6;
-}
-
-.waiting_deferred a, .waiting_deferred small {
-  color: #a6a6a6;
-}
 
 .channel {
   background-color: #ececec;

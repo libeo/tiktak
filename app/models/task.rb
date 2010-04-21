@@ -276,14 +276,6 @@ class Task < ActiveRecord::Base
     @attributes['task_num'] = num
   end
 
-  def time_left
-    res = 0
-    if self.due_at != nil
-      res = self.due_at - Time.now.utc
-    end
-    res
-  end
-
   def overdue?
     self.due_date ? (self.due_date.to_time <= Time.now.utc) : false
   end
@@ -615,7 +607,8 @@ class Task < ActiveRecord::Base
   def to_tip(options = { })
     unless @tip
       owners = "No one"
-      owners = self.users.collect{|u| u.name}.join(', ') unless self.users.empty?
+      #owners = self.users.collect{|u| u.name}.join(', ') unless self.users.empty?
+      owners = self.task_owners.map{|t| t.user.name }.join(', ') unless self.task_owners.length == 0
 
       res = "<table id=\"task_tooltip\" cellpadding=0 cellspacing=0>"
       res << "<tr><th>#{_('Summary')}</td><td>#{self.name}</tr>"
@@ -669,18 +662,6 @@ class Task < ActiveRecord::Base
   def todo_count
     "#{sprintf("%d/%d", todos.select{|t| t.completed_at }.size, todos.size)}"
   end
-
-  def order_date
-    [self.started_at.to_i]
-  end 
-
-  def worked_and_duration_class
-    if worked_minutes > duration
-      "overtime"
-    else 
-      ""
-    end 
-  end 
 
   # Sets up custom properties using the given form params
   def properties=(params)
