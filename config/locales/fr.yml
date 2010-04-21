@@ -1,6 +1,6 @@
 fr:
   #Task
-  confirm_archive : "Êtes-vous sûr de vouloir fermer cette tâche ?"
+  confirm_archive : "Êtes-vous sûr de vouloir archiver cette tâche ?"
   todo : "À Faire"
   stop_task : "Arrêter la tâche"
   start_task : "Démarrer la tâche"

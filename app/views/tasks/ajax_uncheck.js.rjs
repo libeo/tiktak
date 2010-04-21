@@ -1,10 +1,6 @@
 if session[:history] && session[:history][0].include?('/search/search')
   page.replace @task.dom_id, :partial => "search/search_task", :locals => {:task => @task}
 else
-  #page.remove "task_#{@task.id}"
-  #page << "if(jQuery('#done_sep_0')) {"
-  #page.insert_html :before, "done_sep_0", :partial => "task_row", :locals => {:task => @task }
-  #page << "}"
   page.replace @task.dom_id, :partial => "task_row", :locals => {:task => @task}
 end
 
@@ -18,5 +14,5 @@ if session[:history] && session[:history][0] == '/activities/list'
   end
 end 
 
-page.visual_effect(:highlight, "task_#{@task.id}", :duration => 2.0)
+page.visual_effect(:highlight, @task.dom_id, :duration => 2.0)
 page.call "UpdateDnD"
