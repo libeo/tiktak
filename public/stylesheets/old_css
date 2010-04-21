@@ -319,3 +319,136 @@ a.widget-collapsed {
 .widget select, .widget input { 
   font-size: 9px;
 }
+
+.override_filter {
+  background-color: #ececec;
+}
+
+.override_filter a, .override_filter small, .override_filter .description {
+  color: #a6a6a6;
+}
+
+.waiting_deferred a, .waiting_deferred small {
+  color: #a6a6a6;
+}
+
+.task_active input {
+  margin: 0 0 1px 0px;
+}
+
+#content div.task_active_others {
+  color: #000000;
+  background-color: #ecfeec;
+}
+
+#content div.task_active {
+  color: #000000;
+  background-color: #ececfe;
+}
+
+.task_done input {
+  margin: 0 0 1px 0px;
+}
+
+.task_done {
+  color: #a6a6a6;
+  background-color: #fbfbfb;
+  font-size: 10px;
+}
+
+#content div.task_done {
+  border-left: solid 4px #EEEEEE;
+}
+
+#content div.task_paused {
+  color: #000000;
+  background-color: #F3F3F3;
+}
+
+#left_menu .task_filters .unread {
+    font-weight: bold;
+}
+
+.task.unread .task-name a {
+  font-weight: bold;
+}
+
+
+.unread .unread_icon a	{ background-position: top left; }
+
+.unread_icon span {
+  display: none;
+}
+
+.unread_icon {
+  cursor: pointer;
+  float: left;
+  margin-left: -75px;
+  margin-top: 4px;
+}
+  
+.unread_icon a {
+  display: block;
+  width: 12px;
+  height: 12px;
+
+  background-image: url(../images/unread.png);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+}
+
+.task input {
+  margin: 0 0 1px 0px;
+}
+
+#content div.task
+{
+  margin-left: 8px;
+  border-left: solid 4px #b0d295;
+  clear: both;
+  font-size: 11px;
+  min-height: 2.3em;
+  margin-bottom: 2px;
+  background: url(/images/pri_normal_bkg.png) repeat-y;
+}
+
+.task-icon img {
+    height: 16px;
+    width: 16px;
+    float:left;
+    padding-top:1px;
+    padding-right:2px;
+    padding-left:2px;
+}
+
+#content div.task-row {
+  min-height: 2.3em;
+}
+
+.handle, .widget_draggable {
+          cursor: move;
+}
+
+input.button { border: auto; }
+
+fieldset#task_information input.button { float: right; }
+
+.task_info {
+  font-size: 9px;
+}
+
+.description
+{
+  color: #5e6b71;
+  font-size: 10px;
+}
+
+a.description {
+  color: #5e6b71;
+  font-weight: normal;
+}
+
+.otheruser {
+  color: #333333;
+}
+
