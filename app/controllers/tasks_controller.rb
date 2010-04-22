@@ -241,7 +241,7 @@ class TasksController < ApplicationController
       ng.each { |n| n.send_task_notice(@task, current_user) }
 
       create_attachments(@task)
-      worklog = WorkLog.create_for_task(@task, current_user, params[:comment])
+      worklog = WorkLog.create_for_task(@task, current_user, {:body => params[:comment]})
 
       notify(@task, worklog) do |recipients|
         Notifications::deliver_created(@task, current_user, recipients, params[:comment])

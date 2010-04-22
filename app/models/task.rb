@@ -109,7 +109,11 @@ class Task < ActiveRecord::Base
 
     self.milestone.update_counts if self.milestone
 
-    self.completed_at = Time.now.utc if self.status > 1 and self.completed_at.nil?
+    if self.status >= 2
+      self.completed_at = Time.now.utc
+    elsif self.status < 2 and self.completed_at
+      self.completed_at = nil
+    end
 
     next_repeat = self.next_repeat_date
     self.repeat_task if next_repeat and Time.now.utc >= next_repeat
@@ -118,11 +122,6 @@ class Task < ActiveRecord::Base
   #Called on EXISTING records
   def update_callback
 
-    if status >= 2
-      self.completed_at = Time.now.utc
-    elsif status < 2 and self.completed_at
-      self.completed_at = nil
-    end
     send_notifications
 
   end
@@ -137,13 +136,14 @@ class Task < ActiveRecord::Base
 
   #Called on NEW records
   def create_callback
+    debugger
     if self.recipient_users.length > 0
       begin
         Notifications::deliver_created(self, self.creator, self.all_notify_emails, (self.work_logs.first and self.work_logs.first.comment? ? self.work_logs.first.body : "") )
-        self.notified_last_change = self.recipient_users
+        self.notified_last_change.set(self.recipient_users)
         self.mark_as_unread(self.recipient_users)
 
-        worklog = Worklog.create_for_task(self, self.creator, _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", ")))
+        worklog = Worklog.create_for_task(self, self.creator, {:body => _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", "))})
         worklog.users = self.recipient_users
         worklog.save
       rescue
@@ -156,10 +156,13 @@ class Task < ActiveRecord::Base
 
   def has_changed?
     self.changed? or 
-    (@new_assignments and @new_assignments.select{|n|n.assigned?}.length > 0) or
-    (@removed_assignments and @removed_assignments.select{|n|n.assigned?}.length > 0) or
-    @new_dependencies or @removed_dependencies or
-    @new_dependants or @removed_dependants
+    self.assignments.select { |a| a.changed? or a.new_record? }.length > 0
+    @new_assignments or
+    @removed_assignments or
+    @new_dependencies or 
+    @removed_dependencies or
+    @new_dependants or 
+    @removed_dependants
   end
 
   def deliver_notification_emails(user, worklog, event_type=:updated)
@@ -170,7 +173,7 @@ class Task < ActiveRecord::Base
         self.notified_last_change = self.recipient_users
         self.mark_as_unread(self.recipient_users)
 
-        worklog = Worklog.create_for_task(self, user, _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", ")))
+        worklog = Worklog.create_for_task(self, user, {:body => _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", "))})
         worklog.users = self.recipient_users
         worklog.save
       rescue
@@ -182,34 +185,37 @@ class Task < ActiveRecord::Base
   def create_event_worklog
     event_type = :updated
     body = []
+
+    #Scan all changed attributes and create a message indicating what changed
     self.changes do |attr, values|
       case attr
       when 'project_id'
-        body << "<strong>Project</strong>: #{self.project_was.name} -> #{self.project.name}"
+        body << "Project: #{self.project_was.name} -> #{self.project.name}"
       when 'duration'
-        body << "<strong>Estimate</strong>: #{self.updated_by.format_duration(values.first)} -> #{self.updated_by.format_duration(values.last)}"
+        body << "Estimate: #{self.updated_by.format_duration(values.first)} -> #{self.updated_by.format_duration(values.last)}"
       when 'milestone_id'
         before = self.milestone_was ? self.milestone_was.name : 'none'
         after = self.milestone ? self.milestone.name : 'none'
-        body << "<strong>Milestone</strong>: #{before} -> #{after}"
+        body << "Milestone: #{before} -> #{after}"
       when 'due_at'
         before = self.due_at_was ? self.updated_by.tz.utc_to_local(values.first).strftime_localized("%A, %d %B %Y") : 'none'
-        before = self.due_at ? self.updated_by.tz.utc_to_local(values.last).strftime_localized("%A, %d %B %Y") : 'none'
-        body << "<strong>Due</strong>: #{before} -> #{after}"
+        after = self.due_at ? self.updated_by.tz.utc_to_local(values.last).strftime_localized("%A, %d %B %Y") : 'none'
+        body << "Due: #{before} -> #{after}"
       when 'status'
-        body << "<strong>Status</strong>: #{self.status_types[values.first]} -> #{self.status_types[values.last]}"
+        body << "Status: #{self.status_types[values.first]} -> #{self.status_types[values.last]}"
       else
-        body << "<strong>#{attr.capitalize}</strong>: #{values.first} -> #{values.last}"
+        body << "#{attr.capitalize}: #{values.first} -> #{values.last}"
       end
     end
 
-    if self.assignments.select { |a| a.new_record? or a.changed? }.length > 0 or !@new_assignments.nil? or !@removed_assignments.nil?
-      body << "<strong>Assignment</strong>: #{self.assigned_users.length > 0 ? self.users.map { |u| u.name }.join(', ') : 'None'}"
+    #Special cases
+    if self.assignments.select { |a| (a.new_record? or a.changed?) and a.assigned? }.length > 0 or @new_assignments or @removed_assignments
+      body << "Assignments: #{self.assignments.select { |a| a.assigned? }.length > 0 ? self.assignments.select { |a| a.assigned? }.map { |a| a.user.name }.join(', ') : 'None'}"
       event_type = :reassigned
     end
 
     if self.dependencies.select { |d| d.changed?  or d.new_record? }.length > 0 or @new_dependencies or @removed_dependencies
-      body << "<strong>Dependencies</strong>: #{self.dependencies.length > 0 ? self.dependencies.map { |d| d.name }.join(', ') : 'None'}"
+      body << "Dependencies: #{self.dependencies.length > 0 ? self.dependencies.map { |d| d.name }.join(', ') : 'None'}"
     end
 
     #Since work logs will soon be nested into tasks, work_logs are saved before the task.
@@ -225,8 +231,9 @@ class Task < ActiveRecord::Base
 
       defaults = {
         :log_type => EventLog::TASK_MODIFIED,
+        :body => body.join("\n")
       }
-      worklog = WorkLog.create_for_task(self, self.updated_by, body.join("\n"), defaults)
+      worklog = WorkLog.create_for_task(self, self.updated_by, defaults)
       if self.status_changed?
         if self.status < 2
           worklog.log_type = EventLog::TASK_REVERTED
@@ -407,18 +414,9 @@ class Task < ActiveRecord::Base
 
   # Creates a new work log for this task using the given params
   def create_work_log(params, user)
-    if params and !params[:duration].blank?
-      params[:duration] = TimeParser.parse_time(user, params[:duration])
-      params[:started_at] = TimeParser.date_from_params(user, params, :started_at)
-      if params[:body].blank?
-        params[:body] = self.description
-      end
-      params.merge!(:user => user,
-                    :company => self.company, 
-                    :project => self.project, 
-                    :customer => (self.customers.first || self.project.customer))
-      self.work_logs.build(params).save!
-    end
+    params.merge!(:user => user,
+      :customer => (self.customers.first || self.project.customer))
+    WorkLog.create_for_user(user, params)
   end
 
   def last_comment

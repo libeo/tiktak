@@ -78,32 +78,60 @@ class WorkLog < ActiveRecord::Base
   def self.per_page
     40
   end
+
+  ###
+  # Creates and saves a worklog for the given task.
+  # If comment is given, it will be escaped before saving.
+  # The newly created worklog is returned. 
+  ###
+  def self.create_for_task(task, user, params={})
+    defaults = {:user => user,
+      :task => task,
+      :project => task.project,
+      :company => task.project.company,
+      :customer => task.project.customer,
+      :duration => 0,
+      :started_at => Time.now.utc}
+
+    params[:duration] = TimeParser.parse_time(user, params[:duration]) if params[:duration].is_a? String
+    params[:started_at] = TimeParser.parse_time(user, params[:started_at]) if params[:started_at].is_a? String
+
+    params = defaults.merge(params)
+
+    if params[:body]
+      params[:body] = CGI::escapeHTML(params[:body])
+      params[:comment] = true
+    end
+
+    WorkLog.new(params)
+  end
+    
   
   ###
   # Creates and saves a worklog for the given task.
   # If comment is given, it will be escaped before saving.
   # The newly created worklog is returned. 
   ###
-  def self.create_for_task(task, user, comment, params={})
-    params = {:log_type => EventLog::TASK_CREATED}.merge(params)
-    worklog = WorkLog.new(params)
-    worklog.user = user
-    worklog.company = task.project.company
-    worklog.customer = task.project.customer
-    worklog.project = task.project
-    worklog.task = task
-    worklog.started_at = Time.now.utc
-    worklog.duration = 0
+  #def self.create_for_task(task, user, comment, params={})
+  #  params = {:log_type => EventLog::TASK_CREATED}.merge(params)
+  #  worklog = WorkLog.new(params)
+  #  worklog.user = user
+  #  worklog.company = task.project.company
+  #  worklog.customer = task.project.customer
+  #  worklog.project = task.project
+  #  worklog.task = task
+  #  worklog.started_at = Time.now.utc
+  #  worklog.duration = 0
 
-    if !comment.blank?
-      worklog.body =  CGI::escapeHTML(comment)
-      worklog.comment = true
-    end 
-    
-    worklog.save
+  #  if !comment.blank?
+  #    worklog.body =  CGI::escapeHTML(comment)
+  #    worklog.comment = true
+  #  end 
+  #  
+  #  worklog.save
 
-    return worklog
-  end
+  #  return worklog
+  #end
 
   def ended_at
     self.started_at + self.duration + self.paused_duration

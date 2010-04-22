@@ -4,12 +4,12 @@ class Task
 
       def mark_new_assignment(assignment)
         @new_assignments ||= []
-        @new_assignments << assignment
+        @new_assignments << assignment unless @new_assignments.include? assignment
       end
 
       def mark_removed_assignment(assignment)
         @removed_assignments ||= []
-        @removed_assignments << assignment
+        @removed_assignments << assignment unless @removed_assignments.include? assignment
       end
 
       def reject_if_already_assigned(user)
@@ -28,41 +28,47 @@ class Task
         throw "User already unread" if self.unread_users.exists?(user.id)
       end
 
-      def update_assignment_properties(users, property, create_attributes, absolute = true)
+      def update_assignment_properties(users, update, create, remove=nil)
         users = [users].flatten
-        users = users.map{|u|u.id} unless users.first.is_a? Fixnum
-        update_assignment_properties_with_ids(users, property, create_attributes, absolute)
+        update_assignment_properties_with_ids(users.map { |u| u.id }, update, create, remove)
       end
 
-      def update_assignment_properties_with_ids(user_ids, property, create_attributes, absolute = true)
+      def update_assignment_properties_with_ids(user_ids, update, create, remove=nil)
         user_ids = [user_ids].flatten
-        self.assignments.all(:select => 'id, user_id, assigned, notified, notified_last_change').each do |a|
-          if user_ids.include?(a.user_id)
-            a.update_attribute(property, true)
-            self.mark_new_assignment(a)
-          elsif absolute == true
-            a.update_attribute(property, false)
+        self.assignments.each do |a|
+          if user_ids.include? a.user_id
+            a.update_attributes(update)
+          elsif remove
+            a.update_attributes(remove)
           end
-          user_ids.delete(a.user_id)
+          user_ids.delete a.user_id
         end
 
-        user_ids.each do |u| 
-          self.mark_new_assignment(self.assignments.create(create_attributes.merge({:user_id => u})))
+        user_ids.each do |u_id|
+          self.assignments.create(create.merge({:user_id => u_id}))
         end
-        #refresh assignments to include also those that have been created
-        send_notifications 
         self.assignments(true)
+        send_notifications if update[:assigned] and !self.new_record?
       end
 
       module UserAssignments
 
         def set(users)
-          proxy_owner.update_assignment_properties(users, :assigned, {:assigned => true, :notified => false})
+          [users].flatten.each { |u| proxy_owner.mark_new_assignment(u) }
+          proxy_owner.update_assignment_properties(users,
+            {:assigned => true},
+            {:assigned => true, :notified => false},
+            {:assigned => false}
+          )
           proxy_owner.assigned_users(true)
         end
 
         def add(users)
-          proxy_owner.update_assignment_properties(users, :assigned, {:assigned => true, :notified => false}, false)
+          [users].flatten.each { |u| proxy_owner.mark_new_assignment(u) }
+          proxy_owner.update_assignment_properties(users,
+            {:assigned => true},
+            {:assigned => true, :notified => false}
+          )
           proxy_owner.assigned_users(true)
         end
 
@@ -71,12 +77,19 @@ class Task
       module NotifiedAssignments
 
         def set(users)
-          proxy_owner.update_assignment_properties(users, :notified, {:assigned => false, :notified => true})
+          proxy_owner.update_assignment_properties(users,
+            {:notified => true},
+            {:notified => true, :assigned => false},
+            {:notified => false}
+          )
           proxy_owner.notified_users(true)
         end
 
         def add(users)
-          proxy_owner.update_assignment_properties(users, :assigned, {:assigned => false, :notified => true}, false)
+          proxy_owner.update_assignment_properties(users,
+            {:notified => true},
+            {:notified => true, :assigned => false}
+          )
           proxy_owner.notified_users(true)
         end
 
@@ -90,12 +103,19 @@ class Task
         ###
 
         def set(users)
-          proxy_owner.update_assignment_properties(users, :notified, {:assigned => false, :notified => true, :notified_last_change => true})
+          proxy_owner.update_assignment_properties(users,
+            {:notified_last_change => true, :notified => true},
+            {:notified_last_change => true, :notified => true, :assigned => false},
+            {:notified_last_change => false}
+          )
           proxy_owner.notified_last_change(true)
         end
 
         def add(users)
-          proxy_owner.update_assignment_properties(users, :assigned, {:assigned => false, :notified => true, :notified_last_change => true}, false)
+          proxy_owner.update_assignment_properties(users,
+            {:notified_last_change => true, :notified => true},
+            {:notified_last_change => true, :notified => true, :assigned => false}
+          )
           proxy_owner.notified_last_change(true)
         end
 
@@ -103,13 +123,22 @@ class Task
 
       module UnreadAssignments
 
+        #TODO: KEEP THIS SHIT ?
+
         def set(users)
-          proxy_owner.update_assignment_properties(users, :unread, {:assigned => true, :notified => true, :unread => true})
+          proxy_owner.update_assignment_properties(users,
+            {:unread => true, :notified => true},
+            {:unread => true, :notified => true, :assigned => true},
+            {:unread => false}
+          )
           proxy_owner.unread_users(true)
         end
 
         def add(users)
-          proxy_owner.update_assignment_properties(users, :unread, {:assigned => true, :notified => true, :unread => true}, false)
+          proxy_owner.update_assignment_properties(users,
+            {:unread => true, :notified => true},
+            {:unread => true, :notified => true, :assigned => true}
+          )
           proxy_owner.unread_users(true)
         end
 
