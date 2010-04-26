@@ -20,6 +20,10 @@ en:
   #General
   close : "Close"
   #Header
+  notes : "Notes"
+  company_settings : "Company settings"
+  custom_attributes : "Custom properties"
+  resource_types : "Resource types"
   describe_worklog : "Please describe your activities for the current time period"
   worklog : "Journal"
   close_worklog : "Close work log"
@@ -36,6 +40,7 @@ en:
   to_work : "work time left"
   search : "Search"
   #Tab menu
+  add_widget : "Add widget"
   tutorial : "Tutorial"
   overview : "Overview"
   tasks : "Tasks"

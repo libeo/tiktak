@@ -21,29 +21,36 @@
     <% end %>
   </div>
 
+  <!-- information about the task the user is currently working on -->
   <div id="clock_text">
+    
+    <!-- Task title -->
     <div class="task">
       <%= link_to task_label, {:controller => 'tasks', :action => 'edit', :id => task.id} %>
     </div>
+
+    <!-- Time spent -->
     <div class="time">
       <div class="task_time"><%= info_string %></div>
+
+      <!-- worklog description, can be toggled to hide/unhide -->
       <div class="task_postit" id="sheet_description">
         <%= link_to_function t(:worklog),
           "jQuery('#worklog_form').toggle(1500);" %>
         <div class="postit">
           <%= link_to_function image_tag( 'header/img_co_icon-close-postit.png', :alt => t(:close_worklog), :title => t(:close_worklog) ),
             "jQuery('#worklog_form').toggle(1500);" %>
-            <% form_remote_tag :url => {:controller => 'tasks', :action => 'updatelog'} -%>
-              <%= label_tag :worklog_form, t(:describe_worklog) %>
-              <%= text_area_tag 'worklog_body'
+          <% form_remote_tag :url => {:controller => 'tasks', :action => 'updatelog'} do %>
+            <%= label_tag :worklog_form, t(:describe_worklog) %>
+            <%= text_area_tag 'worklog[body]', nil, :size => '60x4', :id => 'worklog_body' %>
+          <% end %>
+          <%= observe_field 'worklog_body', :frequency => 2, :url => {:controller => 'tasks', :action => 'updatelog'} %>
+        </div>
+      </div>
 
-              
-
-              
-
-
-      <span class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'tasks', :action => 'cancel_work_ajax' },
-        :confirm => t(:confirm_cancel_work), :loading => "showProgress();", :complete => "hideProgress();" %></span>
+      <!-- Cancel working on task -->
+      <div class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'tasks', :action => 'cancel_work_ajax' },
+        :confirm => t(:confirm_cancel_work), :loading => "showProgress();", :complete => "hideProgress();" %></div>
     </div>
   </div>
 
