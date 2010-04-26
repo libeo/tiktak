@@ -6,30 +6,46 @@
       info_string += "(#{worked_nice(task.worked_minutes + @current_sheet.duration/60)}"
       info_string += " / #{worked_nice(task.duration)})"
     end
+    
+    truncate_length = 45
+    task_label = task.issue_name + ' - ' + task.project.name + "#{task.full_tags unless task.full_tags.empty?}"
+    task_label = task_label[0,truncate_length] + '...' if task_label.length > truncate_length 
   %>
 
-    <div id="clock_image">
-      <% if @current_sheet.paused? %>
-        <%= link_to_remote image_tag("time_resume.png", :title => t(:resume_time), :alt => t(:resume_time)), :url => {:controller => 'tasks', :action => 'pause_work_ajax'}, 
-          :loading => "showProgress();", :complete => "hideProgress();" %>
-      <% else %>
-        <%= link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), {:controller => 'tasks', :action => 'stop_work'} %>
-      <% end %>
-    </div>
+  <div id="clock_image">
+    <% if @current_sheet.paused? %>
+      <%= link_to_remote image_tag("time_resume.png", :title => t(:resume_time), :alt => t(:resume_time)), :url => {:controller => 'tasks', :action => 'pause_work_ajax'}, 
+        :loading => "showProgress();", :complete => "hideProgress();" %>
+    <% else %>
+      <%= link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), {:controller => 'tasks', :action => 'stop_work'} %>
+    <% end %>
+  </div>
 
-    <div id="clock_text">
-      <p class="task">
-      <% truncate_length = 45
-        task_label = task.issue_name + ' - ' + task.project.name + "#{task.full_tags unless task.full_tags.empty?}"
-        task_label = task_label[0,truncate_length] + '...' if task_label.length > truncate_length %>
+  <div id="clock_text">
+    <div class="task">
       <%= link_to task_label, {:controller => 'tasks', :action => 'edit', :id => task.id} %>
-      </p>
-      <p class="time">
-        <span class="task_time"><%= info_string %></span>
-        <span class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'tasks', :action => 'cancel_work_ajax' },
-          :confirm => t(:confirm_cancel_work), :loading => "showProgress();", :complete => "hideProgress();" %></span>
-      </p>
     </div>
+    <div class="time">
+      <div class="task_time"><%= info_string %></div>
+      <div class="task_postit" id="sheet_description">
+        <%= link_to_function t(:worklog),
+          "jQuery('#worklog_form').toggle(1500);" %>
+        <div class="postit">
+          <%= link_to_function image_tag( 'header/img_co_icon-close-postit.png', :alt => t(:close_worklog), :title => t(:close_worklog) ),
+            "jQuery('#worklog_form').toggle(1500);" %>
+            <% form_remote_tag :url => {:controller => 'tasks', :action => 'updatelog'} -%>
+              <%= label_tag :worklog_form, t(:describe_worklog) %>
+              <%= text_area_tag 'worklog_body'
+
+              
+
+              
+
+
+      <span class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'tasks', :action => 'cancel_work_ajax' },
+        :confirm => t(:confirm_cancel_work), :loading => "showProgress();", :complete => "hideProgress();" %></span>
+    </div>
+  </div>
 
 <% else %>
   

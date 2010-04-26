@@ -17,6 +17,10 @@ fr:
   #General
   close : "Fermer"
   #Header
+  describe_worklog : "Décrivez ce que vous avec fait durant cette période de temps:"
+  worklog : "Journal"
+  close_worklog : "Fermer le journal"
+  open_worklog : "Ouvrir le journal"
   shortlist_window : "Ajoutez ce lien à vos favoris pour accéder rapidement à la Fenêtre d'activité"
   save_time : "Enregistrement du temps"
   resume_time : "Poursuivre le temps"

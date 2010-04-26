@@ -20,6 +20,10 @@ en:
   #General
   close : "Close"
   #Header
+  describe_worklog : "Please describe your activities for the current time period"
+  worklog : "Journal"
+  close_worklog : "Close work log"
+  open_worklog : "Open work log"
   shortlist_window : "Bookmark this link to quickly open the Timer window"
   save_time : "Save time"
   resume_time : "Resume time"
