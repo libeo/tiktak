@@ -7,11 +7,21 @@
       timerwindow.focus();", 
       {:title => t(:shortlist_window), :alt => t(:shortlist_window)} %>
   </div>
+  <div id="tools_notes">
+    <%= link_to image_tag( 'header/img_co_icon-notes.png', :alt => t(:notes), :title => t(:notes) ), {:controller => 'pages', :action => 'index'} %>
+  </div>
   <div id="tools_parameters">
     <%= link_to image_tag('header/img_co_icon-parameters.png', :alt => t(:user_preferences), :title => t(:user_preferences)), {:controller => 'users', :action => 'edit_preferences'} %>
+    <% if current_user.admin? %>
+      <ul>
+        <li> <%= link_to t(:company_settings), :controller => :companies, :action => 'edit', :id => current_user.company.id %> </li>
+        <li> <%= link_to t(:custom_properties), 'custom_attributes' %> </li>
+        <li> <%= link_to t(:resource_types), 'resource_types' %> </li>
+      </ul>
+    <% end %>
   </div>
   <div id="tools_connexion">
     <div class="username"><%= current_user.name %></div>
-    <div class="deconnection"><%= link_to t(:logout), {:controller => 'login', :action => 'logout'} %></div>
+    <div class="deconnexion"><%= link_to t(:logout), {:controller => 'login', :action => 'logout'} %></div>
   </div>
 </div>

@@ -1,26 +1,43 @@
 <div id="tabs">
   <ul>
     <% menu = []
-    menu << [:tutorial, {:controller => 'activites', :action => 'welcome'}] unless current_user.seen_welcome
-    menu << [:overview, {:controller => 'activities', :action => 'list'}, [[:add_widget, {:controller => 'widget', :action => 'add'}]] ]
-    menu << [:tasks, {:controller => 'tasks', :action => 'list'}]
-    menu << [:add_task, {:controller => 'tasks', :action => 'new'}]
+    menu << [:tutorial, {:controller => 'activities', :action => 'welcome'}] unless current_user.seen_welcome
+    menu << [:overview, {:controller => 'activities', :action => 'list'}, [link_to_remote(t(:add_widget), :url => {:controller => 'widget', :action => 'add'})] ]
+    menu << [:tasks, {:controller => 'tasks', :action => 'list'}, nil, ['task'] ]
+    menu << [ image_tag( 'header/img_co_icon-createtask.png', :alt => t(:add_task), :title => t(:add_task) ), 
+      {:controller => 'tasks', :action => 'new'}, nil, ['create_task'] ]
     menu << [:timeline, {:controller => 'timeline', :action => 'list'}] if current_user.option_tracktime
     menu << [:reports, {:controller => 'reports', :action => 'list'}] if current_user.option_tracktime and current_user.can_any?(current_user.projects, 'report')
     menu << [:wiki, {:controller => 'wiki', :action => 'show'}] if current_user.company.show_wiki?
     #menu << [:chat, {:controller => 'shout', :action => 'list'}] if current_user.company.show_chat?
     menu << [:forums, forum_path] if current_user.company.show_forum?
     #menu << [:files, {:controller => 'project_files', :action => 'list'}]
-    menu << [:projects, {:controller => 'projects', :action => 'list'}, [[:add_project, {:controller => 'projects', :action => 'new'}]] ]
+    menu << [:projects, {:controller => 'projects', :action => 'list'} ]
+    menu.last << [[:add_project, {:controller => 'projects', :action => 'new'}]] if current_user.create_projects?
     menu << [:resources, resources_path] if current_user.use_resources?
-    %>
+  %>
 
-    <% menu.each do |name, path_link, sub_menus| %>
-      <li <%="class='select'" if controller.controller_name == path_link[:controller] or 
-      (sub_menus and !sub_menus.select{ |s| controller.controller_name == s.last[:controller] }.empty? ) %>>
-        <%= link_to t(name).capitalize, path_link %>
+    <% menu.each do |name, path_link, sub_menus, classes|
+      classes ||= []
+      classes << 'select' if controller.controller_name == path_link[:controller] or 
+      (sub_menus and !sub_menus.select{ |s| controller.controller_name == s.last[:controller] }.empty?) %>
+      <li class="<%=classes.join(' ')%>">
+      <%= link_to( (name.is_a?(Symbol) ? t(name).capitalize : name) , path_link) %>
+
+      <!-- show drop-down menu if necessary -->
+      <% if sub_menus %>
+        <ul>
+        <% sub_menus.each do |sub_menu| %>
+          <% if sub_menu.is_a? Array %>
+            <li><%= link_to t(sub_menu.first), sub_menu.last %></li>
+          <% else %>
+            <li><%=sub_menu%></li>
+          <% end %>
+        <% end %>
+        </ul>
+      <% end %>
+
       </li>
-      <!-- Add drop-down menu code here, probably -->
     <% end %>
   </ul>
 </div>

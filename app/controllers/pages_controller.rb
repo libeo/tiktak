@@ -1,6 +1,11 @@
 # Simple Page/Notes system, will grow into a full Wiki once I get the time..
 class PagesController < ApplicationController
 
+  def index
+    @pages = current_user.pages.all(:select => 'projects.name, pages.id, pages.name', 
+  :order => 'projects.name, pages.position', :include => :project).group_by { |p| p.project.name }
+  end
+
   def show
     @page = Page.find(params[:id], :conditions => ["company_id = ?", current_user.company.id] )
   end

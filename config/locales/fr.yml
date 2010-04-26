@@ -17,6 +17,10 @@ fr:
   #General
   close : "Fermer"
   #Header
+  notes : "Notes"
+  company_settings : "Configuration de la compagnie"
+  custom_attributes : "Propriétés optionelles"
+  resource_types : "Types de ressources"
   describe_worklog : "Décrivez ce que vous avec fait durant cette période de temps:"
   worklog : "Journal"
   close_worklog : "Fermer le journal"
@@ -33,6 +37,7 @@ fr:
   to_work : ""
   search : "Recherche"
   #Tab menu
+  add_widget : "Nouveau widget"
   tutorial : "Tutoriel"
   overview : "Vue d'ensemble"
   tasks : "Tâches"
