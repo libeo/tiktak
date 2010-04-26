@@ -24,14 +24,6 @@
 		
 		/*Le bloc d'infos*/
 
-    .time_spent {
-      color: #FFFFFF;
-      font-size: 1.08em;
-      overflow: hidden;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-		
 		#sheet_info {
 			float:left;
 			padding:17px 0 0 18px;
@@ -62,19 +54,84 @@
 				
 					#sheet_info #clock_text .time .task_time {
 						color:#bdbdbd;
-						margin-right:5px;
+						margin-right:4px;
+						float:left;
 					}
 					
-					#sheet_info #clock_text .time .task_cancel a{
-						color:#ffc2a9;
-						text-decoration:none;
-						background:url(../images/header/img_co_icon-cancel.png) no-repeat left 1px;
-						padding-left:16px;
+					#sheet_info #clock_text .time .task_cancel {
+						float:left;
+						margin-left:5px;
 					}
 					
-					#sheet_info #clock_text .time .task_cancel a:hover {
-						text-decoration:underline;
+						#sheet_info #clock_text .time .task_cancel a{
+							color:#ffc2a9;
+							text-decoration:none;
+							background:url(images/img_co_icon-cancel.png) no-repeat left 1px;
+							padding-left:16px;
+						}
+						
+						#sheet_info #clock_text .time .task_cancel a:hover {
+							text-decoration:underline;
+						}
+						
+					#sheet_info #clock_text .time .task_postit {
+						float:left;
 					}
+						
+						#sheet_info #clock_text .time .task_postit a{
+							color:#fede6b;
+							text-decoration:none;
+							background:url(images/img_co_icon-postit.png) no-repeat left 1px;
+							padding-left:16px;
+							margin-left:4px;
+						}
+						
+						#sheet_info #clock_text .time .task_postit a:hover {
+							text-decoration:underline;
+						}
+					
+					#sheet_info #clock_text .time .postit {
+						position:absolute;
+						z-index:9000;
+						-webkit-border-radius:5px;
+						-moz-border-radius:5px;
+						border-radius:5px;
+						padding:8px;
+						border:1px solid #c6c6c6;
+						margin:8px 0 0 -12px;
+						background:#fff url(images/img_co_bg-postit.jpg) repeat-x left bottom;
+						color:#7e7e7e;
+					}
+					
+						#sheet_info #clock_text .time .postit form {
+							background:url(images/img_co_flch-bg-postit.png) no-repeat 5px top;
+							margin-top:-15px;
+							padding-top:15px;
+						}
+						
+							#sheet_info #clock_text .time .postit label {
+								display:block;
+								font-family:Verdana, Arial;
+								font-size:0.91em;
+								margin-right:40px;
+							}
+							
+							#sheet_info #clock_text .time .postit textarea {
+								border:none;
+								border:1px solid #acacac;
+								font-family:Verdana, Arial;
+								font-size:0.91em;
+								margin-top:4px;
+							}
+							
+							#sheet_info #clock_text .time .postit a {
+								background:none;
+								padding-left:0;
+								margin-left:0;
+								position:absolute;
+								right:3px;
+								margin-right:4px;
+							}
 					
 		/*Le bloc utilitaires*/
 						
