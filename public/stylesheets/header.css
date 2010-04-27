@@ -28,6 +28,12 @@
 			float:left;
 			padding:17px 0 0 18px;
 		}
+
+      #sheet_info .time_spent {
+        color: #FFFFFF;
+        font-size : 1.08em;
+        text-decoration : none;
+      }
 		
 			#sheet_info #clock_image {
 				float:left;
@@ -66,7 +72,7 @@
 						#sheet_info #clock_text .time .task_cancel a{
 							color:#ffc2a9;
 							text-decoration:none;
-							background:url(../../images/img_co_icon-cancel.png) no-repeat left 1px;
+							background:url(../../images/header/img_co_icon-cancel.png) no-repeat left 1px;
 							padding-left:16px;
 						}
 						
@@ -81,7 +87,7 @@
 						#sheet_info #clock_text .time .task_postit a{
 							color:#fede6b;
 							text-decoration:none;
-							background:url(../../images/img_co_icon-postit.png) no-repeat left 1px;
+							background:url(../../images/header/img_co_icon-postit.png) no-repeat left 1px;
 							padding-left:16px;
 							margin-left:4px;
 						}
@@ -99,12 +105,12 @@
 						padding:8px;
 						border:1px solid #c6c6c6;
 						margin:8px 0 0 -12px;
-						background:#fff url(../../images/img_co_bg-postit.jpg) repeat-x left bottom;
+						background:#fff url(../../images/header/img_co_bg-postit.jpg) repeat-x left bottom;
 						color:#7e7e7e;
 					}
 					
 						#sheet_info #clock_text .time .postit form {
-							background:url(../../images/img_co_flch-bg-postit.png) no-repeat 5px top;
+							background:url(../../images/header/img_co_flch-bg-postit.png) no-repeat 5px top;
 							margin-top:-15px;
 							padding-top:15px;
 						}

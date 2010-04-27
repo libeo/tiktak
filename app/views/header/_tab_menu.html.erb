@@ -2,7 +2,7 @@
   <ul>
     <% menu = []
     menu << [:tutorial, {:controller => 'activities', :action => 'welcome'}] unless current_user.seen_welcome
-    menu << [:overview, {:controller => 'activities', :action => 'list'}, [link_to_remote(t(:add_widget), :url => {:controller => 'widget', :action => 'add'})] ]
+    menu << [:overview, {:controller => 'activities', :action => 'list'}, [link_to_remote(t(:add_widget), :url => {:controller => 'widgets', :action => 'add'})] ]
     menu << [:tasks, {:controller => 'tasks', :action => 'list'}, nil, ['task'] ]
     menu << [ image_tag( 'header/img_co_icon-createtask.png', :alt => t(:add_task), :title => t(:add_task) ), 
       {:controller => 'tasks', :action => 'new'}, nil, ['create_task'] ]

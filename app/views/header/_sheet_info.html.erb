@@ -17,7 +17,7 @@
       <%= link_to_remote image_tag("time_resume.png", :title => t(:resume_time), :alt => t(:resume_time)), :url => {:controller => 'tasks', :action => 'pause_work_ajax'}, 
         :loading => "showProgress();", :complete => "hideProgress();" %>
     <% else %>
-      <%= link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), {:controller => 'tasks', :action => 'stop_work'} %>
+      <%= link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), {:controller => 'tasks', :action => 'stop_work'}, :onclick => "updateLog();" %>
     <% end %>
   </div>
 
@@ -36,15 +36,14 @@
       <!-- worklog description, can be toggled to hide/unhide -->
       <div class="task_postit" id="sheet_description">
         <%= link_to_function t(:worklog),
-          "jQuery('#worklog_form').toggle(1500);" %>
-        <div class="postit">
+          "jQuery('#worklog_form').toggle(500);toggleUpdater();updateLog();" %>
+        <div class="postit" id="worklog_form" style="display: none;">
           <%= link_to_function image_tag( 'header/img_co_icon-close-postit.png', :alt => t(:close_worklog), :title => t(:close_worklog) ),
-            "jQuery('#worklog_form').toggle(1500);" %>
+            "jQuery('#worklog_form').toggle(500);toggleUpdater();updateLog();" %>
           <% form_remote_tag :url => {:controller => 'tasks', :action => 'updatelog'} do %>
             <%= label_tag :worklog_form, t(:describe_worklog) %>
-            <%= text_area_tag 'worklog[body]', nil, :size => '60x4', :id => 'worklog_body' %>
+            <%= text_area_tag 'text', @current_sheet.body, :size => '60x4', :id => 'worklog_body' %>
           <% end %>
-          <%= observe_field 'worklog_body', :frequency => 2, :url => {:controller => 'tasks', :action => 'updatelog'} %>
         </div>
       </div>
 

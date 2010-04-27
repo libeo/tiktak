@@ -7,6 +7,7 @@
 	<%= yield :tinymce %>
 	<%= yield :tinymce_init %>
 
+  <%= javascript_include_tag 'general' %>
 	<%= javascript_include_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
 	<%= javascript_include_tag "swfobject" %>
 
@@ -87,26 +88,6 @@
         <% redirect_action = controller.controller_name == 'reports' ? '/reports/list' : nil %>
         <%= render(:partial => "/task_filters/panel", :locals => {:redirect_action => redirect_action }) %>
 
-        <!-- Small textbox for worklog description -->
-	      <div <%= "style=\"display:none;\"" if @current_sheet.nil? || controller.action_name == "stop_work" %> id="work-log">
-          <div class="page_header tooltip" title="<%= _'Text entered will be saved automatically to your current work notes.'%>"><%= _'Work Log' %></div>
-          <form method="post" onsubmit="return false;" id="worklog_form">
-            <textarea name="worklog[body]" id="worklog_body" style="padding:0;margin-top:0.5em;margin-bottom:0.3em;width:100%;" rows="4">
-              <%= @current_sheet.body if @current_sheet%>
-            </textarea>
-          </form>
-          <div id="worklog-saved" class="optional" style="text-align:right;padding-bottom:0.3em;padding-right:1em;"></div>
-          <br />
-          <% javascript_tag do %>
-            new Form.Element.Observer('worklog_body', 2, 
-              function(element, value) {
-                new Ajax.Updater('worklog-saved', '/tasks/updatelog', {asynchronous:true, evalScripts:true, parameters: Form.serialize($('worklog_form'))})
-              }
-            );
-          <% end %>
-
-	      </div>
-        
         <!-- Panel listing available notes -->
 	      <%= render(:partial => "pages/panel") %>
 
@@ -160,8 +141,11 @@
 
 	<% end %>
 
-<!-- javascript that frequently updates the page counters (in the header) -->
-<%= periodically_call_remote(:url => { :controller => 'tasks', :action => 'update_sheet_info', :format => "js" }, :frequency => 90 ) -%>
+  <!-- javascript that frequently updates the page counters (in the header) -->
+<% javascript_tag do %>
+  var intervalId = null;
+  toggleUpdater();
+<% end %>
 
 <!-- flash plugin for push notifications (push_server) -->
 <%= flash_plugin(session[:channels]) %>

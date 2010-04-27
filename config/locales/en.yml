@@ -13,6 +13,7 @@ en:
   archive_task : "Archive task"
   unarchive_task : "Reopen task"
   #Widgets
+  loading : "chargement..."
   open_widget : "Show"
   close_widget : "Close"
   subscribe_rss : "Subscribe to this widgets' rss feed"
@@ -22,7 +23,7 @@ en:
   #Header
   notes : "Notes"
   company_settings : "Company settings"
-  custom_attributes : "Custom properties"
+  custom_properties : "Custom properties"
   resource_types : "Resource types"
   describe_worklog : "Please describe your activities for the current time period"
   worklog : "Journal"
