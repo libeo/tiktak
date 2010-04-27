@@ -13,20 +13,6 @@
 <script type="text/javascript" language="javascript" charset="utf-8">
 // <![CDATA[
 
-/*
-function onOverWidget(portal, widget) {
-  // show the widget menu
-  jQuery("#" + widget._getId() + " .widget-menu").show();
-} 
-   
-function onOutWidget(portal, widget) {
-  // hide the widget menu (not the whole widget!)
-  jQuery("#" + widget._getId() + " .widget-menu").hide();
-  }
-*/
-
-//var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
-
 function onStartDrag() {
   jQuery('#widget_col_0').addClass('widget_col_delimiter');
   jQuery('#widget_col_1').addClass('widget_col_delimiter');
@@ -40,24 +26,8 @@ function onEndDrag() {
 }
 
 var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
-
 <% current_user.widgets.each do |@widget| %>
-
-  var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
-  var title = "<%= escape_javascript(render :partial => 'widgets/widget_title', :locals => {:widget => @widget}) %>";
-
-  //HTML inserted in title is encapsulated in a <div id='header-widgets_#{id}' class='widget_title widget_draggable'>
-  widget.setTitle(title);
-  widget.setContent('<span class="optional"><br/><%= _'Loading...'%></span>');
-  portal.add(widget, <%=@widget.column%>);
-  <%= "jQuery('#content_#{@widget.dom_id}').hide();" if @widget.collapsed? %> 
-
-<% end %>
-
-<% widgets = (current_user.widgets.select{ |w| !w.collapsed? } +
-              current_user.widgets.select{ |w| w.collapsed? }) -%>
-<% widgets.each do |@widget| %>
-jQuery.getScript('/widgets/show/<%=@widget.id%>', function(data) { portal.refreshHeights();} );
+  jQuery.getScript('/widgets/generate/<%=@widget.id%>');
 <% end %>
 // ]]>
 </script>

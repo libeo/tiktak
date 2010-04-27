@@ -15,8 +15,8 @@
     <% if current_user.admin? %>
       <ul>
         <li> <%= link_to t(:company_settings), :controller => :companies, :action => 'edit', :id => current_user.company.id %> </li>
-        <li> <%= link_to t(:custom_properties), 'custom_attributes' %> </li>
-        <li> <%= link_to t(:resource_types), 'resource_types' %> </li>
+        <li> <%= link_to t(:custom_properties), '/custom_attributes' %> </li>
+        <li> <%= link_to t(:resource_types), '/resource_types' %> </li>
       </ul>
     <% end %>
   </div>

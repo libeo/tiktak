@@ -1,0 +1,14 @@
+<script type='text/javascript'>
+  var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
+  var title = "<%= escape_javascript(render :partial => 'widgets/widget_title', :locals => {:widget => @widget}) %>";
+
+  //HTML inserted in title is encapsulated in a <div id='header-widgets_#{id}' class='widget_title widget_draggable'>
+  widget.setTitle(title);
+  widget.setContent('<span class="optional"><br/><%= _'Loading...'%></span>');
+  portal.add(widget, <%=widget.column%>);
+  <% if widget.collapsed? %>
+    jQuery('#content_<%=widget.dom_id%>').hide();
+  <% else %>
+    jQuery.getScript('/widgets/show/<%=@widget.id%>', function(data) { portal.refreshHeights();} );
+  <% end %>
+</script>

@@ -389,18 +389,20 @@ class WidgetsController < ApplicationController
     end
 
   end
-
-  
   
   def add
     render :update do |page|
-      page << "if(! $('add-widget' ) ) {"
-      page.insert_html :top, "left_col", :partial => "widgets/add"
+      page << "if(! $('add-widget') ) {"
+      page.insert_html :top, "widget_col_0", :partial => "widgets/add"
       page.visual_effect :appear, "add-widget"
       page << "} else {"
       page.visual_effect :fade, "add-widget"
       page << "}"
     end
+  end
+
+  def generate
+    @widget = Widget.find(:first, :conditions => ["id = ? and user_id = ?", params[:id], current_user.id])
   end
 
   def destroy
@@ -433,21 +435,25 @@ class WidgetsController < ApplicationController
       return
     else 
       render :update do |page|
-        page.remove 'add-widget'
-        page << "var widget = new Xilinus.Widget('widget', '#{@widget.dom_id}');"
-        page << "var title = '<div style=\"float:right;display:none;\" class=\"widget-menu\"><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/edit/#{@widget.id}\\\'); return false;\"><img src=\"/images/configure.png\" border=\"0\"/></a><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/destroy/#{@widget.id}\\\'); return false;\"><img src=\"/images/delete.png\" border=\"0\"/></a></div>';"
+        page << "jQuery.getScript('/widgets/generate/#{@widget.id}');"
+      end
+      #render :update do |page|
+      #  page.remove 'add_widget'
+      #  page.insert_html
+      #  page << "var widget = new Xilinus.Widget('widget', '#{@widget.dom_id}');"
+      #  page << "var title = '<div style=\"float:right;display:none;\" class=\"widget-menu\"><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/edit/#{@widget.id}\\\'); return false;\"><img src=\"/images/configure.png\" border=\"0\"/></a><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/destroy/#{@widget.id}\\\'); return false;\"><img src=\"/images/delete.png\" border=\"0\"/></a></div>';"
 
-        page << "title += '<div><a href=\"#\" id=\"indicator-#{@widget.dom_id}\" class=\"widget-open\" onclick=\"jQuery.get(\\\'/widgets/toggle_display/#{@widget.id}\\\',function(data) {portal.refreshHeights();} );\">&nbsp;</a>';"
-        page << "title += '" + render_to_string(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join + "</div>';"
-        page.<< "widget.setTitle(title);"
-        page << "widget.setContent('<span class=\"optional\">#{h(_('Please configure the widget'))}</span>');"
-        page << "portal.add(widget, #{@widget.column});"
-        page << "jQuery.get('/widgets/show/#{@widget.id}', function(data) {portal.refreshHeights();} );"
+      #  page << "title += '<div><a href=\"#\" id=\"indicator-#{@widget.dom_id}\" class=\"widget-open\" onclick=\"jQuery.get(\\\'/widgets/toggle_display/#{@widget.id}\\\',function(data) {portal.refreshHeights();} );\">&nbsp;</a>';"
+      #  page << "title += '" + render_to_string(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join + "</div>';"
+      #  page.<< "widget.setTitle(title);"
+      #  page << "widget.setContent('<span class=\"optional\">#{h(_('Please configure the widget'))}</span>');"
+      #  page << "portal.add(widget, #{@widget.column});"
+      #  page << "jQuery.get('/widgets/show/#{@widget.id}', function(data) {portal.refreshHeights();} );"
 
-        page << "updateTooltips();"
-        page << "portal.refreshHeights();"
-        page << "Element.scrollTo('#{@widget.dom_id}');"
-      end 
+      #  page << "updateTooltips();"
+      #  page << "portal.refreshHeights();"
+      #  page << "Element.scrollTo('#{@widget.dom_id}');"
+      #end 
     end
 
   
@@ -522,11 +528,14 @@ class WidgetsController < ApplicationController
     
     render :update do |page|
       if @widget.collapsed?
-        page.hide "content_#{@widget.dom_id}"
+        page.replace_html "content_#{@widget.dom_id}", ""
+        #page.hide "content_#{@widget.dom_id}"
         page << "Element.removeClassName($('indicator-#{@widget.dom_id}'), 'widget-open');"
         page << "Element.addClassName($('indicator-#{@widget.dom_id}'), 'widget-collapsed');"
-      else 
-        page.show "content_#{@widget.dom_id}"
+      else
+        page.replace_html "content_#{@widget.dom_id}", t(:loading)
+        page << "jQuery.getScript('/widgets/show/#{@widget.id}', function(data) { jQuery('#content_#{@widget.dom_id}').hide(); jQuery('#content_#{@widget.dom_id}').fadeIn(500);} );"
+        #page.show "content_#{@widget.dom_id}"
         page << "Element.removeClassName($('indicator-#{@widget.dom_id}'), 'widget-collapsed');"
         page << "Element.addClassName($('indicator-#{@widget.dom_id}'), 'widget-open');"
       end

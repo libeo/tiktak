@@ -10,6 +10,7 @@ fr:
   unarchive_task : "Restaurer la tâche"
   confirm_close : "Êtes-vous sûr de vouloir fermer cette tâche ?"
   #Widget
+  loading : "loading..."
   open_widget : "Afficher"
   close_widget : "Fermer"
   subscribe_rss : "Suivre le fil rss de ce widget"
@@ -19,7 +20,7 @@ fr:
   #Header
   notes : "Notes"
   company_settings : "Configuration de la compagnie"
-  custom_attributes : "Propriétés optionelles"
+  custom_properties : "Propriétés optionelles"
   resource_types : "Types de ressources"
   describe_worklog : "Décrivez ce que vous avec fait durant cette période de temps:"
   worklog : "Journal"

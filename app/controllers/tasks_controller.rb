@@ -915,8 +915,8 @@ class TasksController < ApplicationController
       render :text => "#{_("Task not worked on")} #{current_user.tz.utc_to_local(Time.now.utc).strftime_localized("%H:%M:%S")}"
       return
     end 
-    if params[:worklog] && params[:worklog][:body] 
-      @current_sheet.body = params[:worklog][:body] 
+    if params[:text]
+      @current_sheet.body = params[:text]
       @current_sheet.save
       render :text => "#{_("Saved")} #{current_user.tz.utc_to_local(Time.now.utc).strftime_localized("%H:%M:%S")}"
     else 
