@@ -17,6 +17,10 @@ fr:
   subscribe_ical : "Suivre le file iCal de vos projets. Pour un fil personnel, remplacez 'ical_all' par 'ical' dans l'adresse. Vous pouvez aussi ajouter '?mode=tasks' pour filtrer seulement les tâches, mode=logs' pour seulement les plages de temps, ou '?mode=milestones' pour les jalons."
   #General
   close : "Fermer"
+  open : "Ouvrir"
+  #Footer
+  clockingit_logo : "ClockingIT Logo"
+  help_translate : "Participer à la traduction"
   #Header
   notes : "Notes"
   company_settings : "Configuration de la compagnie"

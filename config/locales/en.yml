@@ -20,6 +20,10 @@ en:
   subscribe_ical : "Subscribe to the iCal feed for your projects. For a personal feed, replace 'ical_all' with 'ical' in the URL. You can also append '?mode=tasks' for only tasks, '?mode=logs' for only work logs, or '?mode=milestones' for just milestones."
   #General
   close : "Close"
+  open : "Open"
+  #Footer
+  clockingit_logo : "Logo ClockingIT"
+  help_translate : "Help translate"
   #Header
   notes : "Notes"
   company_settings : "Company settings"
