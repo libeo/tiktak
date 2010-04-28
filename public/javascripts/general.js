@@ -50,16 +50,15 @@ function toggleRightColumn() {
 
 /*
  Marks the task sender belongs to as unread.
- Also removes the "unread" class from the task html.
+ Also removes the "unread" class from the img html.
  */
-function toggleTaskUnread(icon) {
-    var task = jQuery(icon).parents(".task");
-    
-    var unread = task.hasClass("unread");
-    task.toggleClass("unread");
-
-    var taskId = task.attr("id").replace("task_", "");
-    var parameters = { "id" : taskId, "read" : unread };
-
-    jQuery.post("/tasks/set_unread",  parameters);
+function toggleTaskUnread(img, taskId) {
+  var unread = jQuery(img).hasClass('unread');
+  if (unread) {
+    img.attr('src', 'images/task/img_co_icon-bookmark-up.png');
+  } else {
+    img.attr('src', 'images/task/img_co_icon-bookmark-select.png');
+  }
+  img.toggleClass('unread');
+  jQuery.post('tasks/set_unread', {id: taskId, read: unread});
 }

@@ -1,4 +1,8 @@
 fr:
+  #Task filter
+  my_filters : "Mes filtres"
+  shared_filters : "Les filtres partagés"
+  default_filters : "Les filtres par défaut"
   #Task
   confirm_archive : "Êtes-vous sûr de vouloir archiver cette tâche ?"
   todo : "À Faire"
@@ -9,6 +13,7 @@ fr:
   archive_task : "Archiver la tâche"
   unarchive_task : "Restaurer la tâche"
   confirm_close : "Êtes-vous sûr de vouloir fermer cette tâche ?"
+  dw : 'j/s'
   #Task tooltip
   tooltip_name : "Nom"
   tooltip_project : "Projet" 
@@ -32,6 +37,7 @@ fr:
   #General
   close : "Fermer"
   open : "Ouvrir"
+  delete : "Delete"
   #Footer
   clockingit_logo : "ClockingIT Logo"
   help_translate : "Participer à la traduction"

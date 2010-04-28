@@ -48,7 +48,7 @@ img {
 /*Message*/
 
 .notice {
-  background:#eaf9cd url(images/img_co_icon-green.png) no-repeat 8px center;
+  background:#eaf9cd url(../../images/general/img_co_icon-green.png) no-repeat 8px center;
   -webkit-border-radius:8px;
   -moz-border-radius:8px;
   border-radius:8px;
@@ -90,7 +90,7 @@ img {
 	
 			#right_button a {
 				float:left;
-				background:#fff url(images/img_co_bg-filters.jpg) repeat-y right top;
+				background:#fff url(../../images/general/img_co_bg-filters.jpg) repeat-y right top;
 				border:1px solid #c6c6c6;
 				border-right:none;
 				padding:12px 6px 8px 5px;
@@ -118,7 +118,7 @@ img {
 				border:1px solid #c6c6c6;
 				border-left:none;
 				border-right:none;
-				background:url(images/img_co_bg-widget-header.jpg) repeat-x bottom left;
+				background:url(../../images/task/img_co_bg-widget-header.jpg) repeat-x bottom left;
 				color:#464646;
 				padding:3px 5px 2px 5px;
 				font-weight:bold;

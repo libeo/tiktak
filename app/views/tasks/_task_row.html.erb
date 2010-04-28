@@ -5,8 +5,9 @@
 
     <div class="col_entry_icon">
       <!-- bookmark task -->
-      <% link_to_function image_tag( 'widget/img_co_icon-bookmark-select.png', :alt => t(:bookmark_task), :title => t(:bookmark_task) ),
-        "toggleTaskUnread(this);" %>
+      <% link_to_function image_tag( 'task/img_co_icon-bookmark-select.png', :alt => t(:bookmark_task), :title => t(:bookmark_task) ), 
+          :class => (task.unread?(current_user) ? 'unread' : ''),
+          "toggleTaskUnread(this, #{task.id});" %>
 
       <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
       <% if @current_sheet and @current_sheet.task_id == task.id %>
@@ -27,12 +28,16 @@
         <!-- tooltip showing info about the task -->
         <%= render :partial => 'task_tooltip', :locals => {:task => task} %>
 
-        <% if current_user.option_tracktime? %>
+        <!-- total time worked on the task -->
+        <% if current_user.option_tracktime? and task.worked %>
           <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
             / <%= worked_nice(task.duration) %>)</span>
         <% end %>
-        <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
-          / <%= worked_nice(task.duration) %>)</span>
+
+        <!-- task due date -->
+        <% if task.due_at %>
+          <%= task.overworked? ? content_tag(:span, neg_due_date(task.due_at), :class => 'entry_date_exceeded') : neg_due_date(task.due_at) %>
+        <% end %>
 
       </div>
       <div class="entry_project"><%= task.full_name_without_links %></div>
@@ -41,12 +46,10 @@
 
   <!-- Utility icons that perform a specific action link closing a task, adding a TODO, archiving a task -->
   <div class="col_entry_tools">
-    <% todo_tooltip = ""
-      task.todos.each do |todo|
-        todo_tooltip += "<tr><td>#{todo.done? ? '+' : '-'}</td><td>#{todo.name}</td></tr>"
-      end
-    %>
-    <%= image_tag 'task/img_co_icon-todo.png', {:alt => t(:todo)}.merge(tooltip_options(todo_tooltip)) %>
+
+    <!-- TODO list -->
+    <%= image_tag 'task/img_co_icon-todo.png', {:alt => t(:todo), :title => t(:todo)} %>
+    <%= render :partial => 'task_todo_tooltip', :locals => {:todos => task.todos} %>
 
     <!-- Close/open task -->
     <% if current_user.can?(task.project, 'close') -%>
@@ -55,7 +58,7 @@
           :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_close),
           :url => {:controller => 'tasks', :action => 'ajax_check', :id => task.id} %>
       <% else %>
-        <%= link_to_remote image_tag( 'task/img_co_icon-reopen.png', :alt => t(:open_task), :title => t(:open_task) ),
+        <%= link_to_remote image_tag( 'task/img_co_icon-declassify.png', :alt => t(:open_task), :title => t(:open_task) ),
           :loading => 'showProgress();', :complete => 'hideProgress();',
           :url => {:controller => 'tasks', :action => 'ajax_uncheck', :id => task.id} %>
       <% end %>
@@ -68,11 +71,12 @@
             :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_archive),
             :url => {:controller => 'tasks', :action => 'ajax_hide', :id => task.id} %>
       <% else %>
-        <%= link_to_remote image_tag( 'task/img_co_icon-unarchive.png', :alt => t(:unarchive_task), :title => t(:unarchive_task) ),
+        <%= link_to_remote image_tag( 'task/img_co_icon-dearchive.png', :alt => t(:unarchive_task), :title => t(:unarchive_task) ),
             :loading => 'showProgress();', :complete => 'hideProgress();',
             :url => {:controller => 'tasks', :action => 'ajax_restore', :id => task.id} %>
       <% end %>
     <% end %>
+
   </div>
   <div class="clear"></div>
 </div>
