@@ -36,10 +36,10 @@
       <!-- worklog description, can be toggled to hide/unhide -->
       <div class="task_postit" id="sheet_description">
         <%= link_to_function t(:worklog),
-          "jQuery('#worklog_form').toggle(500);toggleUpdater();updateLog();" %>
+          "toggleWorkLogJournal();" %>
         <div class="postit" id="worklog_form" style="display: none;">
           <%= link_to_function image_tag( 'header/img_co_icon-close-postit.png', :alt => t(:close_worklog), :title => t(:close_worklog) ),
-            "jQuery('#worklog_form').toggle(500);toggleUpdater();updateLog();" %>
+            "toggleWorkLogJournal();" %>
           <% form_remote_tag :url => {:controller => 'tasks', :action => 'updatelog'} do %>
             <%= label_tag :worklog_form, t(:describe_worklog) %>
             <%= text_area_tag 'text', @current_sheet.body, :size => '60x4', :id => 'worklog_body' %>

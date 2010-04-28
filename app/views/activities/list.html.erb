@@ -26,8 +26,12 @@ function onEndDrag() {
 }
 
 var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
-<% current_user.widgets.each do |@widget| %>
-  jQuery.getScript('/widgets/generate/<%=@widget.id%>');
-<% end %>
 // ]]>
 </script>
+<% current_user.widgets.each do |@widget| %>
+  <%= render :partial => 'widgets/generate_widget', :locals => {:widget => @widget} %>
+<% end %>
+
+<% if false %>
+  jQuery.getScript('/widgets/generate/<%=@widget.id%>');
+<% end %>
