@@ -401,10 +401,6 @@ class WidgetsController < ApplicationController
     end
   end
 
-  def generate
-    @widget = Widget.find(:first, :conditions => ["id = ? and user_id = ?", params[:id], current_user.id])
-  end
-
   def destroy
     begin
       @widget = Widget.find(params[:id], :conditions => ["company_id = ? AND user_id = ?", current_user.company_id, current_user.id])
@@ -435,28 +431,10 @@ class WidgetsController < ApplicationController
       return
     else 
       render :update do |page|
-        page << "jQuery.getScript('/widgets/generate/#{@widget.id}');"
+        page.replace_html 'add-widget', :partial => 'widgets/generate_widget', :locals => {:widget => @widget}
       end
-      #render :update do |page|
-      #  page.remove 'add_widget'
-      #  page.insert_html
-      #  page << "var widget = new Xilinus.Widget('widget', '#{@widget.dom_id}');"
-      #  page << "var title = '<div style=\"float:right;display:none;\" class=\"widget-menu\"><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/edit/#{@widget.id}\\\'); return false;\"><img src=\"/images/configure.png\" border=\"0\"/></a><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/destroy/#{@widget.id}\\\'); return false;\"><img src=\"/images/delete.png\" border=\"0\"/></a></div>';"
-
-      #  page << "title += '<div><a href=\"#\" id=\"indicator-#{@widget.dom_id}\" class=\"widget-open\" onclick=\"jQuery.get(\\\'/widgets/toggle_display/#{@widget.id}\\\',function(data) {portal.refreshHeights();} );\">&nbsp;</a>';"
-      #  page << "title += '" + render_to_string(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join + "</div>';"
-      #  page.<< "widget.setTitle(title);"
-      #  page << "widget.setContent('<span class=\"optional\">#{h(_('Please configure the widget'))}</span>');"
-      #  page << "portal.add(widget, #{@widget.column});"
-      #  page << "jQuery.get('/widgets/show/#{@widget.id}', function(data) {portal.refreshHeights();} );"
-
-      #  page << "updateTooltips();"
-      #  page << "portal.refreshHeights();"
-      #  page << "Element.scrollTo('#{@widget.dom_id}');"
-      #end 
     end
 
-  
   end
 
   def edit

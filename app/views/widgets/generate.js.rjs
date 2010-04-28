@@ -1,8 +1,0 @@
-page << "var widget = new Xilinus.Widget('widget', '#{@widget.dom_id}');"
-page << "var title = \"#{ escape_javascript(render :partial => 'widgets/widget_title', :locals => {:widget => @widget}) }\";"
-page << "widget.setTitle(title);"
-unless @widget.collapsed?
-  page << "widget.setContent('<span><br/>#{t(:loading)}</span>');"
-  page << "jQuery.getScript('/widgets/show/#{@widget.id}', function(data) { jQuery('#content_#{@widget.dom_id}').hide(); jQuery('#content_#{@widget.dom_id}').fadeIn(500);} );"
-end
-page << "portal.add(widget, #{@widget.column});"
