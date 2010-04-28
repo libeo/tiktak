@@ -14,73 +14,152 @@
 
     /*L'icône de l'horloge*/
     
-    .task_entry .col_entry_icon {
-        float:left;
-        padding:7px 4px 0 4px;
-        position:absolute;
-    }
-
-        .task_entry .col_entry_icon img {
-            vertical-align:middle;
-        }
-        
-    .task_entry .col_entry_time_task {
-        padding:9px 0 0 0;
-        margin-left:35px;
-    }
-        
-        /*Le no, la tâche et le temps*/
-        
-        .task_entry .col_entry_time_task .entry_task {
-            font-weight:bold;
-            float:left;
-        }
-        
-            .task_entry .entry_no {
-                font-weight:bold;
-                margin:0 3px 0 0;
-                color:#000;
-            }
-            
-            .task_entry .entry_task_text a {
-                margin-right:3px;
-                color:#335600;
-                text-decoration:none;
-            }
-            
-            .task_entry .entry_task_text a:hover {
-                text-decoration:underline;
-            }
-        
-            .task_entry .col_entry_time_task .entry_time {
-                margin:0 10px 0 0;
-                color:#000;
-                font-weight:normal;
-                display:inline-block;
-            }
-        
-            .task_entry .col_entry_time_task .entry_time .entry_time_exceeded {
-                color:#b8121a;
-                font-weight:bold;
-            }
-        
-        /*Le projet et le client*/
-        
-        .task_entry .col_entry_time_task .entry_project {
-            font-size:0.91em;
-            color:#b4b4b4;
-            float:left;
-        }
-    
-/*Les icones reliées aux tâches*/
-
-.task_entry .col_entry_tools {
-    float:right;
-    width:10%;
-    text-align:right;
-    padding:7px 0 0 0;
-}
-
-  .task_entry .col_entry_tools img {
-      margin:0 3px 0 3px;
-  }
+				.task_entry .col_entry_icon {
+					float:left;
+					padding:7px 4px 0 4px;
+					position:absolute;
+				}
+			
+					.task_entry .col_entry_icon img {
+						vertical-align:middle;
+					}
+					
+					.task_entry .col_entry_icon .entry_icon_bookmark img {
+						margin-right:6px;
+					}
+					
+				.task_entry .col_entry_time_task {
+					padding:9px 0 0 0;
+					margin-left:50px;
+				}
+					
+					/*Le no, la tâche et le temps*/
+					
+					.task_entry .col_entry_time_task .entry_task {
+						font-weight:bold;
+						float:left;
+					}
+					
+						.task_entry .entry_no {
+							font-weight:bold;
+							margin:0 3px 0 0;
+							color:#000;
+						}
+						
+						.task_entry .entry_task_text a {
+							margin-right:9px;
+							color:#335600;
+							text-decoration:none;
+						}
+						
+						.task_entry .entry_task_text a:hover {
+							text-decoration:underline;
+						}
+					
+						.task_entry .col_entry_time_task .entry_time {
+							margin:0 8px 0 0;
+							color:#000;
+							font-weight:normal;
+							display:inline-block;
+							padding-left:10px;
+							background:url(images/img_co_icon-hourglass.png) no-repeat left 2px;
+						}
+						
+						.task_entry .col_entry_time_task .entry_date {
+							margin:0 10px 0 0;
+							color:#000;
+							font-weight:normal;
+							display:inline-block;
+							padding-left:13px;
+							word-spacing:-2px;
+							background:url(images/img_co_icon-calendar.png) no-repeat left 2px;
+						}
+					
+						.task_entry .col_entry_time_task .entry_time .entry_time_exceeded, .task_entry .col_entry_time_task .entry_date .entry_date_exceeded {
+							color:#b8121a;
+							font-weight:bold;
+						}
+						
+						.task_entry .col_entry_time_task .entry_time .entry_time_correct {}
+						
+						/*L'infobulle*/
+						
+						.task_entry .entry_task_text:hover .tooltip {
+							display:block;
+						}
+						
+						.task_entry .entry_task_text .tooltip {
+							display:none;
+							position:absolute;
+							z-index:9000;
+							-webkit-border-radius:5px;
+							-moz-border-radius:5px;
+							border-radius:5px;
+							padding:8px;
+							border:1px solid #c6c6c6;
+							margin:8px 0 0 18px;
+							background:#fff url(images/img_co_bg-postit.jpg) repeat-x left bottom;
+							font-family:Verdana, Arial;
+							font-size:0.91em;
+						}
+						
+							.task_entry .entry_task_text .tooltip .tooltip_content {
+								background:url(images/img_co_flch-bg-postit.png) no-repeat 5px top;
+								margin-top:-15px;
+								padding-top:15px;
+							}
+							
+								.task_entry .entry_task_text .tooltip .tooltip_content .row {
+									border-bottom:1px solid #d4d4d4;
+									padding:5px 0 5px 0;
+									font-weight:normal;
+								}
+								
+								.task_entry .entry_task_text .tooltip .tooltip_content .row_term {
+									border-bottom:none;
+									padding:5px 0 0 0;
+								}
+																
+									.task_entry .entry_task_text .tooltip .tooltip_content .row .label {
+										float:left;
+										color:#a5a5a5;
+										width:58px;
+										text-align:right;
+										font-weight:bold;
+									}
+									
+									.task_entry .entry_task_text .tooltip .tooltip_content .row .content {
+										float:left;
+										margin-left:10px;
+									}
+									
+									.task_entry .entry_task_text .tooltip .tooltip_content .row_name .content {
+										font-weight:bold;
+									}
+									
+									.task_entry .entry_task_text .tooltip .tooltip_content .row .content .row_time_exceeded, .task_entry .entry_task_text .tooltip .tooltip_content .row .content .row_date_exceeded {
+										color:#B8121A;
+										font-weight:bold;
+									}
+					
+					/*Le projet et le client*/
+					
+					.task_entry .col_entry_time_task .entry_project {
+						font-size:0.91em;
+						color:#9fb56a;
+						float:left;
+					}
+				
+			/*Les icones reliées aux tâches*/
+			
+			.task_entry .col_entry_tools {
+				float:right;
+				width:10%;
+				text-align:right;
+				padding:7px 0 0 0;
+			}
+			
+			
+				.task_entry .col_entry_tools img {
+					margin:0 2px 0 1px;
+				}

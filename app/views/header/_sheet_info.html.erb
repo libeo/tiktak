@@ -42,7 +42,7 @@
             "toggleWorkLogJournal();" %>
           <% form_remote_tag :url => {:controller => 'tasks', :action => 'updatelog'} do %>
             <%= label_tag :worklog_form, t(:describe_worklog) %>
-            <%= text_area_tag 'text', @current_sheet.body, :size => '60x4', :id => 'worklog_body' %>
+            <%= text_area_tag 'text', @current_sheet.body, :size => '52x8', :id => 'worklog_body' %>
           <% end %>
         </div>
       </div>

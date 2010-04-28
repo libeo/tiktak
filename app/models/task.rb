@@ -1245,6 +1245,19 @@ class Task < ActiveRecord::Base
     return task
   end
 
+  def duration_progress(user)
+    res = format_duration(self.worked_minutes, user.duration_format, user.workday_duration, user.days_per_week)
+    res += ' / ' + format_duration(self.duration, user.duration_format, user.workday_duration, user.days_per_week)
+    res
+  end
+
+  def neg_time_left(user)
+    res = ""
+
+    res += '-' if self.overdure?
+  end
+
+
 end
 
 # == Schema Information

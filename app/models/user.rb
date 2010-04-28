@@ -412,6 +412,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  def localized_datetime(datetime)
+    return nil unless datetime
+    self.tz.utc_to_local(datetime).strftime_localized("#{self.date_format} #{self.time_format}")
+  end
+
 end
 
 #These classes used for their 'qualifiable' property that is used when showing qualifiers underneath the task filter
