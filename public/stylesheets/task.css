@@ -62,7 +62,7 @@
 							font-weight:normal;
 							display:inline-block;
 							padding-left:10px;
-							background:url(images/img_co_icon-hourglass.png) no-repeat left 2px;
+							background:url(../../images/task/img_co_icon-hourglass.png) no-repeat left 2px;
 						}
 						
 						.task_entry .col_entry_time_task .entry_date {
@@ -72,7 +72,7 @@
 							display:inline-block;
 							padding-left:13px;
 							word-spacing:-2px;
-							background:url(images/img_co_icon-calendar.png) no-repeat left 2px;
+							background:url(../../images/task/img_co_icon-calendar.png) no-repeat left 2px;
 						}
 					
 						.task_entry .col_entry_time_task .entry_time .entry_time_exceeded, .task_entry .col_entry_time_task .entry_date .entry_date_exceeded {
@@ -87,6 +87,7 @@
 						.task_entry .entry_task_text:hover .tooltip {
 							display:block;
 						}
+
 						
 						.task_entry .entry_task_text .tooltip {
 							display:none;
@@ -98,13 +99,13 @@
 							padding:8px;
 							border:1px solid #c6c6c6;
 							margin:8px 0 0 18px;
-							background:#fff url(images/img_co_bg-postit.jpg) repeat-x left bottom;
+							background:#fff url(../../images/task/img_co_bg-postit.jpg) repeat-x left bottom;
 							font-family:Verdana, Arial;
 							font-size:0.91em;
 						}
 						
 							.task_entry .entry_task_text .tooltip .tooltip_content {
-								background:url(images/img_co_flch-bg-postit.png) no-repeat 5px top;
+								background:url(../../images/task/img_co_flch-bg-postit.png) no-repeat 5px top;
 								margin-top:-15px;
 								padding-top:15px;
 							}
@@ -142,6 +143,57 @@
 										font-weight:bold;
 									}
 					
+						/*L'infobulle TODO*/
+						
+						.task_entry .col_entry_tools:hover .todo_tooltip {
+							display:block;
+						}
+						
+						.task_entry .col_entry_tools .todo_tooltip {
+							display:none;
+							position:absolute;
+							z-index:9000;
+							-webkit-border-radius:5px;
+							-moz-border-radius:5px;
+							border-radius:5px;
+							padding:8px;
+							border:1px solid #c6c6c6;
+							margin:8px 0 0 18px;
+							background:#fff url(../../images/task/img_co_bg-postit.jpg) repeat-x left bottom;
+							font-family:Verdana, Arial;
+							font-size:0.91em;
+						}
+						
+							.task_entry .col_entry_tools .todo_tooltip .tooltip_content {
+								background:url(../../images/task/img_co_flch-bg-postit.png) no-repeat 5px top;
+								margin-top:-15px;
+								padding-top:15px;
+							}
+							
+								.task_entry .col_entry_tools .todo_tooltip .tooltip_content .row {
+									border-bottom:1px solid #d4d4d4;
+									padding:5px 0 5px 0;
+									font-weight:normal;
+								}
+								
+								.task_entry .col_entry_tools .todo_tooltip .tooltip_content .row_term {
+									border-bottom:none;
+									padding:5px 0 0 0;
+								}
+																
+									.task_entry .col_entry_tools .todo_tooltip .tooltip_content .row .label {
+										float:left;
+										color:#a5a5a5;
+										width:58px;
+										text-align:right;
+										font-weight:bold;
+									}
+									
+									.task_entry .col_entry_tools .todo_tooltip .tooltip_content .row .content {
+										float:left;
+										margin-left:10px;
+									}
+
 					/*Le projet et le client*/
 					
 					.task_entry .col_entry_time_task .entry_project {

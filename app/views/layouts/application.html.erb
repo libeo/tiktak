@@ -92,7 +92,7 @@
         </div>
         <div id="filters_content">
           <% redirect_action = controller.controller_name == 'reports' ? '/reports/list' : nil %>
-          <%= render :partial => 'panels/filter_panel', :locals => {:redirect_action => redirect_action} %>
+          <%= render :partial => 'task_filters/panel', :locals => {:redirect_action => redirect_action} %>
           <% # use content_for(:side_panel) to add extra content to this sidebar -%>
           <%= yield(:side_panel) %>
         </div>
@@ -107,9 +107,9 @@
       </div>
       <div id="menu_footer">
         <ul>
-          <li><%=mail_to('gregory@sys-tech.net', t(:help_translate) %></li>
-          <li><%=mail_to('gregory@sys-tech.net', t(:give_feedback) %></li>
-          <li><%=mail_to('gregory@sys-tech.net', t(:report_bugs) %></li>
+          <li><%=mail_to('gregory@sys-tech.net', t(:help_translate)) %></li>
+          <li><%=mail_to('gregory@sys-tech.net', t(:give_feedback)) %></li>
+          <li><%=mail_to('gregory@sys-tech.net', t(:report_bugs)) %></li>
         </ul>
       </div>
       <% if current_user.company.show_messaging %>

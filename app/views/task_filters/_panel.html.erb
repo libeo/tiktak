@@ -1,31 +1,56 @@
 <% redirect_action ||= nil %>
-<div class="task_filters section">
-  <div class="page_header tooltip" title="<%= _'Custom saved filters showing a subset of your tasks'%>">
-    <div><%=_ "Filters" %></div>
-  </div>
 
+<!-- My filters -->
+<div class="filters_header">
+  <%= link_to_function image_tag( 'general/img_co_icon-open.png', :alt => t(:open), :title => t(:open) ),
+    "jQuery(this).parent().next().toggle(500);" %>
+  <span class="header_name"><%=t(:my_filters)%></span>
+</div>
+<div class="filters_section">
   <ul>
-    <li><%= link_to_open_tasks(nil, redirect_action) %></li>
-    <li><%= link_to_open_tasks(current_user, redirect_action) %></li>
-    <li><%= link_to_in_progress_tasks(current_user, redirect_action) %></li>
-    <li><%= link_to_non_assigned_tasks(redirect_action) %></li>
+    <% current_user.task_filters.each do |task_filter| %>
+      <li>
+        <%= link_to task_filter.name, {:controller => 'task_filters', :action => 'select', :id => task_filter.id, :redirect_action => redirect_action }, :class => 'filter_name' %>
+        <%= link_to image_tag( 'task_filter/img_co_icon-filters-delete-up.png', :alt => t(:delete), :title => t(:delete) ),
+            task_filter_path(task_filter), :method => :delete, :confirm => t(:confirm_delete) %>
+      </li>
+    <% end %>
+  </ul>
+</div>
 
-    <% current_user.visible_task_filters.each do |tf| -%>
-    <li>
-      <span class="right small">
-        <% if tf.user == current_user or current_user.admin? -%>
-          <%= link_to(_("Delete"), task_filter_path(tf), 
-	      :method => :delete, :confirm => _("Are you sure?")) %>
-        <% else -%>
-          <%= "[#{ _("Shared") }]" %>
-        <% end -%>
-      </span>
+<!-- Shared filters -->
+<div class="filters_header">
+  <%= link_to_function image_tag( 'general/img_co_icon-open.png', :alt => t(:open), :title => t(:open) ),
+    "jQuery(this).parent().next().toggle(500);" %>
+  <span class="header_name"><%=t(:shared_filters)%></span>
+</div>
+<div class="filters_section">
+  <ul>
+    <% current_user.company.task_filters.shared.visible do |task_filter| %>
+      <li>
+        <%= link_to task_filter.name, {:controller => 'task_filters', :action => 'select', :id => task_filter.id, :redirect_action => redirect_action }, :class => 'filter_name' %>
+        <%= link_to image_tag( 'task_filter/img_co_icon-filters-delete-up.png', :alt => t(:delete), :title => t(:delete) ),
+            task_filter_path(task_filter), :method => :delete, :confirm => t(:confirm_delete) if task_filter.user == current_user %>
+      </li>
+    <% end %>
+  </ul>
+</div>
 
-      <% count = tf.display_count(current_user) -%>
-      <%= link_to("#{ tf.name } (#{ count })", 
-        {:controller => 'task_filters', :action => 'select', :id => tf.id,  :redirect_action => redirect_action},
-        {:class => (count > 0 ? "unread" : "")})%>
-    </li>
-    <% end -%>
+<!-- Default filters -->
+<div class="filters_header">
+  <%= link_to_function image_tag( 'general/img_co_icon-open.png', :alt => t(:open), :title => t(:open) ),
+    "jQuery(this).parent().next().toggle(500);" %>
+  <span class="header_name"><%=t(:default_filters)%></span>
+</div>
+<div class="filters_section">
+  <ul>
+    <% current_user.company.task_filters.shared.visible do |task_filter| %>
+      <li>
+        <%= link_to_open_tasks(nil, redirect_action) %>
+        <%= link_to_open_tasks(current_user, redirect_action) %>
+        <%= link_to_in_progress_tasks(current_user, redirect_action) %>
+        <%= link_to_non_assigned_tasks(redirect_action) %>
+      </li>
+    <% end %>
   </ul>
 </div>

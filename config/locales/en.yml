@@ -2,6 +2,10 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #Task filter
+  my_filters : "My Filters"
+  shared_filters : "Shared Filters"
+  default_filters : "Default Filters"
   #Task
   confirm_archive : "Are you sure you want to archive this task ?"
   confirm_close : "Are you sure you want to close this task ?"
@@ -12,6 +16,7 @@ en:
   open_task : "Reopen task"
   archive_task : "Archive task"
   unarchive_task : "Reopen task"
+  dw : 'd/w'
   #Task tooltip
   tooltip_name : "Name"
   tooltip_project : "Project" 
@@ -35,6 +40,7 @@ en:
   #General
   close : "Close"
   open : "Open"
+  delete : "Delete"
   #Footer
   clockingit_logo : "Logo ClockingIT"
   help_translate : "Help translate"

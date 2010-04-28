@@ -473,4 +473,9 @@ module TasksHelper
                }, true)
   end
 
+  def neg_due_date(date)
+    distance = date.to_time - Time.now.utc
+    (distance / 60 / 60 / 24).to_i.to_s + t(:dw)
+  end
+
 end

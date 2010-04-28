@@ -368,6 +368,7 @@ function showTaskInPage(taskNum) {
  Marks the task sender belongs to as unread.
  Also removes the "unread" class from the task html.
  */
+/*
 function toggleTaskUnread(icon) {
     var task = jQuery(icon).parents(".task");
     
@@ -379,6 +380,7 @@ function toggleTaskUnread(icon) {
 
     jQuery.post("/tasks/set_unread",  parameters);
 }
+*/
 
 /*
  Clears the text in the given field
