@@ -3,8 +3,12 @@
   <!-- Stuff that's on the left like the clock icon, task num, task name, worked time, project / client -->
   <div class="col_entry_task">
 
-    <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
     <div class="col_entry_icon">
+      <!-- bookmark task -->
+      <% link_to_function image_tag( 'widget/img_co_icon-bookmark-select.png', :alt => t(:bookmark_task), :title => t(:bookmark_task) ),
+        "toggleTaskUnread(this);" %>
+
+      <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
       <% if @current_sheet and @current_sheet.task_id == task.id %>
         <%= link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
           { :controller => 'tasks', :action => 'stop_work', :id => task.id } %>
@@ -17,12 +21,19 @@
     <!-- Useful information like task num, task name, etc -->
     <div class="col_entry_time_task">
       <div class="entry_task">
-        <span class="entry_no">#<%= task.task_num %></span>
+        <span class="entry_no"><%= task.task_num %></span>
         <span class="entry_task_text"><%= link_to_task(task) %></span>
+
+        <!-- tooltip showing info about the task -->
+        <%= render :partial => 'task_tooltip', :locals => {:task => task} %>
+
         <% if current_user.option_tracktime? %>
           <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
             / <%= worked_nice(task.duration) %>)</span>
         <% end %>
+        <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
+          / <%= worked_nice(task.duration) %>)</span>
+
       </div>
       <div class="entry_project"><%= task.full_name_without_links %></div>
     </div>

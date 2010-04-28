@@ -9,10 +9,24 @@ fr:
   archive_task : "Archiver la tâche"
   unarchive_task : "Restaurer la tâche"
   confirm_close : "Êtes-vous sûr de vouloir fermer cette tâche ?"
+  #Task tooltip
+  tooltip_name : "Nom"
+  tooltip_project : "Projet" 
+  tooltip_assigned : "Affecté à"
+  tooltip_requested_by : "Demande de"
+  tooltip_status : "État"
+  tooltip_milestone : "Jalon"
+  tooltip_due_at : "Échéance"
+  tooltip_duration : "Temps"
+  tooltip_tags : "Tags"
+  tooltip_depenencies : "Dépendances"
+  tooltip_dependants : "Dépendants"
   #Widget
   loading : "loading..."
   open_widget : "Afficher"
   close_widget : "Fermer"
+  edit_widget : "Éditer ce widget"
+  delete_widget : "Supprimer ce widget"
   subscribe_rss : "Suivre le fil rss de ce widget"
   subscribe_ical : "Suivre le file iCal de vos projets. Pour un fil personnel, remplacez 'ical_all' par 'ical' dans l'adresse. Vous pouvez aussi ajouter '?mode=tasks' pour filtrer seulement les tâches, mode=logs' pour seulement les plages de temps, ou '?mode=milestones' pour les jalons."
   #General
@@ -21,6 +35,7 @@ fr:
   #Footer
   clockingit_logo : "ClockingIT Logo"
   help_translate : "Participer à la traduction"
+  users_online : "Employé(e)s en ligne"
   #Header
   notes : "Notes"
   company_settings : "Configuration de la compagnie"

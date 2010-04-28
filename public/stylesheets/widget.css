@@ -22,12 +22,11 @@
     /*L'entête du widget*/
 
     .widget_title {
-        height:23px;
-        border:1px solid #c6c6c6;
-        background:url(../images/widget/img_co_bg-widget-header.jpg) repeat-x top left;
-        color:#464646;
-        font-size:1.42em;
-        padding:2px 5px 0 5px;
+			border:1px solid #c6c6c6;
+			background:url(images/img_co_bg-widget-header.jpg) repeat-x left bottom;
+			color:#464646;
+			font-size:1.42em;
+			padding:2px 5px 2px 5px;
     }
     
         .widget_title .name{
@@ -41,6 +40,14 @@
         .widget_title img {
             vertical-align:middle;
         }
+
+        .widget_title .header_icons {
+          float:right;
+        }
+        
+          .widget_title .header_icons img {
+            margin:0 4px 0 2px;
+          }
         
     
     .widget_small_2 .task_entry, .widget_small_2 .widget_title {
@@ -56,17 +63,16 @@
             width:85%;
         }
             
-        
         .widget_small .task_entry .col_entry_tools {
-            width:15%;
+          width:17%;
         }
         
 /**
-*Hack CSS pour Safari 3.0 et Chrome
-*/
+  *Hack CSS pour Safari 3.0 et Chrome
+  */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-  .task_entry .col_entry_time_task .entry_project {
-      padding-top:3px;
-  }
+    .task_entry .col_entry_time_task .entry_project {
+		padding-top:3px;
+	}
 }

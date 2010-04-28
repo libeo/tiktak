@@ -12,10 +12,24 @@ en:
   open_task : "Reopen task"
   archive_task : "Archive task"
   unarchive_task : "Reopen task"
+  #Task tooltip
+  tooltip_name : "Name"
+  tooltip_project : "Project" 
+  tooltip_assigned : "Assigned"
+  tooltip_requested_by : "Requested_by"
+  tooltip_status : "Status"
+  tooltip_milestone : "Milestone"
+  tooltip_due_at : "Due at"
+  tooltip_duration : "Duration"
+  tooltip_tags : "Tags"
+  tooltip_depenencies : "Dependencies"
+  tooltip_dependants : "Dependants"
   #Widgets
   loading : "chargement..."
   open_widget : "Show"
   close_widget : "Close"
+  edit_widget : "Configure widget"
+  delete_widget : "Delete widget"
   subscribe_rss : "Subscribe to this widgets' rss feed"
   subscribe_ical : "Subscribe to the iCal feed for your projects. For a personal feed, replace 'ical_all' with 'ical' in the URL. You can also append '?mode=tasks' for only tasks, '?mode=logs' for only work logs, or '?mode=milestones' for just milestones."
   #General
@@ -24,6 +38,7 @@ en:
   #Footer
   clockingit_logo : "Logo ClockingIT"
   help_translate : "Help translate"
+  users_online : "Users online"
   #Header
   notes : "Notes"
   company_settings : "Company settings"
