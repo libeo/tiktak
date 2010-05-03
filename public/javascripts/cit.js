@@ -3,7 +3,6 @@ var lastPrefix = null;
 var lastColor = null;
 var comments = new Hash();
 var last_shout = null;
-var show_tooltips = 1;
 var fetchTimeout = null;
 var fetchElement = null;
 
@@ -42,7 +41,7 @@ jQuery("#loading").bind("ajaxSend", function(){
 
 // -------------------------
 
-
+/*
 function tip(myEvent,tip){
   var scrollposY=0;
   if (window.pageYOffset){
@@ -101,11 +100,8 @@ function tip(myEvent,tip){
   document.getElementById("tip").style.zIndex=99;
   document.getElementById("tip").style.visibility="visible";
 
-  if( el.toString().include("tasks/edit/") && comments.get( taskId ) == null && fetchTimeout == null ) {
-    fetchElement = el;
-    fetchTimeout = setTimeout('fetchComment(fetchElement)', 1000);
-  }
 }
+*/
 
 function hide(e){
   document.getElementById("tip").style.visibility="hidden";
@@ -114,44 +110,6 @@ function hide(e){
     fetchTimeout = null;
     fetchElement = null;
   }
-}
-
-function fetchComment(e) {
-  var elements = e.toString().split("/");
-  var taskId = elements[elements.size()-1];
-  jQuery.get('/tasks/get_comment/' + taskId + ".js", function(data) {updateComment(taskId);} );
-}
-
-function updateComment(taskId) {
-  if(taskId != null) {
-    var comment = comments.get(taskId);
-    if( comment != null && comment != "" ) {
-      var elements = comment.split("<br/>");
-      var author = elements.shift();
-      Element.insert("task_tooltip", { bottom: "<tr><th>"+ author + "</th><td class=\"tip_description\">" + elements.join("<br/>") + "</td></tr>"  } );
-    }
-  }
-}
-
-/*
-function makeTooltips(show) {
-  $$('.tooltip').each( function(el) {
-      if( show == 1 ) {
-        var tooltip = el.title.replace(/&quot;/, "\"").replace(/&gt;/,"<").replace(/&lt;/,">");
-        Event.observe(el, "mousemove", function(e) { tip(e, tooltip ); });
-        Event.observe(el, "mouseout", function(e) { hide(e); });
-      }
-      el.title = '';
-      Element.removeClassName(el, 'tooltip');
-    } );
-
-  Event.observe(document, "mousedown", function(e) {hide(e);} );
-  show_tooltips = show;
-}
-*/
-
-function updateTooltips() {
-  //makeTooltips(show_tooltips);
 }
 
 function init_shout() {
@@ -203,7 +161,7 @@ function UpdateDnD() {
   //Sortable.destroy('components_sortable');
   //Sortable.create("components_sortable", {dropOnEmpty:true, handle:'handle_comp', onUpdate:function(){new Ajax.Request('/components/ajax_order_comp', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}, parameters:Sortable.serialize("components_sortable")})}, only:'component', tree:true});
   //Sortable.create('tasks_sortable', {dropOnEmpty:true, handle:'handle', onUpdate:function(){new Ajax.Request('/components/ajax_order', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}, parameters:Sortable.serialize("tasks_sortable")})}, only:'task', tree:true});
-  updateTooltips();
+  //updateTooltips();
 }
 
 function EnableDND() {
@@ -342,7 +300,6 @@ function clearOtherDefaults(sender) {
 
 jQuery(document).ready(function() {
     fixNestedCheckboxes();
-    updateTooltips();
 
     jQuery("#task_list").resizable({
 	resize: function(event, ui) {

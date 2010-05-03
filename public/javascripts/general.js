@@ -31,6 +31,36 @@ function toggleWorkLogJournal() {
   }
 }
 
+function warnWorkLogJournal() {
+  var log = jQuery('#worklog_body');
+  var empty = (jQuery.trim(log.val()) == '');
+  alert(log.val());
+  alert(empty);
+  if (empty) {
+    if( !log.is(':visible')) {
+      toggleWorkLogJournal();
+    } else {
+      log.effect('hightlight', {}, 1000);
+      log.effect('hightlight', {}, 1000);
+      log.effect('hightlight', {}, 1000);
+    }
+  }
+  return empty;
+}
+
+function sendWorkLogJournal() {
+  showProgress();
+  if (!warnWorkLogJournal()) {
+    jQuery.ajax({
+      data: {description: jQuery('#worklog_body').val()},
+      dataType: 'script',
+      url: '/tasks/ajax_stop_work?format=js',
+      type: 'post'
+    });
+  }
+  hideProgress();
+}
+
 function defineToggleRightColumn() {
   jQuery('#right_button').toggle(
     function() {
@@ -53,13 +83,15 @@ function defineToggleRightColumn() {
  Also removes the "unread" class from the img html.
  */
 function toggleTaskUnread(taskId) {
-  var img = jQuery('#bookmark_' + taskId);
-  var unread = img.hasClass('unread');
+  var links = jQuery('.entry_icon_bookmark', '.tasks-' + taskId);
+  var imgs = jQuery('img', links);
+  var unread = imgs.hasClass('unread');
+
   if (unread) {
-    img.attr('src', '/images/task/img_co_icon-bookmark-up.png');
+    imgs.attr('src', '/images/task/img_co_icon-bookmark-up.png');
   } else {
-    img.attr('src', '/images/task/img_co_icon-bookmark-select.png');
+    imgs.attr('src', '/images/task/img_co_icon-bookmark-select.png');
   }
-  img.toggleClass('unread');
+  imgs.toggleClass('unread');
   jQuery.post('/tasks/set_unread', {id: taskId, read: unread});
 }

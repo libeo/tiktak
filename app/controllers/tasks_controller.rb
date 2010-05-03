@@ -553,6 +553,19 @@ class TasksController < ApplicationController
     self.update
   end
 
+  def ajax_stop_work
+    @work_log = nil
+    if @current_sheet
+      @current_sheet.body = params[:description] if params[:description] and params[:description].strip != ''
+      task = @current_sheet.task
+      if @current_sheet.body.strip != ''
+        @work_log = task.close_current_work_log(@current_sheet)
+        @current_sheet.destroy
+        @current_sheet = nil
+      end
+    end
+  end
+
   def ajax_hide
     @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids_query})"])
 

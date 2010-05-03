@@ -1,17 +1,9 @@
-if session[:history] && session[:history][0] == '/search/search'
-  page.replace "task_#{@task.id}", :partial => "search/search_task", :locals => {:task => @task}
-  page.visual_effect(:highlight, @task.dom_id, :duration => 2.0)
-else
-  page << "jQuery('##{@task.dom_id}').hide('slow');"
-end
+page.visual_effect :blind, ".#{@task.dom_id}"
 
 if session[:history] && session[:history][0] == '/activities/list'
-  page.delay(1) do 
-    current_user.widgets.each do |widget|
-      if widget.configured?
-        page << "jQuery.get('/widgets/show/#{widget.id}', function(data) {portal.refreshHeights();} );"
-      end   
-    end 
+  #give time for the 'blind' effect to finish before recalculating the height
+  page.delay(1) do
+    page << "portal.refreshHeights();"
   end
 end 
 

@@ -128,6 +128,6 @@ class TaskFiltersController < ApplicationController
       flash[:notice] = _("You don't have access to delete that task filter")
     end
 
-    redirect_to "/tasks/list"
+    redirect_to :back
   end
 end

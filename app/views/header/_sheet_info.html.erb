@@ -17,7 +17,7 @@
       <%= link_to_remote image_tag("time_resume.png", :title => t(:resume_time), :alt => t(:resume_time)), :url => {:controller => 'tasks', :action => 'pause_work_ajax'}, 
         :loading => "showProgress();", :complete => "hideProgress();" %>
     <% else %>
-      <%= link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), {:controller => 'tasks', :action => 'stop_work'}, :onclick => "updateLog();" %>
+      <%= link_to_function image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), "sendWorkLogJournal();" %>
     <% end %>
   </div>
 

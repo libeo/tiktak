@@ -8,7 +8,7 @@
 </div>
 <div class="filters_section">
   <ul>
-    <% current_user.task_filters.each do |task_filter| %>
+    <% current_user.task_filters.visible.each do |task_filter| %>
       <li>
         <%= link_to task_filter.name, {:controller => 'task_filters', :action => 'select', :id => task_filter.id, :redirect_action => redirect_action }, :class => 'filter_name' %>
         <%= link_to image_tag( 'task_filter/img_co_icon-filters-delete-up.png', :alt => t(:delete), :title => t(:delete) ),
