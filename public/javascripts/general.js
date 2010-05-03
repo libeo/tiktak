@@ -34,8 +34,6 @@ function toggleWorkLogJournal() {
 function warnWorkLogJournal() {
   var log = jQuery('#worklog_body');
   var empty = (jQuery.trim(log.val()) == '');
-  alert(log.val());
-  alert(empty);
   if (empty) {
     if( !log.is(':visible')) {
       toggleWorkLogJournal();
