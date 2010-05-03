@@ -1,8 +1,8 @@
 <div class="widget_header">
   <% if widget.collapsed?
-      img = image_tag('widget/img_co_icon-open.png', :alt => t(:open_widget), :title => t(:open_widget))
+      img = image_tag('general/img_co_icon-open.png', :alt => t(:open_widget), :title => t(:open_widget))
      else
-       img = image_tag('widget/img_co_icon-close.png', :alt => t(:close_widget), :title => t(:close_widget))
+       img = image_tag('general/img_co_icon-close.png', :alt => t(:close_widget), :title => t(:close_widget))
      end
   %>
   <%= link_to_remote img, { :url => {:controller => 'widgets', :action => 'toggle_display', :id => widget.id },
@@ -11,7 +11,7 @@
   <span class="name"><%= widget.name %></span>
 
   <div class="header_icons">
-    <%= link_to( image_tag('widget/img_co_icon-rss-up.jpg', :alt => t(:subscribe_rss), :title => t(:subscribe_rss)), 
+    <%= link_to( image_tag('widget/img_co_icon-rss-up.png', :alt => t(:subscribe_rss), :title => t(:subscribe_rss)), 
       {:controller => 'feeds', :action => 'rss', :id => current_user.uuid, :widget => widget} ) if widget.rss_capable? %>
 
     <%= link_to( image_tag("calendar.png", :title => t(:ical_subscribe)), 
@@ -21,7 +21,7 @@
       { :url => {:controller => 'widgets', :action => 'edit', :id => @widget.id },
         :loading => 'showProgress();', :complete => 'hideProgress();' } %>
 
-    <%= link_to_remote image_tag( 'widget/imc_co_icon-delete-up.png', :alt => t(:delete_widget), :title => t(:delete_widget) ),
+    <%= link_to_remote image_tag( 'widget/img_co_icon-delete-up.png', :alt => t(:delete_widget), :title => t(:delete_widget) ),
       { :url => {:controller => 'widgets', :action => 'destroy', :id => @widget.id}, 
         :loading => 'showProgress();', :complete => 'hideProgress();' } %>
   </div>

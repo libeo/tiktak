@@ -5,38 +5,51 @@
 
     <div class="col_entry_icon">
       <!-- bookmark task -->
-      <% link_to_function image_tag( 'task/img_co_icon-bookmark-select.png', :alt => t(:bookmark_task), :title => t(:bookmark_task) ), 
-          :class => (task.unread?(current_user) ? 'unread' : ''),
-          "toggleTaskUnread(this, #{task.id});" %>
+      <% if task.unread_with_assoc?(current_user)
+           img = 'task/img_co_icon-bookmark-select.png'
+           cls = 'unread entry_icon_bookmark'
+         else
+           img = 'task/img_co_icon-bookmark-up.png'
+           cls = 'entry_icon_bookmark'
+         end
+      %>
+
+      <%= link_to_function image_tag( img, :alt => t(:bookmark_task), :title => t(:bookmark_task), :id => "bookmark_#{task.id}" ), 
+          "toggleTaskUnread(#{task.id});",
+          :class => cls %>
 
       <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
       <% if @current_sheet and @current_sheet.task_id == task.id %>
         <%= link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
-          { :controller => 'tasks', :action => 'stop_work', :id => task.id } %>
+          { :controller => 'tasks', :action => 'stop_work', :id => task.id }, :class => 'entry_icon_clock' %>
       <% elsif current_user.can?(task.project, 'work') %>
         <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
-          :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id }, :loading => 'showProgress();', :complete => 'hideProgress();' %>
+          :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' %>
       <% end %>
     </div>
 
     <!-- Useful information like task num, task name, etc -->
     <div class="col_entry_time_task">
       <div class="entry_task">
-        <span class="entry_no"><%= task.task_num %></span>
-        <span class="entry_task_text"><%= link_to_task(task) %></span>
-
-        <!-- tooltip showing info about the task -->
-        <%= render :partial => 'task_tooltip', :locals => {:task => task} %>
+        <span class="entry_no">#<%= task.task_num %></span>
+        <span class="entry_task_text">
+          <%= link_to task.name, :controller => 'tasks', :action => 'edit', :id => task.task_num %>
+          <%# link_to_task(task) -%>
+          <!-- tooltip showing info about the task -->
+          <%= render :partial => 'tasks/task_tooltip', :locals => {:task => task} %>
+        </span>
 
         <!-- total time worked on the task -->
-        <% if current_user.option_tracktime? and task.worked %>
-          <span class="entry_time">(<%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
-            / <%= worked_nice(task.duration) %>)</span>
+        <% if current_user.option_tracktime? %>
+          <span class="entry_time"><%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
+            / <%= worked_nice(task.duration) %></span>
         <% end %>
 
         <!-- task due date -->
         <% if task.due_at %>
-          <%= task.overworked? ? content_tag(:span, neg_due_date(task.due_at), :class => 'entry_date_exceeded') : neg_due_date(task.due_at) %>
+          <span class="entry_date">
+            <%= task.overworked? ? content_tag(:span, TasksHelper.neg_due_date(task.due_at), :class => 'entry_date_exceeded') : TasksHelper.neg_due_date(task.due_at) %>
+          </span>
         <% end %>
 
       </div>
@@ -49,7 +62,7 @@
 
     <!-- TODO list -->
     <%= image_tag 'task/img_co_icon-todo.png', {:alt => t(:todo), :title => t(:todo)} %>
-    <%= render :partial => 'task_todo_tooltip', :locals => {:todos => task.todos} %>
+    <%= render :partial => 'tasks/task_todo_tooltip', :locals => {:todos => task.todos} %>
 
     <!-- Close/open task -->
     <% if current_user.can?(task.project, 'close') -%>

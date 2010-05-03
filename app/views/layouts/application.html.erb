@@ -15,6 +15,7 @@
   <!-- general css that can be used everywhere in the site -->
   <%= stylesheet_link_tag 'general' %>
   <%= stylesheet_link_tag 'task' %>
+  <%= stylesheet_link_tag 'footer' %>
   <%= stylesheet_link_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
   <%= javascript_include_tag "builder" if ['activities'].include? controller.controller_name %>
 
@@ -87,8 +88,11 @@
     <div id="right_content">
       <div id="sub_right_content">
         <div id="right_button">
-          <%= link_to_function image_tag( 'general/img_co_icon-filters.close.png', :alt => t(:open), :title => t(:open) ),
-            "toggleRightColumn();" %> 
+          <%= link_to_function image_tag( 'general/img_co_icon-filters-close.png', :alt => t(:open), :title => t(:open) ),
+            "" %>
+          <% javascript_tag do %>
+            defineToggleRightColumn();
+          <% end %>
         </div>
         <div id="filters_content">
           <% redirect_action = controller.controller_name == 'reports' ? '/reports/list' : nil %>
@@ -97,8 +101,9 @@
           <%= yield(:side_panel) %>
         </div>
       </div>
-      <div class="clear"></div>
     </div>
+
+    <div class="clear"></div>
 
     <!-- FOOTER -->
     <div id="footer">
@@ -115,12 +120,13 @@
       <% if current_user.company.show_messaging %>
         <div id="connected_users">
           <a href="#">
-            <span class="co_users_no"><%=online_users%></span><%= t(:users_online) %>
+            <span class="co_users_no"><%=online_users%> </span><%= t(:users_online) %>
           </a>
         </div>
       <% end %>
     </div>
   </div>
+	<div id="loading" style="z-index: 1000; position:absolute; right: 10px; top: 10px; width:70px; height:20px; color: white; padding:6px; display: none; "><%= image_tag('spinner.gif', :border => 0) %></div>
 
   <!-- javascript that frequently updates the page counters (in the header) -->
   <% javascript_tag do %>

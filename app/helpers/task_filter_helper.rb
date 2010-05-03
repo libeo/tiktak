@@ -68,8 +68,8 @@ EOS
   # Returns a link to set the task filter to show only open tasks.
   # If user is passed, only open tasks belonging to that user will 
   # be shown
-  def link_to_open_tasks(user = nil, redirect_action=nil)
-    str = user ? _("My Open Tasks") : _("Open Tasks")
+  def link_to_open_tasks(user = nil, redirect_action=nil, html_options={})
+    str = user ? t(:my_open_tasks) : t(:open_tasks) 
     open = current_user.company.statuses.first
 
     link_params = []
@@ -80,20 +80,20 @@ EOS
     link_params = { :task_filter => { :qualifiers_attributes => link_params } } 
     link_params[:redirect_action] = redirect_action if redirect_action
     
-    return link_to(str, update_current_filter_task_filters_path(link_params))
+    return link_to(str, update_current_filter_task_filters_path(link_params), html_options)
   end
 
-  def link_to_non_assigned_tasks(redirect_action = nil)
+  def link_to_non_assigned_tasks(redirect_action = nil, html_options={})
     link_params = []
     link_params << {:qualifiable_type => "NoUser", :qualifiable_id => 0}
     link_params = { :task_filter => { :qualifiers_attributes => link_params } }
     link_params[:redirect_action] = redirect_action if redirect_action
-    link_to( _("Non-Assigned Tasks"), update_current_filter_task_filters_path(link_params))
+    link_to( t(:non_assigned_tasks), update_current_filter_task_filters_path(link_params), html_options)
   end
 
   # Returns a link to set the task filter to show only in progress
   # tasks. Only tasks belonging to the given user will be shown.
-  def link_to_in_progress_tasks(user, redirect_action = nil)
+  def link_to_in_progress_tasks(user, redirect_action = nil, html_options={})
     in_progress = current_user.company.statuses[1]
 
     link_params = []
@@ -102,8 +102,8 @@ EOS
     link_params = { :task_filter => { :qualifiers_attributes => link_params } } 
     link_params[:redirect_action] = redirect_action if redirect_action
 
-    return link_to(_("My In Progress Tasks"), 
-                   update_current_filter_task_filters_path(link_params))
+    return link_to( t(:my_in_progress_tasks), 
+                   update_current_filter_task_filters_path(link_params), html_options)
   end
 
 

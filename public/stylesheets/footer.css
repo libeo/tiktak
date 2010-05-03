@@ -1,0 +1,56 @@
+#footer {
+	background:url(/images/footer/img_co_bg-footer.png) repeat-x top left;
+	height:54px;
+	position:fixed;
+	width:100%;
+	bottom:0;
+}
+
+	#logo_clockingit {
+		float:left;
+		padding:16px 0 0 21px;
+	}
+	
+	#menu_footer {
+		float:left;
+		padding:19px 0 0 21px;
+	}
+		
+		#menu_footer li{
+			list-style:none;
+			display:inline;
+			margin-right:15px;
+		}
+		
+			#menu_footer li a{
+				color:#9ec063;
+				text-decoration:none;
+				font-size:0.91em;
+			}
+			
+			#menu_footer li a:hover{
+				text-decoration:underline;
+			}
+	
+	#connected_users {
+		float:right;
+		background:url(/images/footer/img_co_icon-chat.png)no-repeat right top;
+		height:32px;
+		padding:0 55px 0 0;
+		margin:12px 20px 0 0;
+	}
+		
+		#connected_users .co_users_no{
+			font-weight:bold;
+		}
+		
+		#connected_users a{
+			color:#fff;
+			text-decoration:none;
+			font-size:0.91em;
+			text-transform:uppercase;
+		}
+		
+		#connected_users a:hover{
+			text-decoration:underline;
+		}
