@@ -2,4 +2,3 @@ page.insert_html :bottom, "shortlist-tasks", :partial => 'tasks/task_row', :loca
 page.visual_effect(:highlight, "task_#{@task.id}", :duration => 1.5)
 page << "jQuery('task_name').focus();"
 page.call("fixShortLinks")
-page.call("updateTooltips")

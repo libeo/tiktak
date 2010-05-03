@@ -53,6 +53,8 @@ class Task < ActiveRecord::Base
 
   before_create :set_task_num
 
+  named_scope :open, :conditions => 'tasks.status < 2'
+
   after_save { |r|
     r.ical_entry.destroy if r.ical_entry
     project = r.project
@@ -1160,7 +1162,12 @@ class Task < ActiveRecord::Base
       :log_type => EventLog::TASK_WORK_ADDED
     })
     worklog.comment = true if sheet.body and sheet.body.length > 0
-    worklog.save
+    if worklog.save
+      return worklog
+    else
+      return false
+    end
+
   end
 
   def close_task(user, params={})

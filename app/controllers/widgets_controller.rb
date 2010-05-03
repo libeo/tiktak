@@ -383,8 +383,6 @@ class WidgetsController < ApplicationController
       when 9..10
         page.replace_html "content_#{@widget.dom_id}", :partial => "widgets/widget_#{@widget.widget_type}"
       end
-
-      page.call("updateTooltips")
       page.call("portal.refreshHeights")
       
     end
@@ -508,15 +506,11 @@ class WidgetsController < ApplicationController
     render :update do |page|
       if @widget.collapsed?
         page.replace_html "content_#{@widget.dom_id}", ""
-        #page.hide "content_#{@widget.dom_id}"
-        page << "Element.removeClassName($('indicator-#{@widget.dom_id}'), 'widget-open');"
-        page << "Element.addClassName($('indicator-#{@widget.dom_id}'), 'widget-collapsed');"
+        page.replace_html "header_#{@widget.dom_id}", :partial => 'widget_title', :locals => {:widget => @widget}
       else
         page.replace_html "content_#{@widget.dom_id}", t(:loading)
+        page.replace_html "header_#{@widget.dom_id}", :partial => 'widget_title', :locals => {:widget => @widget}
         page << "jQuery.getScript('/widgets/show/#{@widget.id}', function(data) { jQuery('#content_#{@widget.dom_id}').hide(); jQuery('#content_#{@widget.dom_id}').fadeIn(500);} );"
-        #page.show "content_#{@widget.dom_id}"
-        page << "Element.removeClassName($('indicator-#{@widget.dom_id}'), 'widget-collapsed');"
-        page << "Element.addClassName($('indicator-#{@widget.dom_id}'), 'widget-open');"
       end
       page << "portal.refreshHeights();"
     end

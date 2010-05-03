@@ -1,8 +1,8 @@
 <div class="widget_header">
   <% if widget.collapsed?
-      img = image_tag('general/img_co_icon-open.png', :alt => t(:open_widget), :title => t(:open_widget))
+      img = image_tag('general/img_co_icon-close.png', :alt => t(:open_widget), :title => t(:open_widget))
      else
-       img = image_tag('general/img_co_icon-close.png', :alt => t(:close_widget), :title => t(:close_widget))
+       img = image_tag('general/img_co_icon-open.png', :alt => t(:close_widget), :title => t(:close_widget))
      end
   %>
   <%= link_to_remote img, { :url => {:controller => 'widgets', :action => 'toggle_display', :id => widget.id },
@@ -23,16 +23,6 @@
 
     <%= link_to_remote image_tag( 'widget/img_co_icon-delete-up.png', :alt => t(:delete_widget), :title => t(:delete_widget) ),
       { :url => {:controller => 'widgets', :action => 'destroy', :id => @widget.id}, 
-        :loading => 'showProgress();', :complete => 'hideProgress();' } %>
+        :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_delete_widget) } %>
   </div>
 </div>
-
-<% if false %>
-<a href="#" onclick="jQuery.getScript('/widgets/edit/<%=@widget.id%>'); return false;">
-  <img src="/images/configure.png" border="0"/>
-</a>
-
-<a href="#" onclick="if( confirm('Really delete widget?') ){jQuery.getScript('/widgets/destroy/<%=@widget.id%>'); return false; }">
-  <img src="/images/delete.png" border="0"/>
-</a>
-<% end %>

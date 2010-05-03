@@ -1,4 +1,9 @@
 fr:
+  #WorkLog
+  worklog_saved : "Le temps a bien été enregistré"
+  modify_details : "modifier l'enregistrement"
+  #Pages (notes)
+  create_note : "Créer une nouvelle note"
   #Task filter
   my_filters : "Mes filtres"
   shared_filters : "Les filtres partagés"
@@ -19,7 +24,6 @@ fr:
   confirm_close : "Êtes-vous sûr de vouloir fermer cette tâche ?"
   dw : 'j/s'
   bookmark_task : "Marquer la tâche"
-
   #Task tooltip
   tooltip_name : "Nom"
   tooltip_project : "Projet" 
@@ -33,6 +37,7 @@ fr:
   tooltip_depenencies : "Dépendances"
   tooltip_dependants : "Dépendants"
   #Widget
+  confirm_delete_widget : "Êtes-vous sûr de vouloir supprimer ce widget ?"
   loading : "loading..."
   open_widget : "Afficher"
   close_widget : "Fermer"
@@ -44,6 +49,7 @@ fr:
   close : "Fermer"
   open : "Ouvrir"
   delete : "Delete"
+  confirm_delete : "Êtes-vous sûr de vouloir supprimer ?"
   #Footer
   clockingit_logo : "ClockingIT Logo"
   help_translate : "Participer à la traduction"
