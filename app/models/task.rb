@@ -1037,6 +1037,11 @@ class Task < ActiveRecord::Base
     where notifications.task_id = #{self.id} and notifications.user_id = #{user.id} and notifications.unread = true").first.attributes['count'].to_i
     return num > 0
   end
+
+  def unread_with_assoc?(user)
+    self.task_owners.select { |to| to.user == user and to.unread? }.length > 0 or 
+    self.notifications.select { |n| n.user == user and n.unread? }.length > 0
+  end
   
   ####
   ## Returns true if this task is marked as unread for user.

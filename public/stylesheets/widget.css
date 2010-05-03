@@ -1,3 +1,6 @@
+.widget {
+  margin-bottom : 7px;
+}
 
 .widget_col_delimiter {
   border: 1px dashed gray;
@@ -23,7 +26,7 @@
 
     .widget_title {
 			border:1px solid #c6c6c6;
-			background:url(../../images/widget/img_co_bg-widget-header.jpg) repeat-x left bottom;
+			background:url(../../images/general/img_co_bg-widget-header.jpg) repeat-x left bottom;
 			color:#464646;
 			font-size:1.42em;
 			padding:2px 5px 2px 5px;
@@ -60,7 +63,7 @@
         
         
         .widget_small .task_entry .col_entry_task {
-            width:85%;
+            width:83%;
         }
             
         .widget_small .task_entry .col_entry_tools {

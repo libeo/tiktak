@@ -31,8 +31,8 @@ function toggleWorkLogJournal() {
   }
 }
 
-function toggleRightColumn() {
-  jQuery('#filters_content').toggle(
+function defineToggleRightColumn() {
+  jQuery('#right_button').toggle(
     function() {
       jQuery('#right_button').css('float', 'right');
       jQuery('#filters_content').css('display', 'none');
@@ -52,13 +52,14 @@ function toggleRightColumn() {
  Marks the task sender belongs to as unread.
  Also removes the "unread" class from the img html.
  */
-function toggleTaskUnread(img, taskId) {
-  var unread = jQuery(img).hasClass('unread');
+function toggleTaskUnread(taskId) {
+  var img = jQuery('#bookmark_' + taskId);
+  var unread = img.hasClass('unread');
   if (unread) {
-    img.attr('src', 'images/task/img_co_icon-bookmark-up.png');
+    img.attr('src', '/images/task/img_co_icon-bookmark-up.png');
   } else {
-    img.attr('src', 'images/task/img_co_icon-bookmark-select.png');
+    img.attr('src', '/images/task/img_co_icon-bookmark-select.png');
   }
   img.toggleClass('unread');
-  jQuery.post('tasks/set_unread', {id: taskId, read: unread});
+  jQuery.post('/tasks/set_unread', {id: taskId, read: unread});
 }

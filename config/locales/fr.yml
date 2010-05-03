@@ -3,6 +3,10 @@ fr:
   my_filters : "Mes filtres"
   shared_filters : "Les filtres partagés"
   default_filters : "Les filtres par défaut"
+  my_open_tasks : "Mes tâches ouvertes"
+  open_tasks : "Tâches ouvertes"
+  non_assigned_tasks : "Tâches sans assignation"
+  my_in_progress_tasks : "Mes tâches en cours"
   #Task
   confirm_archive : "Êtes-vous sûr de vouloir archiver cette tâche ?"
   todo : "À Faire"
@@ -14,6 +18,8 @@ fr:
   unarchive_task : "Restaurer la tâche"
   confirm_close : "Êtes-vous sûr de vouloir fermer cette tâche ?"
   dw : 'j/s'
+  bookmark_task : "Marquer la tâche"
+
   #Task tooltip
   tooltip_name : "Nom"
   tooltip_project : "Projet" 
@@ -42,6 +48,8 @@ fr:
   clockingit_logo : "ClockingIT Logo"
   help_translate : "Participer à la traduction"
   users_online : "Employé(e)s en ligne"
+  give_feedback : "Remarques ou Suggestions"
+  report_bugs : "Bogues"
   #Header
   notes : "Notes"
   company_settings : "Configuration de la compagnie"

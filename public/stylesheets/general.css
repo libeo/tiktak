@@ -70,6 +70,8 @@ img {
     margin-right:5px;
   }
 
+/* Right Column */
+
 #right_content {
 	/*float:right;*/
 	position:absolute;
@@ -101,6 +103,8 @@ img {
 				-moz-border-radius-bottomleft:8px;
 				border-bottom-left-radius:8px;
 			}
+
+    /* Filters panel */
 	
 		#filters_content {
 			margin-left:37px;
@@ -118,7 +122,7 @@ img {
 				border:1px solid #c6c6c6;
 				border-left:none;
 				border-right:none;
-				background:url(../../images/task/img_co_bg-widget-header.jpg) repeat-x bottom left;
+				background:url(../../images/general/img_co_bg-widget-header.jpg) repeat-x bottom left;
 				color:#464646;
 				padding:3px 5px 2px 5px;
 				font-weight:bold;

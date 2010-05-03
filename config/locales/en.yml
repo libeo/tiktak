@@ -6,6 +6,10 @@ en:
   my_filters : "My Filters"
   shared_filters : "Shared Filters"
   default_filters : "Default Filters"
+  my_open_tasks : "My Open Tasks"
+  open_tasks : "Open Tasks"
+  non_assigned_tasks : "Non-Assigned Tasks"
+  my_in_progress_tasks : "My In-Progress Tasks"
   #Task
   confirm_archive : "Are you sure you want to archive this task ?"
   confirm_close : "Are you sure you want to close this task ?"
@@ -17,6 +21,7 @@ en:
   archive_task : "Archive task"
   unarchive_task : "Reopen task"
   dw : 'd/w'
+  bookmark_task : "Bookmark task"
   #Task tooltip
   tooltip_name : "Name"
   tooltip_project : "Project" 
@@ -45,6 +50,8 @@ en:
   clockingit_logo : "Logo ClockingIT"
   help_translate : "Help translate"
   users_online : "Users online"
+  give_feedback : "Feedback and suggestions"
+  report_bugs : "Report bugs"
   #Header
   notes : "Notes"
   company_settings : "Company settings"

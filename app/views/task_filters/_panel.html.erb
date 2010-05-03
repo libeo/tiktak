@@ -12,7 +12,7 @@
       <li>
         <%= link_to task_filter.name, {:controller => 'task_filters', :action => 'select', :id => task_filter.id, :redirect_action => redirect_action }, :class => 'filter_name' %>
         <%= link_to image_tag( 'task_filter/img_co_icon-filters-delete-up.png', :alt => t(:delete), :title => t(:delete) ),
-            task_filter_path(task_filter), :method => :delete, :confirm => t(:confirm_delete) %>
+          task_filter_path(task_filter), :method => :delete, :class => 'filter_delete', :confirm => t(:confirm_delete) %>
       </li>
     <% end %>
   </ul>
@@ -26,11 +26,11 @@
 </div>
 <div class="filters_section">
   <ul>
-    <% current_user.company.task_filters.shared.visible do |task_filter| %>
+    <% current_user.company.task_filters.shared.visible.each do |task_filter| %>
       <li>
         <%= link_to task_filter.name, {:controller => 'task_filters', :action => 'select', :id => task_filter.id, :redirect_action => redirect_action }, :class => 'filter_name' %>
-        <%= link_to image_tag( 'task_filter/img_co_icon-filters-delete-up.png', :alt => t(:delete), :title => t(:delete) ),
-            task_filter_path(task_filter), :method => :delete, :confirm => t(:confirm_delete) if task_filter.user == current_user %>
+        <%= link_to( image_tag( 'task_filter/img_co_icon-filters-delete-up.png', :alt => t(:delete), :title => t(:delete) ),
+          task_filter_path(task_filter), :method => :delete, :class => 'filter_delete', :confirm => t(:confirm_delete)) if task_filter.user == current_user %>
       </li>
     <% end %>
   </ul>
@@ -44,13 +44,9 @@
 </div>
 <div class="filters_section">
   <ul>
-    <% current_user.company.task_filters.shared.visible do |task_filter| %>
-      <li>
-        <%= link_to_open_tasks(nil, redirect_action) %>
-        <%= link_to_open_tasks(current_user, redirect_action) %>
-        <%= link_to_in_progress_tasks(current_user, redirect_action) %>
-        <%= link_to_non_assigned_tasks(redirect_action) %>
-      </li>
-    <% end %>
+      <li><%= link_to_open_tasks(nil, redirect_action, {:class => 'filter_name'}) %></li>
+      <li><%= link_to_open_tasks(current_user, redirect_action, {:class => 'filter_name'}) %></li>
+      <li><%= link_to_in_progress_tasks(current_user, redirect_action, {:class => 'filter_name'}) %></li>
+      <li><%= link_to_non_assigned_tasks(redirect_action, {:class => 'filter_name'}) %></li>
   </ul>
 </div>

@@ -133,6 +133,7 @@ function updateComment(taskId) {
   }
 }
 
+/*
 function makeTooltips(show) {
   $$('.tooltip').each( function(el) {
       if( show == 1 ) {
@@ -147,9 +148,10 @@ function makeTooltips(show) {
   Event.observe(document, "mousedown", function(e) {hide(e);} );
   show_tooltips = show;
 }
+*/
 
 function updateTooltips() {
-  makeTooltips(show_tooltips);
+  //makeTooltips(show_tooltips);
 }
 
 function init_shout() {

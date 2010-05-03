@@ -378,6 +378,11 @@ class User < ActiveRecord::Base
     return @visible_task_filters
   end
 
+  def localized_datetime(datetime)
+    return nil unless datetime
+    self.tz.utc_to_local(datetime).strftime_localized("#{self.date_format} #{self.time_format}")
+  end
+
   private
 
   # Sets up search options to use in a find for things linked to 
@@ -410,11 +415,6 @@ class User < ActiveRecord::Base
       self.date_format = "%d/%m/%Y"
       self.time_format = "%H:%M"
     end
-  end
-
-  def localized_datetime(datetime)
-    return nil unless datetime
-    self.tz.utc_to_local(datetime).strftime_localized("#{self.date_format} #{self.time_format}")
   end
 
 end
