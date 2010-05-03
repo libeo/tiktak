@@ -107,6 +107,7 @@
 						margin:8px 0 0 -12px;
 						background:#fff url(../../images/header/img_co_bg-postit.jpg) repeat-x left bottom;
 						color:#7e7e7e;
+            width: 394px;
 					}
 					
 						#sheet_info #clock_text .time .postit form {

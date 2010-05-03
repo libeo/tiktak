@@ -48,6 +48,7 @@ fr:
   #General
   close : "Fermer"
   open : "Ouvrir"
+  open_close : "Ouvrir/fermer"
   delete : "Delete"
   confirm_delete : "Êtes-vous sûr de vouloir supprimer ?"
   #Footer
@@ -61,7 +62,7 @@ fr:
   company_settings : "Configuration de la compagnie"
   custom_properties : "Propriétés optionelles"
   resource_types : "Types de ressources"
-  describe_worklog : "Décrivez ce que vous avec fait durant cette période de temps:"
+  describe_worklog : "Décrivez ce que vous avec fait durant cette période de temps. Cliquez sur l'horloge pour sauvegarder."
   worklog : "Journal"
   close_worklog : "Fermer le journal"
   open_worklog : "Ouvrir le journal"
@@ -72,7 +73,7 @@ fr:
   confirm_cancel_work : "Êtes-vous sûr de vouloir annuler le temps ?"
   worked_today : "travaillé aujourd'hui"
   user_preferences : "Éditer les préferences utilisateur"
-  logout : "Déconnection"
+  logout : "Déconnexion"
   time_left : "Il vous reste à faire :"
   to_work : ""
   search : "Recherche"

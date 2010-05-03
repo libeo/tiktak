@@ -64,7 +64,7 @@ en:
   company_settings : "Company settings"
   custom_properties : "Custom properties"
   resource_types : "Resource types"
-  describe_worklog : "Please describe your activities for the current time period"
+  describe_worklog : "Please describe your activities for the current time period. Click on the clock to save."
   worklog : "Journal"
   close_worklog : "Close work log"
   open_worklog : "Open work log"
