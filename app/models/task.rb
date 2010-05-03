@@ -53,6 +53,8 @@ class Task < ActiveRecord::Base
 
   before_create :set_task_num
 
+  named_scope :open, :conditions => 'tasks.status < 2'
+
   after_save { |r|
     r.ical_entry.destroy if r.ical_entry
     project = r.project
@@ -276,14 +278,6 @@ class Task < ActiveRecord::Base
     @attributes['task_num'] = num
   end
 
-  def time_left
-    res = 0
-    if self.due_at != nil
-      res = self.due_at - Time.now.utc
-    end
-    res
-  end
-
   def overdue?
     self.due_date ? (self.due_date.to_time <= Time.now.utc) : false
   end
@@ -411,6 +405,14 @@ class Task < ActiveRecord::Base
 
   def Task.status_types
     ["Open", "In Progress", "Closed", "Won't fix", "Invalid", "Duplicate"]
+  end
+
+  def closed?
+    self.status > 1
+  end
+
+  def open?
+    self.status < 2
   end
 
   def priority_type
@@ -607,7 +609,8 @@ class Task < ActiveRecord::Base
   def to_tip(options = { })
     unless @tip
       owners = "No one"
-      owners = self.users.collect{|u| u.name}.join(', ') unless self.users.empty?
+      #owners = self.users.collect{|u| u.name}.join(', ') unless self.users.empty?
+      owners = self.task_owners.map{|t| t.user.name }.join(', ') unless self.task_owners.length == 0
 
       res = "<table id=\"task_tooltip\" cellpadding=0 cellspacing=0>"
       res << "<tr><th>#{_('Summary')}</td><td>#{self.name}</tr>"
@@ -661,18 +664,6 @@ class Task < ActiveRecord::Base
   def todo_count
     "#{sprintf("%d/%d", todos.select{|t| t.completed_at }.size, todos.size)}"
   end
-
-  def order_date
-    [self.started_at.to_i]
-  end 
-
-  def worked_and_duration_class
-    if worked_minutes > duration
-      "overtime"
-    else 
-      ""
-    end 
-  end 
 
   # Sets up custom properties using the given form params
   def properties=(params)
@@ -1048,6 +1039,11 @@ class Task < ActiveRecord::Base
     where notifications.task_id = #{self.id} and notifications.user_id = #{user.id} and notifications.unread = true").first.attributes['count'].to_i
     return num > 0
   end
+
+  def unread_with_assoc?(user)
+    self.task_owners.select { |to| to.user == user and to.unread? }.length > 0 or 
+    self.notifications.select { |n| n.user == user and n.unread? }.length > 0
+  end
   
   ####
   ## Returns true if this task is marked as unread for user.
@@ -1166,7 +1162,12 @@ class Task < ActiveRecord::Base
       :log_type => EventLog::TASK_WORK_ADDED
     })
     worklog.comment = true if sheet.body and sheet.body.length > 0
-    worklog.save
+    if worklog.save
+      return worklog
+    else
+      return false
+    end
+
   end
 
   def close_task(user, params={})
@@ -1255,6 +1256,19 @@ class Task < ActiveRecord::Base
 
     return task
   end
+
+  def duration_progress(user)
+    res = format_duration(self.worked_minutes, user.duration_format, user.workday_duration, user.days_per_week)
+    res += ' / ' + format_duration(self.duration, user.duration_format, user.workday_duration, user.days_per_week)
+    res
+  end
+
+  def neg_time_left(user)
+    res = ""
+
+    res += '-' if self.overdure?
+  end
+
 
 end
 

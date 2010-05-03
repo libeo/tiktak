@@ -1,0 +1,5 @@
+page << "var widget = new Xilinus.Widget('widget', '#{widget.dom_id}');"
+page << "var title = " + escape_javascript(render :partial => 'widgets/widget_title', :locals => {:widget => widget}) + ";"
+#HTML inserted in title is encapsulated in a <div id='header-widgets_#{id}' class='widget_title widget_draggable'>
+page << "widget.setTitle(title);"
+page << "widget.setContent(" + escape_javascript('"<span class="optional"><br/>' + t(:loading) + '</span>"')

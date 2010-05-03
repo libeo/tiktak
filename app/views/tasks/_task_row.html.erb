@@ -1,143 +1,97 @@
-<% if session[:hide_deferred].to_i == 0 || task.active? -%>
-<div id="task_<%=task.id %>"
-<%
- depth ||= 1
- depth = 1 if depth < 1
- classes = ""
- cont ||= 'tasks'
+<div class="task_entry <%= task.dom_id%>">
 
- can_complete = { :disabled => "disabled" } unless current_user.can?(task.project, 'close')
- can_complete ||= {}
+  <!-- Stuff that's on the left like the clock icon, task num, task name, worked time, project / client -->
+  <div class="col_entry_task">
 
- can_work = { :disabled => "disabled" } unless current_user.can?(task.project, 'work')
- can_work ||= {}
+    <div class="col_entry_icon">
+      <!-- bookmark task -->
+      <% if task.unread_with_assoc?(current_user)
+           img = 'task/img_co_icon-bookmark-select.png'
+           cls = 'unread entry_icon_bookmark'
+         else
+           img = 'task/img_co_icon-bookmark-up.png'
+           cls = 'entry_icon_bookmark'
+         end
+      %>
 
- classes << " #{task.project.to_css_name}"
- classes << " override_filter" if defined?(override_filter) && override_filter
- classes << " waiting_deferred" unless task.active?
+      <%= link_to_function image_tag( img, :alt => t(:bookmark_task), :title => t(:bookmark_task), :id => "bookmark_#{task.id}" ), 
+          "toggleTaskUnread(#{task.id});",
+          :class => cls %>
 
- classes << " task_active_others" if task.worked_on?
- classes << " task_active" if @current_sheet && @current_sheet.task_id == task.id
- classes << " task_done" if task.done?
- classes << " task_paused" if @current_sheet && @current_sheet.task_id == task.id && @current_sheet.paused?
- classes << " #{task.dom_id}"
- classes << " unread" if task.unread?(current_user)
--%>
-class="task <%=classes%>" style="position:relative; <%= color_style(task, local_assigns[:background_color]) %> <% if depth > 1 %>margin-left:<%= 8 + (depth - 1) * 16%>px<% end %>">
-<% @task = task %>
-<div id="row-<%=task.dom_id%>" class="task-row" style="width:100%;">
-  <% if current_user.show_type_icons? %>
-    <div class="task-icon" style="width: 10px;"><%= task_icon(task) %></div>
-  <% end %>
+      <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
+      <% if @current_sheet and @current_sheet.task_id == task.id %>
+        <%# link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
+          { :controller => 'tasks', :action => 'stop_work', :id => task.id }, :class => 'entry_icon_clock' -%>
+        <%= link_to_function image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
+          "sendWorkLogJournal();", {:class => 'entry_icon_clock'} %>
+      <% elsif current_user.can?(task.project, 'work') %>
+        <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
+          :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
+      <% end %>
+    </div>
 
-  <% if(@current_sheet && @current_sheet.task_id == task.id) || task.done? -%>
-    <div class="popout" id="edit_task_<%=task.id%>" style="position:absolute; width:55px; left: -59px; top: 0px; z-index:10; padding-right:2px;" align="right">
-    <% if(@current_sheet && @current_sheet.task_id == task.id) -%>
-        <%= link_to_remote image_tag("time_delete.png", :border => 0, :title => _("Cancel working on <b>%s</b>.", task.name), :class => "tooltip"),
-          :url => { :controller => cont, :action => 'cancel_work_ajax', :id => task, :depth => depth },
-          :loading => "showProgress();",
-          :complete => "hideProgress();",
-          :confirm => _("Really abort work?") -%>
+    <!-- Useful information like task num, task name, etc -->
+    <div class="col_entry_time_task">
+      <div class="entry_task">
+        <span class="entry_no">#<%= task.task_num %></span>
+        <span class="entry_task_text">
+          <%= link_to task.name, :controller => 'tasks', :action => 'edit', :id => task.task_num %>
+          <%# link_to_task(task) -%>
+          <!-- tooltip showing info about the task -->
+          <%= render :partial => 'tasks/task_tooltip', :locals => {:task => task} %>
+        </span>
 
-        <% if @current_sheet.paused? %>
-          <%= link_to_remote image_tag("time_resume.png", :border => 0, :title => _("Resume working on <b>%s</b>.", task.name), :class => "tooltip"),
-            :url => { :controller => cont, :action => 'pause_work_ajax', :id => task, :depth => depth },
-            :loading => "showProgress();",
-            :complete => "hideProgress();" -%>
-        <% else %>
+        <!-- total time worked on the task -->
+        <% if current_user.option_tracktime? %>
+          <span class="entry_time"><%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
+            / <%= worked_nice(task.duration) %></span>
         <% end %>
-    <% else -%>
-        <% if task.done? -%>
-          <% if task.hidden == 0 -%>
-            <%= link_to_remote image_tag("folder_add.png", :border => 0, :title => _("Move <b>%s</b> to the Archive.", task.name), :class => "tooltip"),
-                  :url => { :controller => cont, :action => 'ajax_hide', :id => task },
-                  :loading => "showProgress();",
-                  :complete => "hideProgress();",
-                  :success => visual_effect(:fade, "task_#{task.id}", :duration => 0.5) -%>
-          <% else -%>
-            <%= link_to_remote image_tag("folder_go.png", :border => 0, :title => _("Restore <b>%s</b> from the Archive.", task.name), :class => "tooltip"),
-                  :url => { :controller => cont, :action => 'ajax_restore', :id => task },
-                  :loading => "showProgress();",
-                  :complete => "hideProgress();",
-                  :success => visual_effect(:fade, "task_#{task.id}", :duration => 0.5) -%>
-          <% end -%>
-        <% end -%>
-      <% end -%>
-     </div>
-    <% end -%>
 
-  <div id="task-handle-<%=task.id%>" style="float:left; padding-left:0.4em;display:none;" class="handle"><%= image_tag('drag.gif', :border => 0) %></div>
-  <div style="float:left; padding-left:0.3em;">
+        <!-- task due date -->
+        <% if task.due_at %>
+          <span class="entry_date">
+            <%= task.overworked? ? content_tag(:span, TasksHelper.neg_due_date(task.due_at), :class => 'entry_date_exceeded') : TasksHelper.neg_due_date(task.due_at) %>
+          </span>
+        <% end %>
 
-    <% unless task.done? %>
-      <%= check_box("task", "done", { "title" => _("Close <b>%s</b>", task.name), "onclick" => "if (confirm(\"#{_("Really close task ?")}\")) { new Ajax.Request('/#{cont}/ajax_check/#{task.id}', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}}); } return false;",
-          :class => "button tooltip checkbox", :id => "button_#{task.id}" }.merge(can_complete) ) -%>
-    <% else %>
-      <%= check_box("task", "done", {"title" => _("Revert <b>%s</b> to not completed status.", task.name), "onclick" => "new Ajax.Request('/#{cont}/ajax_uncheck/#{task.id}', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}})",
-          :class => "button tooltip checkbox", :checked => "checked", :id => "button_#{task.id}" }.merge(can_complete) ) -%>
+      </div>
+      <div class="entry_project"><%= task.full_name_without_links %></div>
+    </div>
+  </div>
+
+  <!-- Utility icons that perform a specific action link closing a task, adding a TODO, archiving a task -->
+  <div class="col_entry_tools">
+
+    <!-- TODO list -->
+    <%= image_tag 'task/img_co_icon-todo.png', {:alt => t(:todo), :title => t(:todo)} %>
+    <%= render :partial => 'tasks/task_todo_tooltip', :locals => {:todos => task.todos} %>
+
+    <!-- Close/open task -->
+    <% if current_user.can?(task.project, 'close') -%>
+      <% if task.open? -%>
+        <%= link_to_remote image_tag( 'task/img_co_icon-classify.png', :alt => t(:close_task), :title => t(:close_task) ),
+          :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_close),
+          :url => {:controller => 'tasks', :action => 'ajax_check', :id => task.id} %>
+      <% else %>
+        <%= link_to_remote image_tag( 'task/img_co_icon-declassify.png', :alt => t(:open_task), :title => t(:open_task) ),
+          :loading => 'showProgress();', :complete => 'hideProgress();',
+          :url => {:controller => 'tasks', :action => 'ajax_uncheck', :id => task.id} %>
+      <% end %>
     <% end %>
 
-    <% if current_user.option_tracktime.to_i == 1 && can_work.size == 0 && !task.done? -%>
-      <% if @current_sheet && @current_sheet.task_id == task.id -%>
-        <%= link_to(image_tag("time_add.png", :border => 0, :class => "tooltip work_icon", :title => _("Stop working on <b>%s</b>.", task.name)), {:controller => cont, :action => 'stop_work'}, { :class => "stop-work-link work-icon" } )  -%>
-      <% else -%>
-        <a href="#" onclick="jQuery.getScript('/<%=cont%>/start_work_ajax/<%=task.id%>?depth=<%=depth%>'); return false;"><%= image_tag("time.png", :border => 0, :class => "tooltip work_icon", :title => _("Start working on <b>%s</b>. Click again when done.", task.name))%></a>
-      <% end -%>
-   <% else -%>
-     <img src="/images/spacer.gif" width="16" height="16" border="0"/>
-   <% end -%>
-   </div>
-
-   <div class="unread_icon">
-     <a href="#" onclick="toggleTaskUnread(this);"><span>*</span></a>
-   </div>
-
-   <div class="task-name" style="padding-left:2px;">
-
-   <% if controller.controller_name != 'search' %>
-     <%= link_to_task(task) -%>
-   <% else %>
-     <%= link_to_task(task, false, @keys)  -%>
-   <% end %>
-     <span id="todo-status-<%= task.dom_id %>">
-       <a class="<%=(task.todos.empty? ? "todo-status-link-empty" :"todo-status-link")%>" href="#" onclick="jQuery('#todo-container-<%=task.dom_id%>').toggle(); Sortable.create('todo-<%=task.dom_id%>', {containment:'todo-<%=task.dom_id%>', format:/^[^-]*-(.*)$/, onUpdate:function(){new Ajax.Request('/<%=cont%>/order_todos/<%=task.id%>', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize('todo-<%=task.dom_id%>')})}, only:'todo-active'}); return false;"><%=task.todo_status%></a>
-     </span>
-     <%  if current_user.option_tracktime.to_i == 1 -%>
-     <% if task.duration.to_i > 0 -%>
-       <span class="<%=task.worked_and_duration_class%>"><%="(#{worked_nice(task.worked_minutes)} / #{worked_nice( task.duration )})"%></span>
-     <% end %> 
-       <%= "(#{worked_nice(task.worked_minutes)})" if( task.duration.to_i == 0 && task.worked_minutes > 0) -%>
-     <% end -%>
-     <%= "<span class=\"task_milestone\">[#{task.milestone.name}]</span>" unless task.milestone_id.to_i == 0 -%>
-   <%
-   name = task.users.all(:select => 'users.name').collect{|u| u.name}.join(', ')
-   name = _("No one") if name.length == 0
-   %>
-
-
-   <div class="task_info description">
-   <% if controller.controller_name != 'search' %>
-   <%= task.full_name %>
-   <% else %>
-   <%= highlight_all(task.full_name_without_links, @keys) %>
-   <% end %>
-   <%= "<span class=\"otheruser\">[#{name}]</span>" %>
-   <%= due_in_words(task) unless task.due_date && task.done?%>
-   <%= "[#{overdue_time(task.completed_at)}]" if task.done?%>
-   </div>
-
-   </div>
+    <!-- Archive task -->
+    <% if current_user.admin? and task.closed? %> 
+      <% unless task.hidden? %>
+        <%= link_to_remote image_tag( 'task/img_co_icon-archive.png', :alt => t(:archive_task), :title => t(:archive_task) ),
+            :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_archive),
+            :url => {:controller => 'tasks', :action => 'ajax_hide', :id => task.id} %>
+      <% else %>
+        <%= link_to_remote image_tag( 'task/img_co_icon-dearchive.png', :alt => t(:unarchive_task), :title => t(:unarchive_task) ),
+            :loading => 'showProgress();', :complete => 'hideProgress();',
+            :url => {:controller => 'tasks', :action => 'ajax_restore', :id => task.id} %>
+      <% end %>
+    <% end %>
 
   </div>
-  <% if false %>
-    <!--<%= render :partial => 'tasks/todo_container', :locals => { :task => task, :depth => depth } %>-->
-  <% end %>
+  <div class="clear"></div>
 </div>
-
-<% if can_organize? -%>
-  <%= draggable_element "task_#{task.id}", { :revert => true, :ghosting => false, :handle => "'handle'", :constraint => "'vertical'" } %>
-<% end %>
-
-<div style="clear:both;"></div>
-
-<% end %>

@@ -1,4 +1,5 @@
 class WidgetsController < ApplicationController
+
   OVERDUE    = 0
   TODAY      = 1
   TOMORROW   = 2
@@ -51,7 +52,8 @@ class WidgetsController < ApplicationController
         "(tasks.completed_at is null or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
         "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
       ]
-      conditions << "users.id = #{current_user.id}" if @widget.mine?
+      conditions << "tasks.id in (select task_id from task_owners where task_owners.user_id = #{current_user.id})" if @widget.mine?
+      #conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
       order, extra, includes = @widget.order_by_sql
       conditions << extra if extra.length > 0
@@ -381,20 +383,16 @@ class WidgetsController < ApplicationController
       when 9..10
         page.replace_html "content_#{@widget.dom_id}", :partial => "widgets/widget_#{@widget.widget_type}"
       end
-
-      page.call("updateTooltips")
       page.call("portal.refreshHeights")
       
     end
 
   end
-
-  
   
   def add
     render :update do |page|
-      page << "if(! $('add-widget' ) ) {"
-      page.insert_html :top, "left_col", :partial => "widgets/add"
+      page << "if(! $('add-widget') ) {"
+      page.insert_html :top, "widget_col_0", :partial => "widgets/add"
       page.visual_effect :appear, "add-widget"
       page << "} else {"
       page.visual_effect :fade, "add-widget"
@@ -432,24 +430,10 @@ class WidgetsController < ApplicationController
       return
     else 
       render :update do |page|
-        page.remove 'add-widget'
-        page << "var widget = new Xilinus.Widget('widget', '#{@widget.dom_id}');"
-        page << "var title = '<div style=\"float:right;display:none;\" class=\"widget-menu\"><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/edit/#{@widget.id}\\\'); return false;\"><img src=\"/images/configure.png\" border=\"0\"/></a><a href=\"#\" onclick=\"jQuery.getScript(\\\'/widgets/destroy/#{@widget.id}\\\'); return false;\"><img src=\"/images/delete.png\" border=\"0\"/></a></div>';"
-
-        page << "title += '<div><a href=\"#\" id=\"indicator-#{@widget.dom_id}\" class=\"widget-open\" onclick=\"jQuery.get(\\\'/widgets/toggle_display/#{@widget.id}\\\',function(data) {portal.refreshHeights();} );\">&nbsp;</a>';"
-        page << "title += '" + render_to_string(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join + "</div>';"
-        page.<< "widget.setTitle(title);"
-        page << "widget.setContent('<span class=\"optional\">#{h(_('Please configure the widget'))}</span>');"
-        page << "portal.add(widget, #{@widget.column});"
-        page << "jQuery.get('/widgets/show/#{@widget.id}', function(data) {portal.refreshHeights();} );"
-
-        page << "updateTooltips();"
-        page << "portal.refreshHeights();"
-        page << "Element.scrollTo('#{@widget.dom_id}');"
-      end 
+        page.replace_html 'add-widget', :partial => 'widgets/generate_widget', :locals => {:widget => @widget}
+      end
     end
 
-  
   end
 
   def edit
@@ -521,13 +505,12 @@ class WidgetsController < ApplicationController
     
     render :update do |page|
       if @widget.collapsed?
-        page.hide "content_#{@widget.dom_id}"
-        page << "Element.removeClassName($('indicator-#{@widget.dom_id}'), 'widget-open');"
-        page << "Element.addClassName($('indicator-#{@widget.dom_id}'), 'widget-collapsed');"
-      else 
-        page.show "content_#{@widget.dom_id}"
-        page << "Element.removeClassName($('indicator-#{@widget.dom_id}'), 'widget-collapsed');"
-        page << "Element.addClassName($('indicator-#{@widget.dom_id}'), 'widget-open');"
+        page.replace_html "content_#{@widget.dom_id}", ""
+        page.replace_html "header_#{@widget.dom_id}", :partial => 'widget_title', :locals => {:widget => @widget}
+      else
+        page.replace_html "content_#{@widget.dom_id}", t(:loading)
+        page.replace_html "header_#{@widget.dom_id}", :partial => 'widget_title', :locals => {:widget => @widget}
+        page << "jQuery.getScript('/widgets/show/#{@widget.id}', function(data) { jQuery('#content_#{@widget.dom_id}').hide(); jQuery('#content_#{@widget.dom_id}').fadeIn(500);} );"
       end
       page << "portal.refreshHeights();"
     end

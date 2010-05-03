@@ -553,6 +553,19 @@ class TasksController < ApplicationController
     self.update
   end
 
+  def ajax_stop_work
+    @work_log = nil
+    if @current_sheet
+      @current_sheet.body = params[:description] if params[:description] and params[:description].strip != ''
+      task = @current_sheet.task
+      if @current_sheet.body.strip != ''
+        @work_log = task.close_current_work_log(@current_sheet)
+        @current_sheet.destroy
+        @current_sheet = nil
+      end
+    end
+  end
+
   def ajax_hide
     @task = Task.find(params[:id], :conditions => ["project_id IN (#{current_project_ids_query})"])
 
@@ -573,8 +586,6 @@ class TasksController < ApplicationController
       worklog.body = ""
       worklog.save
     end
-
-    render :nothing => true
   end
 
   def create_attachments(task)
@@ -652,7 +663,6 @@ class TasksController < ApplicationController
       worklog.body = ""
       worklog.save
     end
-    render :nothing => true
   end
 
 
@@ -918,8 +928,8 @@ class TasksController < ApplicationController
       render :text => "#{_("Task not worked on")} #{current_user.tz.utc_to_local(Time.now.utc).strftime_localized("%H:%M:%S")}"
       return
     end 
-    if params[:worklog] && params[:worklog][:body] 
-      @current_sheet.body = params[:worklog][:body] 
+    if params[:text]
+      @current_sheet.body = params[:text]
       @current_sheet.save
       render :text => "#{_("Saved")} #{current_user.tz.utc_to_local(Time.now.utc).strftime_localized("%H:%M:%S")}"
     else 
@@ -1387,7 +1397,7 @@ class TasksController < ApplicationController
   end
 
   def get_comment
-    @task = Task.find(params[:id], :conditions => "project_id IN (#{current_project_ids_query})") rescue nil
+    @task = Task.find(:first, :conditions => ["tasks.task_num = ? and tasks.project_id IN (#{current_project_ids_query})", params[:id].to_i]) rescue nil
     if @task
       @comment = WorkLog.find(:first, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.task_id = ? AND work_logs.comment = 1", @task.id], :include => [:user, :task, :project])
     end 

@@ -8,5 +8,4 @@ else
   end
   page.visual_effect(:highlight, "task_#{@task.id}", :duration => 1.5)
   page << "jQuery('#task_name').focus();"
-  page.call("updateTooltips")
 end

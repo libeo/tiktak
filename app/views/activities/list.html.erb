@@ -1,55 +1,37 @@
-<table width="100%" cellpadding=0 cellspacing=0 id="content" >
-  <tr>
-    <td valign="top" align="left" id="left_col">
-      <div id="widget_col_0">
-      </div>
-    </td>
-    <td valign="top" align="left" id="right_col">
-      <div id="widget_col_1">
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="left" id="bottom_col" colspan="2">
-      <div id="widget_col_2">
-      </div>
-    </td>
-  </tr>
-</table>
-<br />
+<%= stylesheet_link_tag 'widget' %>
+<%= stylesheet_link_tag 'task' %>
+<div id="widget_panel" style="width:100%;">
+  <!-- IMPORTANT : the widget_col_x ids are important because this is what Xilinus.Portal uses to identify in which column to add a widget. e.g portal.add(widget, 2) will add code to 'widget_col_2' -->
+  <div id="widget_col_0" class="widget_large">
+  </div>
+  <div id="widget_col_1" class="widget_small widget_small_1">
+  </div>
+  <div id="widget_col_2" class="widget_small widget_small_2">
+  </div>
+</div>
 
 <script type="text/javascript" language="javascript" charset="utf-8">
 // <![CDATA[
 
-function onOverWidget(portal, widget) {
-  // show the widget menu
-  jQuery("#" + widget._getId() + " .widget-menu").show();
-} 
-   
-function onOutWidget(portal, widget) {
-  // hide the widget menu (not the whole widget!)
-  jQuery("#" + widget._getId() + " .widget-menu").hide();
+function onStartDrag() {
+  jQuery('#widget_col_0').addClass('widget_col_delimiter');
+  jQuery('#widget_col_1').addClass('widget_col_delimiter');
+  jQuery('#widget_col_2').addClass('widget_col_delimiter');
 }
-   
-var portal = new Xilinus.Portal("#content div", {url: "/widgets/save_order", onOverWidget: onOverWidget, onOutWidget: onOutWidget} );
 
-<% current_user.widgets.each do |@widget| %>
-var widget = new Xilinus.Widget("widget", "<%=@widget.dom_id%>");
+function onEndDrag() {
+  jQuery('#widget_col_0').removeClass('widget_col_delimiter');
+  jQuery('#widget_col_1').removeClass('widget_col_delimiter');
+  jQuery('#widget_col_2').removeClass('widget_col_delimiter');
+}
 
-var title = '<div style="float:right;display:none;" class="widget-menu"><a href="#" onclick="jQuery.getScript(\'/widgets/edit/<%=@widget.id%>\'); return false;;"><img src="/images/configure.png" border="0"/></a><a href="#" onclick="if( confirm(\'Really delete widget?\') ){jQuery.getScript(\'/widgets/destroy/<%=@widget.id%>\'); return false; }"><img src="/images/delete.png" border="0"/></a></div>';
-title += '<div><%= link_to_remote("&nbsp;", {:url => { :controller => 'widgets', :action => 'toggle_display', :id => @widget.id }, :loading => "showProgress();", :complete => "hideProgress();" }, { :class => (@widget.collapsed? ? "widget-collapsed" : "widget-open"), :id => "indicator-#{@widget.dom_id}" }).gsub(/'/,'\\\\\'') %>';
-title += '<%= render(:partial => "widgets/widget_#{@widget.widget_type}_header").gsub(/'/,'\\\\\'').split(/\n/).join %></div>';
-
-widget.setTitle(title);
-widget.setContent('<span class="optional"><br/><%= _'Loading...'%></span>');
-portal.add(widget, <%=@widget.column%>);
-<%= "jQuery('#content_#{@widget.dom_id}').hide();" if @widget.collapsed? %> 
-<% end %>
-
-<% widgets = (current_user.widgets.select{ |w| !w.collapsed? } +
-              current_user.widgets.select{ |w| w.collapsed? }) -%>
-<% widgets.each do |@widget| %>
-jQuery.getScript('/widgets/show/<%=@widget.id%>', function(data) { portal.refreshHeights();} );
-<% end %>
+var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
 // ]]>
 </script>
+<% current_user.widgets.each do |@widget| %>
+  <%= render :partial => 'widgets/generate_widget', :locals => {:widget => @widget} %>
+<% end %>
+
+<% if false %>
+  jQuery.getScript('/widgets/generate/<%=@widget.id%>');
+<% end %>
