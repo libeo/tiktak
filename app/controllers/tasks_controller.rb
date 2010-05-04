@@ -22,6 +22,7 @@ class TasksController < ApplicationController
   tags.name,
   tags_tasks.id, tags_tasks.name,
   task_property_values.id,
+  todos.name, todos.completed_at,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
   def new
@@ -554,7 +555,6 @@ class TasksController < ApplicationController
   end
 
   def ajax_stop_work
-    debugger
     @work_log = nil
     if @current_sheet
       @current_sheet.body = params[:description] if params[:description] and params[:description].strip != ''
