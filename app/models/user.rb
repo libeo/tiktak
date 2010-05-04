@@ -255,6 +255,10 @@ class User < ActiveRecord::Base
       (self.read_clients? and self.option_externalclients?)
   end
 
+  def can_create_clients?
+    self.admin? or self.create_clients?
+  end
+
   # Returns true if this user is allowed to view the given task.
   def can_view_task?(task)
     projects.include?(task.project) || task.linked_users.include?(self)
@@ -376,6 +380,11 @@ class User < ActiveRecord::Base
     end
 
     return @visible_task_filters
+  end
+
+  def localized_date(date)
+    return nil unless date
+    self.tz.utc_to_local(date).strftime_localized(self.date_format)
   end
 
   def localized_datetime(datetime)

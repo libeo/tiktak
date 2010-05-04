@@ -93,3 +93,7 @@ fr:
   resources : "Ressources"
   add_widget : "Nouveau widget"
   add_project : "Nouveau projet"
+  clients : "Clients"
+  users : "Utilisateurs"
+  add_user : "Nouvel utilisateur"
+  add_client : "Nouveau client"

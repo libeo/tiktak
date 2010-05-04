@@ -191,7 +191,7 @@ class TaskFilter < ActiveRecord::Base
   def get_includes(fields)
     return nil unless fields
 
-    singular = %w(sheets todos milestones)
+    singular = %w(sheets milestones)
     special = {'companies' => { :company => :properties}, 
       'customers_projects' => {:project => :customer}, 
       'watchers_tasks' => :watchers, 

@@ -22,6 +22,7 @@ class TasksController < ApplicationController
   tags.name,
   tags_tasks.id, tags_tasks.name,
   task_property_values.id,
+  todos.name, todos.completed_at,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
   def new
@@ -558,11 +559,9 @@ class TasksController < ApplicationController
     if @current_sheet
       @current_sheet.body = params[:description] if params[:description] and params[:description].strip != ''
       task = @current_sheet.task
-      if @current_sheet.body.strip != ''
-        @work_log = task.close_current_work_log(@current_sheet)
-        @current_sheet.destroy
-        @current_sheet = nil
-      end
+      @work_log = task.close_current_work_log(@current_sheet)
+      @current_sheet.destroy
+      @current_sheet = nil
     end
   end
 

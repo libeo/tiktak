@@ -48,14 +48,13 @@ function warnWorkLogJournal() {
 
 function sendWorkLogJournal() {
   showProgress();
-  if (!warnWorkLogJournal()) {
-    jQuery.ajax({
-      data: {description: jQuery('#worklog_body').val()},
-      dataType: 'script',
-      url: '/tasks/ajax_stop_work?format=js',
-      type: 'post'
-    });
-  }
+  /*if (!warnWorkLogJournal()) {*/
+  jQuery.ajax({
+    data: {description: jQuery('#worklog_body').val()},
+    dataType: 'script',
+    url: '/tasks/ajax_stop_work?format=js',
+    type: 'post'
+  });
   hideProgress();
 }
 

@@ -16,6 +16,7 @@ class WidgetsController < ApplicationController
   customers.name, customers.company_id,
   milestones.name,
   users.name, users.company_id, users.email,
+  todos.name, todos.completed_at,
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
@@ -478,7 +479,8 @@ class WidgetsController < ApplicationController
   end
   
   def save_order
-    [0,1,2].each do |c|
+    debugger
+    [0,1,2,3,4].each do |c|
       pos = 0
       if params["widget_col_#{c}"]
         params["widget_col_#{c}"].each do |id|

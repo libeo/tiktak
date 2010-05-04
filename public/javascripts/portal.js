@@ -368,6 +368,7 @@ Object.extend(Xilinus.Portal.prototype, {
         return sum + element.getHeight(); 
       }));
       col.setStyle({height: h + 'px'});
+      h = 25;
     })
     //this._columns.invoke("setStyle", {height: h + 'px'})
   },
