@@ -119,16 +119,20 @@
     // <![CDATA[
     var userId=<%=current_user.id%>;
     jQuery(document).ready(function () {
-        <% if controller.controller_name == 'shout' && controller.action_name == 'room' %>
-          init_shout();
-          $('contact').scrollTo();
-          window.scrollBy(0,200);
-        <% end %>
+      <% if controller.controller_name == 'shout' && controller.action_name == 'room' %>
+        init_shout();
+        $('contact').scrollTo();
+        window.scrollBy(0,200);
+      <% end %>
 
-        jQuery('#presence-toggle-users').click(function () {
-          toggleChatPopupEvent($('presence-toggle-users')); 
-          });
+      jQuery('#presence-toggle-users').click(function () {
+        toggleChatPopupEvent($('presence-toggle-users')); 
         });
+
+      if (!(jQuery.cookie("showrightcolumn") == 'true')) {
+        jQuery('#right_button').trigger('click');
+      }
+    });
     // ]]>
   </script>
 

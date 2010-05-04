@@ -4,6 +4,7 @@ javascripts:
   - prototype
   - jquery
   - jquery-ui
+  - jquery.cookie
   - shadowbox
   - effects
   - dragdrop

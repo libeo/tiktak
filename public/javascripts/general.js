@@ -65,12 +65,14 @@ function defineToggleRightColumn() {
       jQuery('#filters_content').css('display', 'none');
       jQuery('#right_content').css('width', '0%');
       jQuery('#subcontent').css('width', '97%');
+      jQuery.cookie("showrightcolumn", "false");
     },
     function() {
       jQuery('#right_button').css('float', 'left');
       jQuery('#filters_content').css('display', '');
       jQuery('#right_content').css('width', '15%');
       jQuery('#subcontent').css('width', '85%');
+      jQuery.cookie("showrightcolumn", "true");
     }
   );
 }
