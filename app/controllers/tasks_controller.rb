@@ -554,15 +554,14 @@ class TasksController < ApplicationController
   end
 
   def ajax_stop_work
+    debugger
     @work_log = nil
     if @current_sheet
       @current_sheet.body = params[:description] if params[:description] and params[:description].strip != ''
       task = @current_sheet.task
-      if @current_sheet.body.strip != ''
-        @work_log = task.close_current_work_log(@current_sheet)
-        @current_sheet.destroy
-        @current_sheet = nil
-      end
+      @work_log = task.close_current_work_log(@current_sheet)
+      @current_sheet.destroy
+      @current_sheet = nil
     end
   end
 

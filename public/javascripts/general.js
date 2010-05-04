@@ -34,8 +34,6 @@ function toggleWorkLogJournal() {
 function warnWorkLogJournal() {
   var log = jQuery('#worklog_body');
   var empty = (jQuery.trim(log.val()) == '');
-  alert(log.val());
-  alert(empty);
   if (empty) {
     if( !log.is(':visible')) {
       toggleWorkLogJournal();
@@ -50,14 +48,13 @@ function warnWorkLogJournal() {
 
 function sendWorkLogJournal() {
   showProgress();
-  if (!warnWorkLogJournal()) {
-    jQuery.ajax({
-      data: {description: jQuery('#worklog_body').val()},
-      dataType: 'script',
-      url: '/tasks/ajax_stop_work?format=js',
-      type: 'post'
-    });
-  }
+  /*if (!warnWorkLogJournal()) {*/
+  jQuery.ajax({
+    data: {description: jQuery('#worklog_body').val()},
+    dataType: 'script',
+    url: '/tasks/ajax_stop_work?format=js',
+    type: 'post'
+  });
   hideProgress();
 }
 
@@ -67,13 +64,13 @@ function defineToggleRightColumn() {
       jQuery('#right_button').css('float', 'right');
       jQuery('#filters_content').css('display', 'none');
       jQuery('#right_content').css('width', '0%');
-      jQuery('#subcontent').css('width', '99%');
+      jQuery('#subcontent').css('width', '97%');
     },
     function() {
       jQuery('#right_button').css('float', 'left');
       jQuery('#filters_content').css('display', '');
       jQuery('#right_content').css('width', '15%');
-      jQuery('#subcontent').css('width', '87%');
+      jQuery('#subcontent').css('width', '85%');
     }
   );
 }

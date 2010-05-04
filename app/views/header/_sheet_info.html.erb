@@ -18,6 +18,9 @@
         :loading => "showProgress();", :complete => "hideProgress();" %>
     <% else %>
       <%= link_to_function image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)), "sendWorkLogJournal();" %>
+      <%# link_to image_tag('header/img_co_icon-clock-top.png', :title => t(:save_time), :alt => t(:save_time)),
+        { :controller => 'tasks', :action => 'stop_work', :id => task.id }, :class => 'entry_icon_clock', :onclick => 'updateLog();' -%>
+
     <% end %>
   </div>
 
