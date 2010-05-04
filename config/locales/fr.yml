@@ -94,4 +94,5 @@ fr:
   add_project : "Nouveau projet"
   clients : "Clients"
   users : "Utilisateurs"
-  new_user : "Nouvel utilisateur"
+  add_user : "Nouvel utilisateur"
+  add_client : "Nouveau client"

@@ -13,7 +13,8 @@
     menu << [:projects, {:controller => 'projects', :action => 'list'} ]
     menu.last << [[:add_project, {:controller => 'projects', :action => 'new'}]] if current_user.create_projects?
     menu << [:clients, {:controller => 'clients', :action => 'list'}] if current_user.can_view_clients?
-    menu << [:users, {:controller => 'users', :action => 'list'}, [[:new_user, {:controller => 'users', :action => 'new'}]] ] if current_user.admin?
+    menu.last << [[:add_client, {:controller => 'clients', :action => 'new'}]] if current_user.can_create_clients?
+    menu << [:users, {:controller => 'users', :action => 'list'}, [[:add_user, {:controller => 'users', :action => 'new'}]] ] if current_user.admin?
     menu << [:resources, resources_path] if current_user.use_resources?
     #menu << [:chat, {:controller => 'shout', :action => 'list'}] if current_user.company.show_chat?
     #menu << [:files, {:controller => 'project_files', :action => 'list'}]

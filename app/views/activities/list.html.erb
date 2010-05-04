@@ -2,11 +2,16 @@
 <%= stylesheet_link_tag 'task' %>
 <div id="widget_panel" style="width:100%;">
   <!-- IMPORTANT : the widget_col_x ids are important because this is what Xilinus.Portal uses to identify in which column to add a widget. e.g portal.add(widget, 2) will add code to 'widget_col_2' -->
-  <div id="widget_col_0" class="widget_large">
+  <div id="widget_col_0" class="column widget_small widget_small_1">
   </div>
-  <div id="widget_col_1" class="widget_small widget_small_1">
+  <div id="widget_col_1" class="column widget_small widget_small_2">
   </div>
-  <div id="widget_col_2" class="widget_small widget_small_2">
+  <div class="clear"></div>
+  <div id="widget_col_2" class="column widget_large">
+  </div>
+  <div id="widget_col_3" class="column widget_small widget_small_3">
+  </div>
+  <div id="widget_col_4" class="column widget_small widget_small_4">
   </div>
 </div>
 
@@ -14,18 +19,14 @@
 // <![CDATA[
 
 function onStartDrag() {
-  jQuery('#widget_col_0').addClass('widget_col_delimiter');
-  jQuery('#widget_col_1').addClass('widget_col_delimiter');
-  jQuery('#widget_col_2').addClass('widget_col_delimiter');
+  jQuery('#widget_panel .column').addClass('widget_col_delimiter');
 }
 
 function onEndDrag() {
-  jQuery('#widget_col_0').removeClass('widget_col_delimiter');
-  jQuery('#widget_col_1').removeClass('widget_col_delimiter');
-  jQuery('#widget_col_2').removeClass('widget_col_delimiter');
+  jQuery('#widget_panel .column').removeClass('widget_col_delimiter');
 }
 
-var portal = new Xilinus.Portal("#widget_panel div", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
+var portal = new Xilinus.Portal("#widget_panel .column", {url: "/widgets/save_order", onStartDrag: onStartDrag, onEndDrag: onEndDrag});
 // ]]>
 </script>
 <% current_user.widgets.each do |@widget| %>

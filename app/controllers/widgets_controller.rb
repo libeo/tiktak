@@ -478,7 +478,8 @@ class WidgetsController < ApplicationController
   end
   
   def save_order
-    [0,1,2].each do |c|
+    debugger
+    [0,1,2,3,4].each do |c|
       pos = 0
       if params["widget_col_#{c}"]
         params["widget_col_#{c}"].each do |id|
