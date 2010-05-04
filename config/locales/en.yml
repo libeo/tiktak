@@ -95,4 +95,7 @@ en:
   resources : "Resources"
   add_widget : "New widget"
   add_project : "New project"
+  clients : "Clients"
+  users : "Users"
+  new_user : "New user"
 

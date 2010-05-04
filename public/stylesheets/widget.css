@@ -14,12 +14,14 @@
   border: 3px dashed #F00;
 }
 
-.widget_large {}
+.widget_large {
+  width: 98%;
+}
 
 .widget_small {
     margin-top:24px;
     float:left;
-    width:50%;
+    width:49%;
 }
 
     /*L'entête du widget*/
