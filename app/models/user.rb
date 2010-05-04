@@ -382,6 +382,11 @@ class User < ActiveRecord::Base
     return @visible_task_filters
   end
 
+  def localized_date(date)
+    return nil unless date
+    self.tz.utc_to_local(date).strftime_localized(self.date_format)
+  end
+
   def localized_datetime(datetime)
     return nil unless datetime
     self.tz.utc_to_local(datetime).strftime_localized("#{self.date_format} #{self.time_format}")

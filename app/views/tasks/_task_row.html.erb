@@ -50,7 +50,7 @@
         <!-- task due date -->
         <% if task.due_at %>
           <span class="entry_date">
-            <%= task.overworked? ? content_tag(:span, TasksHelper.neg_due_date(task.due_at), :class => 'entry_date_exceeded') : TasksHelper.neg_due_date(task.due_at) %>
+            <%= task.overdue? ? content_tag(:span, TasksHelper.neg_due_date(task.due_at), :class => 'entry_date_exceeded') : TasksHelper.neg_due_date(task.due_at) %>
           </span>
         <% end %>
 

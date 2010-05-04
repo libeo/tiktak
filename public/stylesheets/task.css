@@ -156,18 +156,19 @@
 							-webkit-border-radius:5px;
 							-moz-border-radius:5px;
 							border-radius:5px;
-							padding:8px;
+							padding:4px;
 							border:1px solid #c6c6c6;
-							margin:8px 0 0 18px;
+							margin:4px 0 0 0px;
 							background:#fff url(../../images/task/img_co_bg-postit.jpg) repeat-x left bottom;
 							font-family:Verdana, Arial;
 							font-size:0.91em;
 						}
 						
 							.task_entry .col_entry_tools .todo_tooltip .tooltip_content {
-								background:url(../../images/task/img_co_flch-bg-postit.png) no-repeat 5px top;
+								/*background:url(../../images/task/img_co_flch-bg-postit.png) no-repeat 5px top;
 								margin-top:-15px;
 								padding-top:15px;
+                */
 							}
 							
 								.task_entry .col_entry_tools .todo_tooltip .tooltip_content .row {
@@ -184,7 +185,7 @@
 									.task_entry .col_entry_tools .todo_tooltip .tooltip_content .row .label {
 										float:left;
 										color:#a5a5a5;
-										width:58px;
+										/*width:58px;*/
 										text-align:right;
 										font-weight:bold;
 									}
