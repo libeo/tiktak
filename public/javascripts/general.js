@@ -67,13 +67,13 @@ function defineToggleRightColumn() {
       jQuery('#right_button').css('float', 'right');
       jQuery('#filters_content').css('display', 'none');
       jQuery('#right_content').css('width', '0%');
-      jQuery('#subcontent').css('width', '97%');
+      jQuery('#subcontent').css('width', '99%');
     },
     function() {
       jQuery('#right_button').css('float', 'left');
       jQuery('#filters_content').css('display', '');
       jQuery('#right_content').css('width', '15%');
-      jQuery('#subcontent').css('width', '85%');
+      jQuery('#subcontent').css('width', '87%');
     }
   );
 }
