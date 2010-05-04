@@ -102,30 +102,8 @@
         </div>
       </div>
     </div>
-
     <div class="clear"></div>
-
-    <!-- FOOTER -->
-    <div id="footer">
-      <div id="logo_clockingit">
-        <%= image_tag 'footer/img_co_logo-clockingit.png', :alt => t(:clockingit_logo), :title => t(:clockingit_logo) %>
-      </div>
-      <div id="menu_footer">
-        <ul>
-          <li><%=mail_to('gregory@sys-tech.net', t(:help_translate)) %></li>
-          <li><%=mail_to('gregory@sys-tech.net', t(:give_feedback)) %></li>
-          <li><%=mail_to('gregory@sys-tech.net', t(:report_bugs)) %></li>
-        </ul>
-      </div>
-      <% if current_user.company.show_messaging %>
-        <div id="connected_users">
-          <a href="#">
-            <span class="co_users_no"><%=online_users%> </span><%= t(:users_online) %>
-          </a>
-        </div>
-      <% end %>
-    </div>
-  </div>
+    <%# render :partial => 'layouts/footer' %>
 	<div id="loading" style="z-index: 1000; position:absolute; right: 10px; top: 10px; width:70px; height:20px; color: white; padding:6px; display: none; "><%= image_tag('spinner.gif', :border => 0) %></div>
 
   <!-- javascript that frequently updates the page counters (in the header) -->
