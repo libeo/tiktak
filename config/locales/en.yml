@@ -97,5 +97,6 @@ en:
   add_project : "New project"
   clients : "Clients"
   users : "Users"
-  new_user : "New user"
+  add_user : "New user"
+  add_client : "New client"
 

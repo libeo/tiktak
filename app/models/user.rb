@@ -255,6 +255,10 @@ class User < ActiveRecord::Base
       (self.read_clients? and self.option_externalclients?)
   end
 
+  def can_create_clients?
+    self.admin? or self.create_clients?
+  end
+
   # Returns true if this user is allowed to view the given task.
   def can_view_task?(task)
     projects.include?(task.project) || task.linked_users.include?(self)

@@ -1,9 +1,10 @@
 .widget {
-  margin-bottom : 7px;
+  padding-bottom : 7px;
 }
 
 .widget_col_delimiter {
   border: 1px dashed gray;
+  margin: 2px 2px 2px 2px;
 }
 
 .widget_ghost {
@@ -19,7 +20,7 @@
 }
 
 .widget_small {
-    margin-top:24px;
+    /*margin-top:24px;*/
     float:left;
     width:49%;
 }
@@ -60,6 +61,14 @@
     }
     
     .widget_small_1 .task_entry, .widget_small_1 .widget_title {
+        margin-right:10px;
+    }
+
+    .widget_small_4 .task_entry, .widget_small_4 .widget_title {
+        margin-left:10px;
+    }
+    
+    .widget_small_3 .task_entry, .widget_small_3 .widget_title {
         margin-right:10px;
     }
         
