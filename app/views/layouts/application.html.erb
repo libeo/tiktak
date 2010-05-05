@@ -10,8 +10,6 @@
   <%= yield :tinymce %>
   <%= yield :tinymce_init %>
 
-  <%= javascript_include_merged :portal if ['activites'].include? controller.controller_name %>
-
   <!-- CSS includes -->
   <%= stylesheet_link_merged :base %>
 
@@ -26,8 +24,8 @@
   <% end %>
 
   <% if ['activities'].include? controller.controller_name %>
-    <%= javascript_include_merged :portal %>
-    <%= stylesheet_link_merged :portal %>
+    <%= javascript_include_merged :widgets %>
+    <%= stylesheet_link_merged :widgets %>
   <% end %>
 
   <% if controller.controller_name == 'tasks' and controller.action_name == 'edit_log' %>
@@ -107,12 +105,6 @@
     <%# render :partial => 'layouts/footer' %>
 	<div id="loading" style="z-index: 1000; position:absolute; right: 10px; top: 10px; width:70px; height:20px; color: white; padding:6px; display: none; "><%= image_tag('spinner.gif', :border => 0) %></div>
 
-  <!-- javascript that frequently updates the page counters (in the header) -->
-  <% javascript_tag do %>
-    var intervalId = null;
-    toggleUpdater();
-  <% end %>
-
   <!-- flash plugin for push notifications (push_server) -->
   <%= flash_plugin(session[:channels]) %>
 
@@ -120,15 +112,9 @@
     // <![CDATA[
     var userId=<%=current_user.id%>;
     jQuery(document).ready(function () {
-      <% if controller.controller_name == 'shout' && controller.action_name == 'room' %>
-        init_shout();
-        $('contact').scrollTo();
-        window.scrollBy(0,200);
-      <% end %>
 
-      jQuery('#presence-toggle-users').click(function () {
-        toggleChatPopupEvent($('presence-toggle-users')); 
-        });
+      //updates various info on the page every 75 seconds
+      toggleUpdater();
 
       if (!(jQuery.cookie("showrightcolumn") == 'true')) {
         jQuery('#right_button').trigger('click');
