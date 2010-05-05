@@ -67,6 +67,7 @@ function defineToggleRightColumn() {
       jQuery('#filters_content').css('display', 'none');
       jQuery('#right_content').css('width', '0%');
       jQuery('#subcontent').css('width', '97%');
+      jQuery('#right_button a img').attr('src', '/images/general/img_co_icon-filters-close.png')
       jQuery.cookie("showrightcolumn", "false");
     },
     function() {
@@ -74,6 +75,7 @@ function defineToggleRightColumn() {
       jQuery('#filters_content').css('display', '');
       jQuery('#right_content').css('width', '15%');
       jQuery('#subcontent').css('width', '85%');
+      jQuery('#right_button a img').attr('src', '/images/general/img_co_icon-filters-open.png')
       jQuery.cookie("showrightcolumn", "true");
     }
   );
