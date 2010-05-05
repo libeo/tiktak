@@ -1,39 +1,39 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <%= javascript_include_merged :base %>
 
-  <!-- Is this still useful ? -->
+  <!-- Javascript includes -->
+  <%= javascript_include_merged :base %>
+  <%= javascript_include_merged :right_column %>
+
+  <!-- TODO: Is this still useful ? -->
   <%= yield :tinymce %>
   <%= yield :tinymce_init %>
 
-  <%= javascript_include_tag 'general' %>
-  <%= javascript_include_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
-  <%= javascript_include_tag "swfobject" %>
+  <%= javascript_include_merged :portal if ['activites'].include? controller.controller_name %>
 
+  <!-- CSS includes -->
   <%= stylesheet_link_merged :base %>
-  <!-- general css that can be used everywhere in the site -->
-  <%= stylesheet_link_tag 'general' %>
-  <%= stylesheet_link_tag 'task' %>
-  <%= stylesheet_link_tag 'footer' %>
-  <%= stylesheet_link_tag "beast" if ['forums', 'posts', 'topics'].include? controller.controller_name %>
-  <%= javascript_include_tag "builder" if ['activities'].include? controller.controller_name %>
-
-  <% if ['activities'].include? controller.controller_name %>
-    <%= javascript_include_tag "portal" %>
-    <!--[if IE]><%= javascript_include_tag "excanvas" %><![endif]-->
-    <%= javascript_include_tag "flotr" %>
-  <% end %>
 
   <%= stylesheet_link_tag "print", { :media => "print" } %>
 
   <%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
 
-  <!-- activecalendar includes -->
-  <%= stylesheet_link_tag "/javascripts/jscalendar-1.0/calendar-blue.css" %>
-  <%= javascript_include_tag "jscalendar-1.0/calendar.js" %>
-  <%= javascript_include_tag "jscalendar-1.0/lang/calendar-en.js" %>
-  <%= javascript_include_tag "jscalendar-1.0/calendar-setup.js" %>
+  <!-- perticular cases -->
+  <% if ['forums', 'posts', 'topics'].include? controller.controller_name %> 
+    <%= javascript_include_merged :forums %>
+    <%= stylesheet_link_merged :forums %>
+  <% end %>
+
+  <% if ['activities'].include? controller.controller_name %>
+    <%= javascript_include_merged :portal %>
+    <%= stylesheet_link_merged :portal %>
+  <% end %>
+
+  <% if controller.controller_name == 'tasks' and controller.action_name == 'edit_log' %>
+    <%= javascript_include_merged :worklogs %>
+    <%= stylesheet_link_merged :worklogs %>
+  <% end %>
 
   <title><%= $CONFIG[:productName] %></title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -51,6 +51,7 @@
       }
     <% end %>
   </style>
+
 </head>
 <body>
   <!-- Visual helpers like the 'in progress' cursor and the tooltip -->
