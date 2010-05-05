@@ -3,10 +3,10 @@
 <!-- My filters -->
 <div class="filters_header">
   <%= link_to_function image_tag( 'general/img_co_icon-open.png', :alt => t(:open), :title => t(:open) ),
-    "jQuery(this).parent().next().toggle(500);" %>
+    "toggleFilterPanel(this, 'show_my_filters');" %>
   <span class="header_name"><%=t(:my_filters)%></span>
 </div>
-<div class="filters_section">
+<div class="filters_section"<%= "style='display:none;'" if cookies[:show_my_filters] == 'false' %>>
   <ul>
     <% current_user.task_filters.visible.each do |task_filter| %>
       <li>
@@ -21,10 +21,10 @@
 <!-- Shared filters -->
 <div class="filters_header">
   <%= link_to_function image_tag( 'general/img_co_icon-open.png', :alt => t(:open), :title => t(:open) ),
-    "jQuery(this).parent().next().toggle(500);" %>
+    "toggleFilterPanel(this, 'show_shared_filters');" %>
   <span class="header_name"><%=t(:shared_filters)%></span>
 </div>
-<div class="filters_section">
+<div class="filters_section" <%= "style='display:none;'" if cookies[:show_shared_filters] == 'false' %>>
   <ul>
     <% current_user.company.task_filters.shared.visible.each do |task_filter| %>
       <li>
@@ -39,10 +39,10 @@
 <!-- Default filters -->
 <div class="filters_header">
   <%= link_to_function image_tag( 'general/img_co_icon-open.png', :alt => t(:open), :title => t(:open) ),
-    "jQuery(this).parent().next().toggle(500);" %>
+    "toggleFilterPanel(this, 'show_default_filters');" %>
   <span class="header_name"><%=t(:default_filters)%></span>
 </div>
-<div class="filters_section">
+<div class="filters_section" <%= "style='display:none;'" if cookies[:show_default_filters] == 'false' %>>
   <ul>
       <li><%= link_to_open_tasks(nil, redirect_action, {:class => 'filter_name'}) %></li>
       <li><%= link_to_open_tasks(current_user, redirect_action, {:class => 'filter_name'}) %></li>

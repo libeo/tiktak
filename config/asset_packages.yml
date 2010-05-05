@@ -4,21 +4,54 @@ javascripts:
   - prototype
   - jquery
   - jquery-ui
+  - jquery.cookie
+  - jrails
   - shadowbox
   - effects
-  - dragdrop
+  #- dragdrop
   - controls
   - application
-  - jrails
   - cit
   - juggernaut_javascript
-- portal:
+  - general
+  - swfobject
+- widgets:
+  - excanvas
+  - prototype
+  #- effects
+  - dragdrop
+  #- controls
+  - builder
+  - portal
+  - flotr
+- right_column:
+  - task_filter
+- forums:
+  - beast
+- login:
   - prototype
   - tz
   - frontpage
+#- worklogs: [jscalendar-1.0/calendar, jscalendar-1.0/lang/calendar-en, jscalendar-1.0/calendar-setup]
+- worklogs:
+  - jscalendar-1.0/calendar
+  - jscalendar-1.0/lang/calendar-en
+  - jscalendar-1.0/calendar-setup
+
 stylesheets:
 - base:
   - ui-lightness/jquery-ui
   - cit
-- portal:
-  - portal
+  - header
+  - general
+  - task
+  - footer
+- login:
+  - login
+- widgets:
+  - widget
+- forums:
+  - beast
+#- worklogs: [../javascripts/jscalendar-1.0/calendar-blue]
+- worklogs:
+  - ../javascripts/jscalendar-1.0/calendar-blue

@@ -41,68 +41,6 @@ jQuery("#loading").bind("ajaxSend", function(){
 
 // -------------------------
 
-/*
-function tip(myEvent,tip){
-  var scrollposY=0;
-  if (window.pageYOffset){
-    scrollposY = window.pageYOffset;
-  }
-  else if (document.documentElement && document.documentElement.scrollTop){
-    scrollposY = document.documentElement.scrollTop;
-  }
-  else if (document.getElementById("content").scrollTop){
-    scrollposY = document.getElementById("content").scrollTop;
-  }
-
-
-  var el = Event.element(myEvent);
-  var taskId = null;
-  if( el.toString().include("tasks/edit/") ) {
-    var elements = el.toString().split("/");
-    taskId = elements[elements.size()-1];
-  }
-
-  if(taskId != null) {
-    var comment = comments.get(taskId);
-    if( comment != null && comment != "" ) {
-      var elements = comment.split("<br/>");
-      var author = elements.shift();
-
-      tip = tip.replace("</table>", "<tr><th>"+ author + "</th><td class=\"tip_description\">" + elements.join("<br/>") + "</td></tr></table>");
-    }
-  }
-
-  document.getElementById("message").innerHTML= tip;
-
-  var height = $("message").offsetHeight;
-  var width = $("message").offsetWidth;
-  var winwidth = (typeof(window.innerWidth) != 'undefined') ? window.innerWidth + self.pageXOffset - 20 : document.documentElement.clientWidth + document.documentElement.scrollLeft;
-  var winBottom = (typeof(window.innerHeight) != 'undefined') ? window.innerHeight + self.pageYOffset - 20 : document.documentElement.clientHeight + document.documentElement.scrollTop;
-
-  var top = scrollposY + myEvent.clientY + 15;
-
-  if((top + height) > winBottom ) {
-    top = top - height - 25;
-  }
-
-  document.getElementById("tip").style.top = top + "px";
-
-  var left = myEvent.clientX - 25;
-  if( left < 0 ) {
-    left = 0;
-  }
-
-  if( (left + width) > winwidth ) {
-    left = winwidth - width - 5;
-  }
-
-  document.getElementById("tip").style.left = left +"px";
-  document.getElementById("tip").style.zIndex=99;
-  document.getElementById("tip").style.visibility="visible";
-
-}
-*/
-
 function hide(e){
   document.getElementById("tip").style.visibility="hidden";
   if(fetchTimeout != null) {
@@ -161,7 +99,6 @@ function UpdateDnD() {
   //Sortable.destroy('components_sortable');
   //Sortable.create("components_sortable", {dropOnEmpty:true, handle:'handle_comp', onUpdate:function(){new Ajax.Request('/components/ajax_order_comp', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}, parameters:Sortable.serialize("components_sortable")})}, only:'component', tree:true});
   //Sortable.create('tasks_sortable', {dropOnEmpty:true, handle:'handle', onUpdate:function(){new Ajax.Request('/components/ajax_order', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading');}, onLoading:function(request){Element.show('loading');}, parameters:Sortable.serialize("tasks_sortable")})}, only:'task', tree:true});
-  //updateTooltips();
 }
 
 function EnableDND() {
@@ -322,24 +259,6 @@ function showTaskInPage(taskNum) {
 	hideProgress();
     });
 }
-
-/*
- Marks the task sender belongs to as unread.
- Also removes the "unread" class from the task html.
- */
-/*
-function toggleTaskUnread(icon) {
-    var task = jQuery(icon).parents(".task");
-    
-    var unread = task.hasClass("unread");
-    task.toggleClass("unread");
-
-    var taskId = task.attr("id").replace("task_", "");
-    var parameters = { "id" : taskId, "read" : unread };
-
-    jQuery.post("/tasks/set_unread",  parameters);
-}
-*/
 
 /*
  Clears the text in the given field

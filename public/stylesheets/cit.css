@@ -1000,7 +1000,7 @@ div.auto_complete {
   position:absolute;
   width:250px;
   background-color:white;
-  border:1px solid #888;
+  /* border:1px solid #888;*/
   margin:0px;
   padding:0px;
     z-index: 100;
