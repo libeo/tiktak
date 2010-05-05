@@ -1,3 +1,5 @@
+var intervalId = null;
+
 function updateSheetInfo() {
   jQuery.ajax({dataType:'script', type:'post', url:'/tasks/update_sheet_info?format=js'});
 }

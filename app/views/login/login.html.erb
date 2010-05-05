@@ -1,7 +1,7 @@
 <html>
 <head>
 <title><%= $CONFIG[:productName] %></title>
-<%= stylesheet_link_merged :portal %>
+<%= stylesheet_link_merged :login %>
 <% if !@company.nil?
    @internal = @company.internal_customer
    if @internal and !@internal.css.blank? %>
