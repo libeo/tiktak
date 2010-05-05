@@ -11,17 +11,17 @@
   <span class="name"><%= widget.name %></span>
 
   <div class="header_icons">
-    <%= link_to( image_tag('widget/img_co_icon-rss-up.png', :alt => t(:subscribe_rss), :title => t(:subscribe_rss)), 
-      {:controller => 'feeds', :action => 'rss', :id => current_user.uuid, :widget => widget} ) if widget.rss_capable? %>
+    <%= link_to( image_tag('widget/img_co_icon-rss-over.png', :alt => t(:subscribe_rss), :title => t(:subscribe_rss)), 
+                {:controller => 'feeds', :action => 'rss', :id => current_user.uuid, :widget => widget} ) if widget.rss_capable? %>
 
     <%= link_to( image_tag("calendar.png", :title => t(:ical_subscribe)), 
       {:controller => 'feeds', :action => 'ical_all', :id => current_user.uuid} ) if widget.ical_capable? %>
 
-    <%= link_to_remote image_tag( 'widget/img_co_icon-edit-up.png', :alt => t(:edit_widget), :title => t(:edit_widget) ),
+    <%= link_to_remote image_tag( 'widget/img_co_icon-edit-over.png', :alt => t(:edit_widget), :title => t(:edit_widget) ),
       { :url => {:controller => 'widgets', :action => 'edit', :id => @widget.id },
         :loading => 'showProgress();', :complete => 'hideProgress();' } %>
 
-    <%= link_to_remote image_tag( 'widget/img_co_icon-delete-up.png', :alt => t(:delete_widget), :title => t(:delete_widget) ),
+    <%= link_to_remote image_tag( 'widget/img_co_icon-delete-over.png', :alt => t(:delete_widget), :title => t(:delete_widget) ),
       { :url => {:controller => 'widgets', :action => 'destroy', :id => @widget.id}, 
         :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_delete_widget) } %>
   </div>
