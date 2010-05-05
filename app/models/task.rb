@@ -606,7 +606,7 @@ class Task < ActiveRecord::Base
     due
   end
 
-  def to_tip()
+  def to_tip(options={})
     unless @tip
       duration = format_duration(self.worked_minutes, options[:duration_format], options[:workday_duration], options[:days_per_week]) + ' / ' +
         format_duration(self.duration, options[:duration_format], options[:workday_duration], options[:days_per_week])
@@ -623,7 +623,7 @@ class Task < ActiveRecord::Base
             [:dependencies, self.dependencies.map { |t| t.issue_name }.join(', ')],
             [:dependants, self.dependants.map { |t| t.issue_name }.join(', ')] ]
 
-      @tip = info.map { |i| "#{I18n.t(i.first)} : #{i.last}" }.join("\n").gsub(/\"/, '&quot;')
+      @tip = info.map { |i| "#{I18n.t('tooltip_'+i.first.to_s)} : #{i.last}" }.join(" / \n").gsub(/\"/, '&quot;')
     end
     @tip
   end

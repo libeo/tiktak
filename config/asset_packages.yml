@@ -23,6 +23,7 @@ javascripts:
   #- controls
   - builder
   - portal
+  - flotr
 - right_column:
   - task_filter
 - forums:
