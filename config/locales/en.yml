@@ -49,6 +49,7 @@ en:
   subscribe_rss : "Subscribe to this widgets' rss feed"
   subscribe_ical : "Subscribe to the iCal feed for your projects. For a personal feed, replace 'ical_all' with 'ical' in the URL. You can also append '?mode=tasks' for only tasks, '?mode=logs' for only work logs, or '?mode=milestones' for just milestones."
   #General
+  open_close : "open/close"
   confirm_delete : "Are you sure ?"
   close : "Close"
   open : "Open"
