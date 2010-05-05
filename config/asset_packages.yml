@@ -40,12 +40,12 @@ javascripts:
 
 stylesheets:
 - base:
-  - ui-lightness/jquery-ui
-  - cit
-  - header
   - general
-  - task
+  - header
   - footer
+  - task
+  - cit
+  - ui-lightness/jquery-ui
 - login:
   - login
 - widgets:
