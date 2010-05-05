@@ -18,7 +18,6 @@ class LoginController < ApplicationController
     else
       @company = company_from_subdomain
       @news ||= NewsItem.find(:all, :conditions => [ "portal = ?", true ], :order => "id desc", :limit => 3)
-      render :action => 'login', :layout => false
     end   
   end
 
