@@ -383,7 +383,7 @@ module TasksHelper
     values << [ _("Description"), task.description ]
     comment = task.last_comment
     if comment and comment.body
-      values << [ _("Last Comment"), "#{ comment.user.shout_nick }:<br/>#{ comment.body.gsub(/\n/, '<br/>') }" ]
+      values << [ _("Last Comment"), "#{ comment.user.shout_nick } : #{ comment.body }" ]
     end
     
     return task_tooltip(values)
@@ -410,27 +410,13 @@ module TasksHelper
 
   # Returns a tooltip showing the users linked to a task
   def task_users_tip(task)
-    values = []
-    task.users.each do |user|
-      icons = image_tag("user.png")
-      values << [ user.name, icons ]
-    end
-
-    task.watchers.each do |user|
-      values << [ user.name ]
-    end
-
+    values = (task.users.map { |u| u.name } | task.watchers.map { |u| u.name }).map { |i| [i] }
     return task_tooltip(values)
   end
 
   # Converts the given array into a table that looks good in a toolip
   def task_tooltip(names_and_values)
-    res = "<table id=\"task_tooltip\" cellpadding=0 cellspacing=0>"
-    names_and_values.each do |name, value|
-      res += "<tr><th>#{ name }</th>"
-      res += "<td>#{ value }</td></tr>"
-    end
-    res += "</table>"
+    res = names_and_values.map { |n| "#{n.first}#{n.last ? ' : ' + n.last : ''}" }.join(" / \n")
     return escape_once(res)
   end
 
