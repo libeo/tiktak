@@ -49,6 +49,7 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
+   config.i18n.default_locale = :fr
 
   # Rotate logs when they reach 50Mb and keep 5 old logs
   config.logger = Logger.new(config.log_path, 5, 50*1024*1024)

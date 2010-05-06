@@ -28,10 +28,10 @@ javascripts:
   - task_filter
 - forums:
   - beast
-- login:
-  - prototype
-  - tz
-  - frontpage
+#- login:
+  #- prototype
+  #- tz
+  #- frontpage
 #- worklogs: [jscalendar-1.0/calendar, jscalendar-1.0/lang/calendar-en, jscalendar-1.0/calendar-setup]
 - worklogs:
   - jscalendar-1.0/calendar
@@ -52,6 +52,5 @@ stylesheets:
   - widget
 - forums:
   - beast
-#- worklogs: [../javascripts/jscalendar-1.0/calendar-blue]
 - worklogs:
   - ../javascripts/jscalendar-1.0/calendar-blue

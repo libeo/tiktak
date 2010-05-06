@@ -2,6 +2,15 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #Login
+  username : "User name"
+  password : "Password"
+  forgot : "forgot ?"
+  stay_signed_in : "stay signed in"
+  connect : "connect"
+  forgot_enter_username : "Please enter your username before clicking on 'forgot ?'"
+  mail_sent : "A message has been sent to your email address."
+  login_wrong : "Username or Password is wrong..."
   #WorkLog
   worklog_saved : "Work log has been saved"
   modify_details : "edit entry"

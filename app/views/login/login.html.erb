@@ -1,7 +1,17 @@
+<!--[if IE ]>
+  <%= stylesheet_link_tag 'login_iecss' %>
+<![endif]-->
+<!--[if lt IE 8]>
+  <%= stylesheet_link_tag 'login_ie8' %>
+<![endif]-->
+<!--[if IE 7]>
+  <%= stylesheet_link_tag 'login_ie7' %>
+<![endif]-->
+
 <!--[if IE]>
 	<div id="ie_upgrade_message">
     <h4>We've noticed you're using Internet Explorer...</h4>
-    <h1>IE IS BAD</h1>
+    <h3>IE</h3><h2>IS</h2><h1>BAD</h1>
 		<p>IE may not properly show you the best parts of this website. We recommend that you upgrade to one of the following browsers:</p>
 		<ul>
       <li><a href="http://www.getfirefox.com/">Firefox</a></li>
@@ -9,7 +19,6 @@
 		</ul>
 	</div>
 <![endif]-->
-<% if @internal -%>
   <div id="xouter">
     <div id="xcontainer">
       <div id="xinner">
@@ -23,26 +32,30 @@
             </div>
           <% end %>
           <% form_for :user, :url => {:action => 'validate'}, :html => {:id => 'loginform', :name => 'loginform'} do |f| %>
-          <div id="fields">
-            <label><%= t(:identification) %></label>
-            <%= f.text_field :username, :class => 'username' %>
-            <%= hidden_field_tag 'forgot' %>
+            <div id="fields">
+              <label><%= t(:username) %></label>
+              <br />
+              <%= f.text_field :username, :class => 'username', :tabindex => 1 %>
+              <br />
+              <br />
 
-            <label>
-              <%= t(:password) %>
-              (<%= link_to_function t(:forgot), 
-                "document.loginform.forgot='true';document.loginform.submit()"%>)
-            </label><br />
+              <%= hidden_field_tag 'forgot' %>
+              <label>
+                <%= t(:password) %>
+                (<%= link_to_function t(:forgot), 
+                 "document.loginform.forgot.value='true';
+                 document.loginform.submit()"%>)
+              </label><br />
 
-            <%= f.password_field :password, :class => 'password' %>
-            <%= check_box_tag :remember %>&;nbsp<span><%= t(:remember_me) %></span>
-            <%= submit_tag t(:connect), :class => 'submit' %>
-          </div>
+              <%= f.password_field :password, :class => 'password', :tabindex => 2 %>
+              <br />
+              <br />
+              <%= check_box_tag :remember, "1", false, :tabindex => 3 %>&nbsp;<span><%= t(:stay_signed_in) %></span>
+              <%= submit_tag t(:connect), :class => 'submit', :tabindex => 4 %>
+            </div>
+          <% end %>
           <%= image_tag 'login/clocking_it.png' %>
         </div>
       </div>
     </div>
   </div>
-<% else %>
-  <h1>Please set up Clocking IT by running the setup.rb script.</h1>
-<% end %>

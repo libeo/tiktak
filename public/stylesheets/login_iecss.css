@@ -1,0 +1,19 @@
+/* IE only CSS Document */
+body {font-size:x-small;f\ont-size:small}/*ie5 and 5.5. that are one size out*/
+* html body{text-align:center;}
+body table{font-size:x-small;f\ont-size:small}
+* html #outer{height:100%}
+* html #main{height:1%}
+* html #logo{height:1px}
+#nav {word-wrap:break-word}
+* html ul#sidenav{position:relative}
+ul#sidenav  li {float:left}
+* html ul.demos li a{height:1%;}
+
+* html h1#logo a{
+	height:108px;
+	he\ight:71px;
+}
+
+* html ul#sidenav a{float:left;f\loat:none}
+* html ul#sidenav, * html #nav p {position:relative;}

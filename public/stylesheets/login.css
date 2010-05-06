@@ -1,89 +1,109 @@
+/* CSS Document */
+
+* {
+	margin:0;
+	padding:0
+}
+/* mac hide \*/
+html, body {
+	height:100%;
+	width:100%;
+}
+/* end hide */
 body {
-	color: white;
-	font-family: verdana, sans-serif;
-	font-size: 11px;
-	margin: 0;
-	padding: 0;
+	text-align:center;
+	min-height:560px;/* for ie7*/
 }
-
-#login {
+#xouter {
+	height:100%;
+	width:100%;
+	display:table;
+	vertical-align:middle;
+}
+#xcontainer {
+	text-align: center;
+	position:relative;
+	vertical-align:middle;
+	display:table-cell;
+	height: 560px;
+}
+#xinner {
+	width: 600px;
+	height: 560px;
+	text-align: center;
+	margin-left:auto;
+	margin-right:auto;
+	
+}
+/*/////////*/
+body{
+	
+	
+}
+#xouter{
+background: url(/images/login/bg.jpg) center center no-repeat #000;
+	
+}
+#login{
+	font-family: Arial;
+	font-size: 12px;
+	text-align: center;
+	position: relative;
+	width: 339px;
+	/*border: 1px solid #fff;*/
 	margin: auto;
-	padding: 40px;
-	width: 375px;
+	height: 560px;
 }
 
-form {
-	padding: 46px;
-	background-repeat: no-repeat;
-	background-image: url('/images/login.jpg');
-	height: 331px;
+.notice_msg {
+  padding-top : 3px;
+  padding-bottom: 9px;
 }
 
-#name {
+.notice_msg span {
+  font-size : 16px;
+  font-weight: bold;
+  color : #FDFF0F;
+}
+
+#fields{
+	text-align: left;
+	background: url(/images/login/bg_login.png) top center no-repeat;
+	height: 185px;
+	padding: 20px 0 0 38px;
+}
+
+.logo{
+	margin-top: 100px;
+}
+
+.username, .password{
+	width: 260px;
+	height: 30px;
+	font-size: 20px;
+	border: 1px solid #d4d4d4;
+	margin: 5px 0 0 0;
+}
+
+label{
 	font-weight: bold;
-	font-size: 14px;
-	position: relative;
-	left: 80px;
-	top: 15px;
-	padding-bottom: 20px;
+	color: #353535;
 }
-
-#ie6_upgrade_message {
-	color: black;
-	display: block;
-	padding: 15px;
-	background-color: #ffe4b7;
+label a{
+	color: grey;
 }
-p {
-	clear: both;
-	padding-bottom: 15px;
+#fields span{
+	font-size: 11px;
+	color: #353535;
 }
-
-img {
+.submit{
+	float: right;
+	margin: 0 40px 0 0;
+	background: url(/images/login/btn.png) no-repeat;
 	border: none;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-}
-  
-a { 
-	color: #ffff88;
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-inputbox {
-	height: 25x;
-}
-
-label {
-	width: 80px;
-	float: left;
-}
-
-label#remember {
-	width: auto;
-	float: none;
-}
-
-button {
-	float: none;
-	left: 220px;
-	top: 175px;
-	position: relative;
-	height: 25px;
-	width: 66px;
-	background-repeat: no-repeat;
-	background-image: url('/images/Login-button.png');
-	background-color: transparent;
-	border: none;
-	clear: none;
-}
-
-#notice {
-	font-size: 1.1em;
-	color: #ffff33;
+	width: 125px;
+	height: 37px;
+	color: #fff;
+	font-size: 13px;
+	padding: 0 0 2px 0;	
 }
