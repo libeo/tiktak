@@ -1,0 +1,6 @@
+@charset "UTF-8";
+/* CSS Document */
+
+#xouter{display:block}
+    #xcontainer{top:50%;display:block}
+    #xinner{top:-50%;position:relative}

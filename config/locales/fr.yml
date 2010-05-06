@@ -1,4 +1,13 @@
 fr:
+  #Login
+  username : "Identifiant"
+  password : "Mot de passe"
+  forgot : "oublié ?"
+  stay_signed_in : "se souvenir de moi"
+  connect : "Se connecter"
+  forgot_enter_username : "Veuillez entrer votre identifiant avant de cliquer sur 'oublié ?'"
+  mail_sent : "Vos informations viennent d'être envoyés au courriel que vous nous avez fourni. Merci d'aller le consulter."
+  login_wrong : "L'identifiant ou le mot de passe est erroné."
   #WorkLog
   worklog_saved : "Le temps a bien été enregistré"
   modify_details : "modifier l'enregistrement"

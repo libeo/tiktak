@@ -1,55 +1,61 @@
-<html>
-<head>
-<title><%= $CONFIG[:productName] %></title>
-<%= stylesheet_link_merged :login %>
-<% if !@company.nil?
-   @internal = @company.internal_customer
-   if @internal and !@internal.css.blank? %>
-     <style type="text/css"><%= @internal.css%></style>
-   <% end -%>
-<% end -%>
-</head>
+<!--[if IE ]>
+  <%= stylesheet_link_tag 'login_iecss' %>
+<![endif]-->
+<!--[if lt IE 8]>
+  <%= stylesheet_link_tag 'login_ie8' %>
+<![endif]-->
+<!--[if IE 7]>
+  <%= stylesheet_link_tag 'login_ie7' %>
+<![endif]-->
 
-<body>
-<% if @company %>
-<!--[if IE 6]>
-	<div id="ie6_upgrade_message">
-		<h4>We've noticed you're using Internet Explorer 6...</h4>
-		<p>IE6 is a bit old, and may not properly show you the best parts of this website. We recommend that you upgrade to one of the following browsers:</p>
+<!--[if IE]>
+	<div id="ie_upgrade_message">
+    <h4>We've noticed you're using Internet Explorer...</h4>
+    <h3>IE</h3><h2>IS</h2><h1>BAD</h1>
+		<p>IE may not properly show you the best parts of this website. We recommend that you upgrade to one of the following browsers:</p>
 		<ul>
-			<li><a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer 8</a></li>
-			<li><a href="http://www.getfirefox.com/">Firefox</a></li>
+      <li><a href="http://www.getfirefox.com/">Firefox</a></li>
+      <li><a href="http://www.google.com/chrome">Chrome</a></li>
 		</ul>
 	</div>
 <![endif]-->
-	<div id="login">
-	  <% if @internal -%>
-	    <%= tag("img", {:src => "/clients/show_logo/#{@internal.id}" } ) %>
-	  <% end -%>
-		<% form_tag( {:action => 'validate'}, {:id => 'loginform', :name => 'loginform'}) do %>
-			<div id="name"><%= $CONFIG[:productName] %></div>
-			<button type="submit" name="Submit" id="submit" value="Login" tabindex="4"></button>
-			<p>
-				<label for="username">Username</label>
-				<input name="user[username]" id="username" type="text" class="inputbox username" alt="username" size="12" tabindex="1" />
-			</p>
-			<p>
-				<label for="password">Password</label>
-				<input type="password" name="user[password]" id="password" class="inputbox" size="12" alt="password" tabindex="2"/>
-				<input type="hidden" name="forgot" value=""/>
-				<small><a onclick="document.loginform.forgot='true';document.loginform.submit()" href="#" tabindex="3">Forgot password</a></small>
-			</p>
-			<p>
-				<input type="checkbox" name="remember" id="remember" value="1" tabindex="5"/>
-				<label id="remember" for="remember">Remember me</label>
-			</p>
-			<% if flash[:notice] %>
-				<div id="notice"><%= flash[:notice] %><% flash.clear %></div>
-			<% end %>
-		<% end %>
-	</div>
-<% else %>
-	<h1>Please set up Clocking IT by running the setup.rb script.</h1>
-<% end %>
-</body>
-</html>
+  <div id="xouter">
+    <div id="xcontainer">
+      <div id="xinner">
+
+        <div id="login">
+          <%= image_tag 'login/sys-tech.png', :class => 'logo' %>
+          <% if flash[:notice] %>
+            <div class='notice_msg'>
+              <span><%= flash[:notice] %></span>
+              <% flash.clear %>
+            </div>
+          <% end %>
+          <% form_for :user, :url => {:action => 'validate'}, :html => {:id => 'loginform', :name => 'loginform'} do |f| %>
+            <div id="fields">
+              <label><%= t(:username) %></label>
+              <br />
+              <%= f.text_field :username, :class => 'username', :tabindex => 1 %>
+              <br />
+              <br />
+
+              <%= hidden_field_tag 'forgot' %>
+              <label>
+                <%= t(:password) %>
+                (<%= link_to_function t(:forgot), 
+                 "document.loginform.forgot.value='true';
+                 document.loginform.submit()"%>)
+              </label><br />
+
+              <%= f.password_field :password, :class => 'password', :tabindex => 2 %>
+              <br />
+              <br />
+              <%= check_box_tag :remember, "1", false, :tabindex => 3 %>&nbsp;<span><%= t(:stay_signed_in) %></span>
+              <%= submit_tag t(:connect), :class => 'submit', :tabindex => 4 %>
+            </div>
+          <% end %>
+          <%= image_tag 'login/clocking_it.png' %>
+        </div>
+      </div>
+    </div>
+  </div>
