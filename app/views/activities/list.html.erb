@@ -30,7 +30,3 @@ var portal = new Xilinus.Portal("#widget_panel .column", {url: "/widgets/save_or
 <% current_user.widgets.each do |@widget| %>
   <%= render :partial => 'widgets/generate_widget', :locals => {:widget => @widget} %>
 <% end %>
-
-<% if false %>
-  jQuery.getScript('/widgets/generate/<%=@widget.id%>');
-<% end %>
