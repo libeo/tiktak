@@ -1,7 +1,9 @@
-<div class='todo_tooltip'>
-  <div class='tooltip_content'>
-    <% todos.sort_by{ |t| t.done? ? 1 : 0 }.each do |todo| %>
-      <div class='row'><%= todo.done? ? '+' : '-' %> <%= todo.name %></div>
-    <% end %>
+<% if todos.length > 0 %>
+  <div class='todo_tooltip'>
+    <div class='tooltip_content'>
+      <% todos.sort_by{ |t| t.done? ? 1 : 0 }.each do |todo| %>
+        <div class='row'><%= todo.done? ? '+' : '-' %> <%= todo.name %></div>
+      <% end %>
+    </div>
   </div>
-</div>
+<% end %>
