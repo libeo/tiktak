@@ -127,6 +127,7 @@ class Task < ActiveRecord::Base
   end
 
   def send_notifications
+    debugger
     if self.has_changed?
       worklog, event_type = self.create_event_worklog
       self.deliver_notification_emails(self.updated_by, worklog, event_type)
@@ -157,12 +158,12 @@ class Task < ActiveRecord::Base
   def has_changed?
     self.changed? or 
     self.assignments.select { |a| a.changed? or a.new_record? }.length > 0
-    @new_assignments or
-    @removed_assignments or
-    @new_dependencies or 
-    @removed_dependencies or
-    @new_dependants or 
-    @removed_dependants
+    !@new_assignments.nil? or
+    !@removed_assignments.nil? or
+    !@new_dependencies.nil? or 
+    !@removed_dependencies.nil? or
+    !@new_dependants.nil? or 
+    !@removed_dependants.nil?
   end
 
   def deliver_notification_emails(user, worklog, event_type=:updated)

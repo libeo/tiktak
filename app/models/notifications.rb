@@ -4,6 +4,7 @@ require  File.join(File.dirname(__FILE__), '../../lib/misc')
 class Notifications < ActionMailer::Base
 
   def created(task, user, recipients, note = "", options={})
+    debugger
 
     options = {:sent_at => Time.now,
       :duration_format => nil,

@@ -19,24 +19,29 @@ class NoticeGroup < ActiveRecord::Base
 
 	def send_task_notice(task, user, state=:created)
 		emails = merge_general_emails(self.get_emails)
-    options = {:duration_format => self.duration_format}
-    options[:subject] = self.template_transform(self.message_subject, [task, user]) if self.message_subject != ""
-    options[:header] = self.template_transform(self.message_header, [task, user]) if self.message_header and self.message_header != ""
+    if emails.length > 0
+      options = {:duration_format => self.duration_format}
+      options[:subject] = self.template_transform(self.message_subject, [task, user]) if self.message_subject != ""
+      options[:header] = self.template_transform(self.message_header, [task, user]) if self.message_header and self.message_header != ""
 
-    if state == :created
-      Notifications::deliver_created(task, user, emails, "", options) 
-    else
-      Notifications::deliver_changed(state, task, user, emails, "", options)
+      if state == :created
+        debugger
+        Notifications::deliver_created(task, user, emails, "", options) 
+      else
+        Notifications::deliver_changed(state, task, user, emails, "", options)
+      end
     end
 	end
 
 	def send_project_notice(project, user)
 		emails = merge_general_emails(self.get_emails)
-    options = {:duration_format => self.duration_format
-    }
-    options[:subject] = self.template_transform(self.message_subject, [project, user]) if self.message_subject != ""
-    options[:header] = self.template_transform(self.message_header, [project, user]) if self.message_header and self.message_header != ""
-		Notifications::deliver_created_project(project, user, emails, "", options)
+    if emails.length > 0
+      options = {:duration_format => self.duration_format
+      }
+      options[:subject] = self.template_transform(self.message_subject, [project, user]) if self.message_subject != ""
+      options[:header] = self.template_transform(self.message_header, [project, user]) if self.message_header and self.message_header != ""
+      Notifications::deliver_created_project(project, user, emails, "", options)
+    end
 	end
 
 	def self.get_general_groups(options={})

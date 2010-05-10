@@ -48,7 +48,10 @@ class Task
           self.assignments.create(create.merge({:user_id => u_id}))
         end
         self.assignments(true)
-        send_notifications if update[:assigned] and !self.new_record?
+        if update[:assigned] and !self.new_record?
+          self.recipient_users(true)
+          send_notifications
+        end
       end
 
       module UserAssignments
@@ -56,7 +59,7 @@ class Task
         def set(users)
           [users].flatten.each { |u| proxy_owner.mark_new_assignment(u) }
           proxy_owner.update_assignment_properties(users,
-            {:assigned => true},
+            {:assigned => true, :notified => false},
             {:assigned => true, :notified => false},
             {:assigned => false}
           )
@@ -78,7 +81,7 @@ class Task
 
         def set(users)
           proxy_owner.update_assignment_properties(users,
-            {:notified => true},
+            {:notified => true, :assigned => false},
             {:notified => true, :assigned => false},
             {:notified => false}
           )
@@ -104,7 +107,7 @@ class Task
 
         def set(users)
           proxy_owner.update_assignment_properties(users,
-            {:notified_last_change => true, :notified => true},
+            {:notified_last_change => true, :notified => true, :assigned => false},
             {:notified_last_change => true, :notified => true, :assigned => false},
             {:notified_last_change => false}
           )
@@ -127,7 +130,7 @@ class Task
 
         def set(users)
           proxy_owner.update_assignment_properties(users,
-            {:unread => true, :notified => true},
+            {:unread => true, :notified => true, :assigned => true},
             {:unread => true, :notified => true, :assigned => true},
             {:unread => false}
           )

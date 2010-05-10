@@ -1,8 +1,8 @@
 $CONFIG = {
-	:domain => "clockingdev.com",  # The client specific hostname will be prepended to this domain
-	:email_domain => "clockingdev.com",
-	:replyto => "admin",  # Note that this is not a full email address, just the part before the @
-	:from => "admin",  # Note that this is not a full email address, just the part before the @
+	:domain => "lan.org",  # The client specific hostname will be prepended to this domain
+	:email_domain => "lan.org",
+	:replyto => "gregory",  # Note that this is not a full email address, just the part before the @
+	:from => "gregory",  # Note that this is not a full email address, just the part before the @
 	:prefix => "[ClockingIT]",
 	:productName => "ClockingIT",
 	:SSL => false
@@ -11,10 +11,10 @@ $CONFIG = {
 ActionMailer::Base.smtp_settings = {
   :address  => "localhost",
   :port  => 25,
-  :domain  => 'clockingdev.com'
+  :domain  => 'giffy'
 }
 
 # Setup email notification of errors
-ExceptionNotifier.exception_recipients = [ "email@example.com" ]
-ExceptionNotifier.sender_address = %("Application Error" <email@server.com>)
+ExceptionNotifier.exception_recipients = [ "gregory@sys-tech.net" ]
+ExceptionNotifier.sender_address = [ "gregory@giffy" ]
 ExceptionNotifier.sections << 'cit'
