@@ -171,7 +171,7 @@ module TasksHelper
   ###
   def assigned_icon(task, user, assign=false)
     classname = "icon tooltip assigned"
-    classname += " is_assigned" if task.users.include?(user) or assign
+    classname += " is_assigned" if task.assigned_users.include?(user) or assign
     content = content_tag(:span, "*", :class => classname, 
                           :title => _("Click to toggle whether this task is assigned to this user"))
 
@@ -227,31 +227,6 @@ module TasksHelper
                                   :after_update_element => "addUserToTask")
   end
 
-  # Returns links to filter the current task list by tags
-  def tag_links
-    links = []
-    tags = Tag.top_counts_as_tags(current_user.company)
-    ranges = cloud_ranges(tags.map { |tag, count| count })
-
-    tags.each do |tag, count|
-      str = "#{ tag.name } (#{ count })"
-      link_params = {
-        :qualifiable_id => tag.id,
-        :qualifiable_type => tag.class.name
-      }
-
-      range = ranges.index { |r| r > count }
-      range ||= ranges.length
-      class_name = "size#{ range - 1 }"
-
-      link_params = { :qualifiers_attributes => [ link_params ] }
-      path = update_current_filter_task_filters_path(:task_filter => link_params)
-      links << link_to(str, path, :class => class_name)
-    end
-
-    return links.join(", ")
-  end
-
   # Returns an array that show the start of ranges to be used
   # for a tag cloud
   def cloud_ranges(counts)
@@ -290,16 +265,6 @@ module TasksHelper
     end
 
     return grouped_options_for_select(options, default)
-  end
-
-  # Returns the js to watch a task's project selector
-  def task_project_watchers_js
-    js = <<-EOS
-    new Form.Element.EventObserver('task_project_id', function(element, value) {new Ajax.Updater('task_milestone_id', '/tasks/get_milestones', {asynchronous:true, evalScripts:true, onComplete:function(request){hideProgress();}, onLoading:function(request){showProgress();}, parameters:'project_id=' + value, insertion: updateSelect })});
-    new Form.Element.EventObserver('task_project_id', function(element, value) {new Ajax.Updater('task_users', '/tasks/get_owners', {asynchronous:true, evalScripts:true, onComplete:function(request){reset_owners();}, parameters:'project_id=' + value, insertion: updateSelect, onLoading:function(request){ remember_user(); } })});
-    EOS
-    
-    return javascript_tag(js)
   end
 
   ###
@@ -411,7 +376,7 @@ module TasksHelper
   # Returns a tooltip showing the users linked to a task
   def task_users_tip(task)
     values = []
-    task.users.each do |user|
+    task.assigned_users.each do |user|
       icons = image_tag("user.png")
       values << [ user.name, icons ]
     end

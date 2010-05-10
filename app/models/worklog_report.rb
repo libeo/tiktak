@@ -222,8 +222,8 @@ class WorklogReport
   def work_logs_for_workload(t)
     res = []
 
-    if t.users.size > 0
-      t.users.each do |u|
+    if t.assigned_users.size > 0
+      t.assigned_users.each do |u|
         w = WorkLog.new
         w.task = t
         w.user_id = u.id
@@ -332,26 +332,15 @@ class WorklogReport
 
       when 1, 4
         # Pivot
-        if @column_value == 2 && !w.task.tags.empty?
-          w.task.tags.each do |tag|
-            key = key_from_worklog(tag, @column_value).to_s
-            unless @column_headers[ key ]
-              @column_headers[ key ] = name_from_worklog( tag, @column_value )
-              @column_totals[ key ] ||= 0
-            end
-            rkey = do_column(w, key)
+        key = key_from_worklog(w, @column_value).to_s
+        unless @column_headers[ key ]
+          @column_headers[ key ] = name_from_worklog( w, @column_value )
+          if @column_value == 1
+            @column_headers[ key ] = w.task.name
           end
-        else
-          key = key_from_worklog(w, @column_value).to_s
-          unless @column_headers[ key ]
-            @column_headers[ key ] = name_from_worklog( w, @column_value )
-            if @column_value == 1
-              @column_headers[ key ] = w.task.name
-            end
-            @column_totals[ key ] ||= 0
-          end
-          rkey = do_column(w, key)
+          @column_totals[ key ] ||= 0
         end
+        rkey = do_column(w, key)
 
       when 2
         # Audit
@@ -409,7 +398,7 @@ class WorklogReport
     if r == 1
       "#{w.customer.name} #{w.project.name} #{w.task.name} #{w.task.task_num}"
     elsif r == 2
-      w.is_a?(Tag) ? w.id : 0
+      0
     elsif r == 3
       w.user_id
     elsif r == 4
@@ -459,7 +448,7 @@ class WorklogReport
     if r == 1
       "#{w.task.issue_num} <a href=\"/tasks/view/#{w.task.task_num}\">#{w.task.name}</a> <br /><small>#{w.task.full_name}</small>"
     elsif r == 2
-      w.is_a?(Tag) ? "#{w.name}" : "none"
+      "none"
     elsif r == 3
       "#{w.user ? w.user.name : _("Unassigned")}"
     elsif r == 4

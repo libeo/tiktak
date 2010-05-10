@@ -3,14 +3,6 @@ class Task
   module Attributes
     augmentation do
 
-      def issue_type
-        Task.issue_types[self.type_id.to_i]
-      end
-
-      def Task.issue_types
-        ["Task", "New Feature", "Defect", "Improvement"]
-      end
-
       def status_type
         Task.status_types[self.status]
       end
@@ -20,31 +12,11 @@ class Task
       end
 
       def Task.status_types
-        ["Open", "In Progress", "Closed", "Won't fix", "Invalid", "Duplicate"]
+        ["Open", "Closed", "Won't fix", "Invalid", "Duplicate"]
       end
 
-      def priority_type
-        Task.priority_types[self.priority]
-      end
-
-      def Task.priority_types
-        {  -2 => "Lowest", -1 => "Low", 0 => "Normal", 1 => "High", 2 => "Urgent", 3 => "Critical" }
-      end
-
-      def severity_type
-        Task.severity_types[self.severity_id]
-      end
-
-      def Task.severity_types
-        { -2 => "Trivial", -1 => "Minor", 0 => "Normal", 1 => "Major", 2 => "Critical", 3 => "Blocker"}
-      end
-      
       def done?
         self.status > 1 && self.completed_at != nil
-      end
-
-      def done
-        self.status > 1
       end
 
       def ready?

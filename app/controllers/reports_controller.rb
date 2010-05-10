@@ -7,10 +7,7 @@ class ReportsController < ApplicationController
     sql_filter = ""
     date_filter = ""
 
-
-    @tags = Tag.top_counts(current_user.company)
     @users = User.find(:all, :order => 'name', :conditions => ['users.company_id = ?', current_user.company_id], :joins => "INNER JOIN project_permissions ON project_permissions.user_id = users.id")
-    
     
     #TODO: the start_date and stop_date code is a last minute ugly hack. Find the time to properly code the date validations
     valid = true

@@ -112,7 +112,7 @@ class ScheduleController < ApplicationController
 
   def users_gantt_free(dates, t, date, rev = false)
     free = true
-    t.users.each do |u|
+    t.assigned_users.each do |u|
       next unless free
       
       date_check = date
@@ -150,7 +150,7 @@ class ScheduleController < ApplicationController
   def users_gantt_mark(dates, t, date, rev = false)
     end_date = date
     start_date = date.midnight
-    t.users.each do |u|
+    t.assigned_users.each do |u|
       dur = t.scheduled_minutes_left
       day = date + dates[date][u.id].minutes
       start_date = day if day > start_date

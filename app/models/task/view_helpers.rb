@@ -10,16 +10,8 @@ class Task
         end 
       end
 
-      def full_tags
-        self.tags.collect{ |t| "<a href=\"/tasks/list/?tag=#{t.name}\" class=\"description\">#{t.name.capitalize.gsub(/\"/,'&quot;')}</a>" }.join(" / ")
-      end
-
       def full_name_without_links
         [self.project.full_name, self.full_tags_without_links].join(' / ')
-      end
-
-      def full_tags_without_links
-        self.tags.collect{ |t| t.name.capitalize }.join(" / ")
       end
 
       def issue_name
@@ -27,7 +19,7 @@ class Task
       end
 
       def issue_num
-        if self.status > 1
+        if self.status > 0
           "<strike>##{self.task_num}</strike>"
         else
           "##{self.task_num}"
@@ -39,7 +31,7 @@ class Task
       end
       
       def owners
-        o = self.users.collect{ |u| u.name}.join(', ')
+        o = self.assigned_users.collect{ |u| u.name}.join(', ')
         o = "Unassigned" if o.nil? || o == ""
         o
       end

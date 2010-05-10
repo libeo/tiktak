@@ -1,4 +1,4 @@
-<% users = (@task.users + @task.watchers).uniq -%>
+<% users = (@task.assignments.map { |a| a.user }) -%>
 
 <fieldset id="task_notify">
   <legend><%=_ 'Notifications' %></legend>

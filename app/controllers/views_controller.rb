@@ -23,7 +23,6 @@ class ViewsController < ApplicationController
 
   def new
     @view = View.new
-    @tags = Tag.top_counts(current_user.company)
   end
 
   def save_filter

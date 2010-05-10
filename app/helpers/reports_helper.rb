@@ -25,7 +25,6 @@ module ReportsHelper
   def display_select(name, default_selected)
     options = [
                [_("Tasks"), "1"],
-               [_("Tags"), "2"],
                [_("Users"), "3"],
                [_("Clients"), "4"],
                [_("Projects"), "5"],
@@ -54,7 +53,6 @@ module ReportsHelper
     if params[:report]
       filters = params[:report]
       show ||= filters[:status] != "-1"
-      show ||= filters[:tags].length > 0
       
       current_user.company.properties.each do |p|
         show ||= filters[p.filter_name] != ""

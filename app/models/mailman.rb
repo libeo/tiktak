@@ -185,11 +185,11 @@ class Mailman < ActionMailer::Base
 
     (email.to || []).each do |email_addr|
       user = project.company.users.find_by_email(email_addr.strip)
-      task.users << user if user
+      task.assigned_users.add(user) if user
     end
     (email.cc || []).each do |email_addr|
       user = project.company.users.find_by_email(email_addr.strip)
-      task.watchers << user if user
+      task.notified_users.add(user) if user
     end
 #    task.watchers << email.user if email.user
 

@@ -5,8 +5,7 @@ class MergeTaskOwnersAndNotifications < ActiveRecord::Migration
       t.integer :user_id
       t.boolean :assigned, :default => true
       t.boolean :notified, :default => true
-      t.boolean :unread, :default => false
-      t.boolean :notified_last_change, :default => false
+      t.boolean :bookmarked, :default => false
     end
 
     Assignment.reset_column_information
@@ -31,6 +30,8 @@ class MergeTaskOwnersAndNotifications < ActiveRecord::Migration
           end
           notifications = notifications.delete_if { |n| n.user_id == owner.user_id }
           e.delete 'id'
+          e['bookmarked'] = e['unread']
+          e.delte 'unread'
           new << e
         end
 

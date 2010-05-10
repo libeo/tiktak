@@ -16,20 +16,12 @@ class Task < ActiveRecord::Base
   belongs_to    :project
   belongs_to    :milestone
 
-  #has_many      :users, :through => :task_owners, :source => :user
-  #has_many      :task_owners, :dependent => :destroy
-  #has_many      :notifications, :dependent => :destroy
-  #has_many      :watchers, :through => :notifications, :source => :user
-
   augment AssignmentsNew
 
   has_many      :work_logs, :order => "started_at asc"
-  has_many      :attachments, :class_name => "ProjectFile", :dependent => :destroy
 
   belongs_to    :creator, :class_name => "User", :foreign_key => "creator_id"
-  belongs_to    :old_owner, :class_name => "User", :foreign_key => "user_id"
 
-  has_and_belongs_to_many  :tags, :join_table => 'task_tags'
   has_and_belongs_to_many  :dependencies, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "dependency_id", :foreign_key => "task_id", :order => 'dependency_id', :after_add => :mark_new_dependency, :after_remove => :mark_removed_dependency
   has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id', :after_add => :mark_new_dependant, :after_remove=> :mark_removed_dependant
 
@@ -39,31 +31,24 @@ class Task < ActiveRecord::Base
   adds_and_removes_using_params :customers
 
   has_one       :ical_entry
-  belongs_to :updated_by, :class_name => "User"
+  belongs_to    :updated_by, :class_name => "User"
 
   has_many      :todos, :order => "completed_at IS NULL desc, completed_at desc, position"
   has_many      :sheets
-  has_and_belongs_to_many :resources
 
   accepts_nested_attributes_for :task_property_values
   accepts_nested_attributes_for :assignments
   accepts_nested_attributes_for :work_logs
-  accepts_nested_attributes_for :attachments
   accepts_nested_attributes_for :dependencies
   accepts_nested_attributes_for :dependants
   accepts_nested_attributes_for :todos
 
-  attr_reader :new_assignments
-
   augment RepeatDate
   augment Attributes
-  augment Tags
   augment TaskProperties
   augment ViewHelpers
 
-  validates_length_of           :name,  :maximum=>200, :allow_nil => true
-  validates_presence_of         :name
-
+  validates_presence_of   :name
   validates_presence_of		:company
   validates_presence_of		:project
   validates_presence_of   :updated_by_id
@@ -109,9 +94,9 @@ class Task < ActiveRecord::Base
 
     self.milestone.update_counts if self.milestone
 
-    if self.status >= 2
+    if self.status > 0
       self.completed_at = Time.now.utc
-    elsif self.status < 2 and self.completed_at
+    elsif self.status == 0 and self.completed_at
       self.completed_at = nil
     end
 
@@ -121,9 +106,7 @@ class Task < ActiveRecord::Base
 
   #Called on EXISTING records
   def update_callback
-
     send_notifications
-
   end
 
   def send_notifications
@@ -138,11 +121,9 @@ class Task < ActiveRecord::Base
   #Called on NEW records
   def create_callback
     debugger
-    if self.recipient_users.length > 0
+    if self.all_notify_emails.length > 0
       begin
         Notifications::deliver_created(self, self.creator, self.all_notify_emails, (self.work_logs.first and self.work_logs.first.comment? ? self.work_logs.first.body : "") )
-        self.notified_last_change.set(self.recipient_users)
-        self.mark_as_unread(self.recipient_users)
 
         worklog = Worklog.create_for_task(self, self.creator, {:body => _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", "))})
         worklog.users = self.recipient_users
@@ -167,13 +148,10 @@ class Task < ActiveRecord::Base
   end
 
   def deliver_notification_emails(user, worklog, event_type=:updated)
-    if self.recipient_users.length > 0
+    if self.all_notify_emails.length > 0
       begin
         body = worklog.comment? ? worklog.body.gsub(/<[^>]*>/, '') : ''
         Notifications::deliver_changed(event_type, self, user, self.all_notify_emails, body)
-        self.notified_last_change = self.recipient_users
-        self.mark_as_unread(self.recipient_users)
-
         worklog = Worklog.create_for_task(self, user, {:body => _("Notification emails sent to %s", self.recipient_users.map{|r|r.name}.join(", "))})
         worklog.users = self.recipient_users
         worklog.save
@@ -222,7 +200,7 @@ class Task < ActiveRecord::Base
     #Since work logs will soon be nested into tasks, work_logs are saved before the task.
     #Thus, if the user just added a comment, it should be the last work log added to the task
     if body.length == 0 and self.work_logs.last.comment?
-      body = [self.work_logs.last.comment]
+      body = [self.work_logs.last.body]
       update_type = :comment
     end
 
@@ -236,7 +214,7 @@ class Task < ActiveRecord::Base
       }
       worklog = WorkLog.create_for_task(self, self.updated_by, defaults)
       if self.status_changed?
-        if self.status < 2
+        if self.status == 0
           worklog.log_type = EventLog::TASK_REVERTED
           update_type = :reverted
         else
@@ -379,27 +357,10 @@ class Task < ActiveRecord::Base
   end
 
   ###
-  # Sets up any links to resources that should be attached to this
-  # task. 
-  # Clears any existings links to resources.
-  ###
-  def set_resource_attributes(params)
-    return if !params
-
-    resources.clear
-
-    ids = params[:name].split(",")
-    ids += params[:ids] if params[:ids] and params[:ids].any?
-
-    ids.each do |id|
-      self.resources << company.resources.find(id)
-    end
-  end
-
-  ###
   # Custom validation for tasks.
   ###
   def validate
+    #TODO: keep custom properties ?
     res = true
 
     mandatory_properties = company.properties.select { |p| p.mandatory? }
@@ -443,7 +404,7 @@ class Task < ActiveRecord::Base
   end
 
   def close_task(user, params={})
-    if self.status < 2
+    if self.status == 0
       self.status = EventLog::TASK_COMPLETED
       self.updated_by_id = user.id
       self.save
@@ -451,7 +412,7 @@ class Task < ActiveRecord::Base
   end
 
   def open_task(user, params={})
-    if self.status >= 2
+    if self.status > 0
       self.status = EventLog::TASK_REVERTED
       self.updated_by_id = user.id
       self.save

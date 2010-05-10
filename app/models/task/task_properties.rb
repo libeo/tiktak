@@ -48,12 +48,6 @@ class Task
       def convert_attributes_to_properties(type, priority, severity)
         old_value = Task.issue_types[attributes['type_id'].to_i]
         copy_task_value(old_value, type)
-
-        old_value = Task.priority_types[attributes['priority'].to_i]
-        copy_task_value(old_value || 0, priority)
-
-        old_value = Task.severity_types[attributes['severity_id'].to_i]
-        copy_task_value(old_value || 0, severity)
       end
 
       ###
@@ -79,12 +73,8 @@ class Task
       ###
       def convert_properties_to_attributes
         type = company.properties.detect { |p| p.name == "Type" }
-        severity = company.properties.detect { |p| p.name == "Severity" }
-        priority = company.properties.detect { |p| p.name == "Priority" }
 
         self.type_id = Task.issue_types.index(property_value(type).to_s)
-        self.severity_id = Task.severity_types.invert[property_value(severity).to_s] || 0
-        self.priority = Task.priority_types.invert[property_value(priority).to_s] || 0
       end
 
       ###
@@ -92,12 +82,6 @@ class Task
       # and change the default priority, etc values then they will return a 
       # default value that shouldn't affect sorting.
       ###
-      def priority
-        property_value_as_integer(company.priority_property, Task.priority_types.invert) || 0
-      end  
-      def severity_id
-        property_value_as_integer(company.severity_property, Task.severity_types.invert) || 0
-      end
       def type_id
         property_value_as_integer(company.type_property) || 0
       end

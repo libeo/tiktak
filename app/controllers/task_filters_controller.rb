@@ -32,9 +32,6 @@ class TaskFiltersController < ApplicationController
     milestones = c.milestones.all(:conditions => name_conds, :limit => limit)
     @to_list << [ _("Milestones"), 'Milestone', milestones ]
 
-    tags = c.tags.all(:conditions => name_conds, :limit => limit)
-    @to_list << [ _("Tags"), 'Tag', tags ]
-
     @to_list << [ _("Status"), 'Status', c.statuses.all(:conditions => name_conds, :limit => limit) ]
 
     current_user.company.properties.each do |property|
