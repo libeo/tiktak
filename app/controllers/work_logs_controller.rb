@@ -30,6 +30,22 @@ class WorkLogsController < ApplicationController
     end
   end
 
+  #GET /work_logs/history/1
+  #GET /work_logs/history/1.xml
+  def history
+    @task = current_user.tasks.find(:first, :conditions => ["tasks.task_num = ?", params[:id]])
+    query = ["work_logs.task_id = ?"]
+    parms = [@task.id]
+    query << "(work_logs.comment = 1 OR work_logs.log_type = 6)" if params[:comments] == "1"
+
+    @work_logs = WorkLog.paginate(:page => params[:page], :conditions => [query.join(" AND "), parms].flatten)
+
+    respond_to do |format|
+      format.html #history.html.erb
+      format.xml { render :xml => @work_logs }
+    end
+  end
+
   # GET /work_logs/1
   # GET /work_logs/1.xml
   def show

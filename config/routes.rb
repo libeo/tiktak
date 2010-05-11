@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :work_logs
+  map.resources :tasks
 
   map.resources :work_logs
 

@@ -370,6 +370,8 @@ class Task < ActiveRecord::Base
       end
     end
 
+    errors.add 'project_id', translate(:project_cannot_create) unless self.updated_by.can?(self.project, 'create')
+
     return res
   end
 
@@ -405,6 +407,7 @@ class Task < ActiveRecord::Base
     end
 
   end
+  alias :stop :close_current_work_log
 
   def close_task(user, params={})
     if self.status == 0
