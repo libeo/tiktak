@@ -98,7 +98,7 @@ class TasksController < ApplicationController
     value.gsub!(/#/, '')
 
     @keys = [ value ]
-    @tasks = Task.search(current_user, @keys, " AND tasks.status < 2")
+    @tasks = Task.search(current_user, @keys, " AND tasks.status < 1")
     render :layout => false
   end
 
@@ -237,7 +237,7 @@ class TasksController < ApplicationController
         Notifications::deliver_created(@task, current_user, recipients, params[:comment])
       end
 
-      if params[:task][:status] == "2"
+      if params[:task][:status] == "1"
         @task.close_task({:user => current_user})
       end
 
@@ -334,7 +334,7 @@ class TasksController < ApplicationController
     old_project_name = @task.project.name
     @old_task = @task.clone
 
-    if params[:task][:status].to_i == 6
+    if params[:task][:status].to_i == 5
       params[:task][:status] = @task.status  # We're hiding the task, set the status to what is was.
     else
       params[:task][:hide_until] = @task.hide_until
@@ -372,7 +372,7 @@ class TasksController < ApplicationController
       @task.duration = parse_time(params[:task][:duration], true) if (params[:task] && params[:task][:duration])
       @task.updated_by_id = current_user.id
 
-      if @task.status > 1 && @task.completed_at.nil?
+      if @task.status >= 1 && @task.completed_at.nil?
         @task.completed_at = Time.now.utc
 
         # Repeat this task every X...
@@ -385,7 +385,7 @@ class TasksController < ApplicationController
         end
       end
 
-      if @task.status < 2 && !@task.completed_at.nil?
+      if @task.status < 1 && !@task.completed_at.nil?
         @task.completed_at = nil
         @task.project.all_notice_groups.each { |ng| ng.send_task_notice(@task, current_user, :reverted) }
       end
@@ -460,10 +460,10 @@ class TasksController < ApplicationController
       if @old_task.status != @task.status
         body << "- <strong>Status</strong>: #{@old_task.status_type} -> #{@task.status_type}\n"
 
-        worklog.log_type = EventLog::TASK_COMPLETED if @task.status > 1
-        worklog.log_type = EventLog::TASK_REVERTED if (@task.status == 0 || (@task.status < 2 && @old_task.status > 1))
+        worklog.log_type = EventLog::TASK_COMPLETED if @task.status > 0
+        worklog.log_type = EventLog::TASK_REVERTED if (@task.status == 0 || @old_task.status > 0)
 
-        if( @task.status > 1 && @old_task.status != @task.status )
+        if( @task.status > 0 && @old_task.status != @task.status )
           update_type = :status
         end
 
@@ -471,11 +471,11 @@ class TasksController < ApplicationController
           update_type = :completed
         end
 
-        if( @task.status < 2 && @old_task.status > 1 )
+        if( @task.status < 1 && @old_task.status > 0 )
           update_type = :reverted
         end
 
-        if( @old_task.status == 6 )
+        if( @old_task.status == 5 )
           @task.hide_until = nil
         end 
 
@@ -685,7 +685,7 @@ class TasksController < ApplicationController
 
       @task.completed_at = Time.now.utc
       @task.updated_by_id = current_user.id
-      @task.status = 2
+      @task.status = 1
       @task.save
       @task.reload
 
@@ -755,7 +755,6 @@ class TasksController < ApplicationController
     sheet.project = task.project
     sheet.save
 
-    task.status = 1 if task.status == 0
     task.save
 
     @current_sheet = sheet
@@ -1114,15 +1113,15 @@ class TasksController < ApplicationController
       when 7
         # Status
         if( @task.status != @group )
-          if @group < 2
+          if @group < 1
             @task.completed_at = nil
-            if @task.status > 1
+            if @task.status > 0
               worklog.log_type = EventLog::TASK_REVERTED
               update_type = :reverted
             end
           else
             @task.completed_at = Time.now.utc if @task.completed_at.nil?
-            if @task.status < 2
+            if @task.status < 1 
               worklog.log_type = EventLog::TASK_COMPLETED
               update_type = :completed
             end
@@ -1460,17 +1459,17 @@ class TasksController < ApplicationController
     if new_status != log.task.status
       status_type = :completed
 
-      if new_status < 2
+      if new_status < 1
         log.log_type = EventLog::TASK_WORK_ADDED 
         status_type = :updated
       end 
       
-      if new_status > 1 && log.task.status < 2
+      if new_status > 0 && log.task.status < 1
         log.log_type = EventLog::TASK_COMPLETED 
         status_type = :completed
       end 
       
-      if new_status < 2 && log.task.status > 1
+      if new_status == 0 && log.task.status > 0
         log.log_type = EventLog::TASK_REVERTED 
         status_type= :reverted
       end 
