@@ -1,3 +1,0 @@
-find a way to toggle widget show-hide (in widgets/widget_title partial)
-transform configure and remove widget links into link_to
-move @content_for_layout in application layout OUT of the table
