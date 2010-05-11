@@ -9,7 +9,6 @@ class WidgetsController < ApplicationController
   dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description,
   projects.name,
   projects.company_id,
-  tags.name,
   assignments.unread, assignments.user_id,
   customers.name, customers.company_id,
   milestones.name,
@@ -17,7 +16,7 @@ class WidgetsController < ApplicationController
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
-  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :tags, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}]
+  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}]
   #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
 
   def show

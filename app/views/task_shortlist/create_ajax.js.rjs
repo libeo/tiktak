@@ -3,7 +3,7 @@ unless @task.id
 else
   @task.reload
   page.insert_html :top, "shortlist-tasks", :partial => 'tasks/task_row', :locals => { :task => @task, :depth => 0, :cont => 'task_shortlist'}
-  ['task_name', 'task_set_tags', 'task_description', 'dependencies_input', 'task_duration'].each do |el|
+  ['task_name', 'task_description', 'dependencies_input', 'task_duration'].each do |el|
     page << "jQuery('##{el}').val('')"
   end
   page.visual_effect(:highlight, "task_#{@task.id}", :duration => 1.5)

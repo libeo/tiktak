@@ -5,8 +5,7 @@ class TaskShortlistController < ApplicationController
         projects.name,
         customers.name,
         users.name, users.company_id, users.email,
-        milestones.name,
-        tags.name'
+        milestones.name'
 
   def quick_add
     self.new
@@ -15,7 +14,7 @@ class TaskShortlistController < ApplicationController
   def index
     options = {
       :select => TASK_ROW_SELECT,
-      :include => [{:project => :customer}, :users, :milestone, :tags, :dependencies, :notifications]
+      :include => [{:project => :customer}, :users, :milestone, :dependencies, :notifications]
     }
     session[:channels] += ["tasks_#{current_user.company_id}"]
 
@@ -206,8 +205,6 @@ class TaskShortlistController < ApplicationController
       str += 'm'
     when 'NoUser'
       str += 'u'
-    when 'Tag'
-      str += 't'
     end
 
     if qualifier.qualifiable_id != 0
@@ -229,8 +226,6 @@ class TaskShortlistController < ApplicationController
       type = 'Milestone'
     when 'u'
       type = 'NoUser'
-    when 't'
-      type = 'Tag'
     end
 
     if type  
@@ -247,9 +242,6 @@ class TaskShortlistController < ApplicationController
     include = []
 
     case order
-      when 't'
-        cond << 'tags.name'
-        include << :tags
       when 'c'
       when 'm'
         include << :project

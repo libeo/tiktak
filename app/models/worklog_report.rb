@@ -514,14 +514,6 @@ class WorklogReport
 
     @column_totals[ key ] += w.duration unless ["comment", "1_start", "2_end", "3_task", "4_note"].include?(key) or @type == WorklogReport::MERGED_TIMESHEET
 
-    if @row_value == 2 && !w.task.tags.empty? && (@type == 1 || @type == 4)
-      w.task.tags.each do |tag|
-        rkey = key_from_worklog(tag, @row_value).to_s
-        row_name = name_from_worklog(tag, @row_value)
-        do_row(rkey, row_name, key, w.duration)
-        @row_totals[rkey] += w.duration
-      end
-
     elsif key == "comment"
       rkey = key_from_worklog(w, 15).to_s
       row_name = name_from_worklog(w, 1)

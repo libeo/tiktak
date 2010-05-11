@@ -54,7 +54,6 @@ class LoginController < ApplicationController
     session[:filter_type] = nil
     session[:filter_severity] = nil
     session[:filter_priority] = nil
-    session[:group_tags] = nil
     session[:channels] = nil
     session[:hide_dependencies] = nil
     session[:remember_until] = nil

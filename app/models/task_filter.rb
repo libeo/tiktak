@@ -174,14 +174,14 @@ class TaskFilter < ActiveRecord::Base
   private
 
   def work_log_to_include
-    includes = [:project, :user, :customer, {:task => [:task_property_values, :tags]} ,
+    includes = [:project, :user, :customer, {:task => [:task_property_values]} ,
       {:company => :properties },
     ]
     return includes
   end
 
   def to_include
-    to_include = [ :tags, :sheets, :todos, :dependencies, :assigned_users,
+    to_include = [ :sheets, :todos, :dependencies, :assigned_users,
       :milestone, :assignments, 
       :customers, :task_property_values ]
     to_include << { :company => :properties }
@@ -195,8 +195,6 @@ class TaskFilter < ActiveRecord::Base
     special = {'companies' => { :company => :properties}, 
       'customers_projects' => {:project => :customer}, 
       'dependencies_tasks' => :dependencies,
-      'task_tags' => :tags,
-      'tags_tasks' => :tags,
       'task_property_values' => {:task_property_values => [:property_value, :property]}
     }
 
@@ -327,8 +325,6 @@ class TaskFilter < ActiveRecord::Base
       return "tasks.company_id"
     elsif class_type == "Milestone"
       return "tasks.milestone_id"
-    elsif class_type == "Tag"
-      return "task_tags.tag_id"
     elsif class_type == "Creator"
       return "tasks.creator_id"
     elsif class_type == 'Client'
@@ -353,8 +349,6 @@ class TaskFilter < ActiveRecord::Base
       return "work_logs.company_id"
     elsif class_type == "Milestone"
       return "tasks.milestone_id"
-    elsif class_type == "Tag"
-      return "task_tags.tag_id"
     else
       return "#{ class_type.downcase }_id"
     end

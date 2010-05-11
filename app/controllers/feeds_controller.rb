@@ -309,7 +309,6 @@ class FeedsController < ApplicationController
       description = t.description.gsub(/<[^>]*>/,'').gsub(/[\r]/, '') if t.description
 
       todo.description = description if description && description.length > 0
-      todo.categories = t.tags.collect{ |tag| tag.name.upcase } if(t.tags.size > 0)
       todo.percent = 100 if t.done?
 
       event = cal.event
@@ -322,8 +321,6 @@ class FeedsController < ApplicationController
       event.summary = "#{t.issue_name} - #{t.owners}" unless t.done?
       event.summary = "#{t.status_type} #{t.issue_name} (#{t.owners})" if t.done?
       event.description = todo.description
-      event.categories = t.tags.collect{ |tag| tag.name.upcase } if(t.tags.size > 0)
-
 
       unless t.ical_entry
         cache = IcalEntry.new( :body => "#{event.to_ical}#{todo.to_ical}", :task_id => t.id )
@@ -357,8 +354,6 @@ class FeedsController < ApplicationController
       event.summary ||= "#{action} - #{log.user.name}"
       description = log.body.gsub(/<[^>]*>/,'').gsub(/[\r]/, '') if log.body
       event.description = description unless description.blank?
-
-      event.categories = log.task.tags.collect{ |t| t.name.upcase } if log.task.tags.size > 0
 
       unless log.ical_entry
         cache = IcalEntry.new( :body => "#{event.to_ical}", :work_log_id => log.id )

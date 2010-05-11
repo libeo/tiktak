@@ -77,12 +77,12 @@ class TimelineController < ApplicationController
       end
       
       @worklogs = { }
-      WorkLog.find(worklog_ids, :include => [:user, {:task => [ :milestone, :tags, :dependencies, :dependants, :users, { :project => [:customer] } ]}  ]).each do |w|
+      WorkLog.find(worklog_ids, :include => [:user, {:task => [ :milestone, :dependencies, :dependants, :users, { :project => [:customer] } ]}  ]).each do |w|
         @worklogs[w.id] = w
       end
       
     else 
-      @logs = WorkLog.paginate(:all, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.company_id = ? #{filter} AND (work_logs.project_id IN (#{current_project_ids}) or work_logs.project_id = 0)", current_user.company_id], :include => [:user, {:task => [ :milestone, :tags, :dependencies, :dependants, :users, { :project => [:customer] } ]}], :per_page => 100, :page => params[:page] )
+      @logs = WorkLog.paginate(:all, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.company_id = ? #{filter} AND (work_logs.project_id IN (#{current_project_ids}) or work_logs.project_id = 0)", current_user.company_id], :include => [:user, {:task => [ :milestone, :dependencies, :dependants, :users, { :project => [:customer] } ]}], :per_page => 100, :page => params[:page] )
     end 
   end
 

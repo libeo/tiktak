@@ -19,8 +19,6 @@ class TasksController < ApplicationController
   users.name, users.company_id, users.email,
   customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
   watchers_tasks.name,
-  tags.name,
-  tags_tasks.id, tags_tasks.name,
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
@@ -37,7 +35,6 @@ class TasksController < ApplicationController
       @task = Task.new
       @task.company = current_user.company
       @task.duration = 0
-      @tags = Tag.top_counts(current_user.company)
       @task.users << current_user
     end
 
@@ -74,8 +71,6 @@ class TasksController < ApplicationController
 
   def list_old
     list_init
-    @tags = {}
-    @tags_total = 0
     @group_ids, @groups = group_tasks(@tasks)
   end
 
@@ -175,9 +170,6 @@ class TasksController < ApplicationController
 
   def create
 
-    tags = params[:task][:set_tags]
-    params[:task][:set_tags] = nil
-
     @task = current_user.company.tasks.new
     @task.attributes = params[:task]
 
@@ -203,7 +195,6 @@ class TasksController < ApplicationController
     @task.updated_by_id = current_user.id
     @task.creator_id = current_user.id
     @task.duration = parse_time(params[:task][:duration], true) 
-    @task.set_tags(tags) 
     @task.set_task_num(current_user.company_id)
     @task.duration = 0 if @task.duration.nil?
 
@@ -212,7 +203,6 @@ class TasksController < ApplicationController
       return if request.xhr?
 
       @projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL"]).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
-      @tags = Tag.top_counts(current_user.company)
       @notify_targets = current_projects.collect{ |p| p.users.collect(&:name) }.flatten.uniq
       @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids_query}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
       @notify_targets = @notify_targets.flatten.uniq
@@ -259,7 +249,6 @@ class TasksController < ApplicationController
       redirect_from_last
     else
       @projects = current_user.projects.find(:all, :order => 'name', :conditions => ["completed_at IS NULL"]).collect {|c| [ "#{c.name} / #{c.customer.name}", c.id ] if current_user.can?(c, 'create')  }.compact unless current_user.projects.nil?
-      @tags = Tag.top_counts({ :company_id => current_user.company_id, :project_ids => current_project_ids_query, :filter_hidden => session[:filter_hidden]})
       @notify_targets = current_projects.collect{ |p| p.users.collect(&:name) }.flatten.uniq
       @notify_targets += Task.find(:all, :conditions => ["project_id IN (#{current_project_ids_query}) AND notify_emails IS NOT NULL and notify_emails <> ''"]).collect{ |t| t.notify_emails.split(',').collect{ |i| i.strip } }
       @notify_targets = @notify_targets.flatten.uniq
@@ -305,7 +294,6 @@ class TasksController < ApplicationController
     @repeat.repeat = task.repeat
     @repeat.requested_by = task.requested_by
     @repeat.creator_id = task.creator_id
-    @repeat.set_tags(task.tags.collect{|t| t.name}.join(', '))
     @repeat.set_task_num(current_user.company_id)
     @repeat.duration = task.duration
     @repeat.notify_emails = task.notify_emails
@@ -338,8 +326,7 @@ class TasksController < ApplicationController
 
     update_type = :updated
 
-    @task = Task.find(params[:id], :conditions => ["project_id IN (?)", projects], :include => [:tags])
-    old_tags = @task.tags.collect {|t| t.name}.sort.join(', ')
+    @task = Task.find(params[:id], :conditions => ["project_id IN (?)", projects])
     old_deps = @task.dependencies.collect { |t| "[#{t.issue_num}] #{t.name}" }.sort.join(', ')
     old_users = @task.users.collect{ |u| u.id}.sort.join(',')
     old_users ||= "0"
@@ -459,11 +446,6 @@ class TasksController < ApplicationController
         new_name = current_user.tz.utc_to_local(@task.due_at).strftime_localized("%A, %d %B %Y") unless @task.due_at.nil?
 
         body << "- <strong>Due</strong>: #{old_name} -> #{new_name}\n"
-      end
-
-      new_tags = @task.tags.collect {|t| t.name}.sort.join(', ')
-      if old_tags != new_tags
-        body << "- <strong>Tags</strong>: #{new_tags}\n"
       end
 
       new_deps = @task.dependencies.collect { |t| "[#{t.issue_num}] #{t.name}"}.sort.join(", ")
@@ -1031,11 +1013,11 @@ class TasksController < ApplicationController
 
     csv_string = FasterCSV.generate( :col_sep => "," ) do |csv|
 
-      header = ['Client', 'Project', 'Num', 'Name', 'Tags', 'User', 'Milestone', 'Due', 'Created', 'Completed', 'Worked', 'Estimated', 'Status', 'Priority', 'Severity']
+      header = ['Client', 'Project', 'Num', 'Name', 'User', 'Milestone', 'Due', 'Created', 'Completed', 'Worked', 'Estimated', 'Status', 'Priority', 'Severity']
       csv << header
 
       for t in @tasks
-        csv << [t.project.customer.name, t.project.name, t.task_num, t.name, t.tags.collect(&:name).join(','), t.owners, t.milestone.nil? ? nil : t.milestone.name, t.due_at.nil? ? t.milestone.nil? ? nil : t.milestone.due_at : t.due_at, t.created_at, t.completed_at, t.worked_minutes, t.duration, t.status_type, t.priority_type, t.severity_type]
+        csv << [t.project.customer.name, t.project.name, t.task_num, t.name, t.owners, t.milestone.nil? ? nil : t.milestone.name, t.due_at.nil? ? t.milestone.nil? ? nil : t.milestone.due_at : t.due_at, t.created_at, t.completed_at, t.worked_minutes, t.duration, t.status_type, t.priority_type, t.severity_type]
       end
 
     end
@@ -1363,30 +1345,6 @@ class TasksController < ApplicationController
     end
   end
 
-  def tags
-    @tags = current_user.company.tags
-  end 
-
-  def delete_tag
-    @tag = current_user.company.tags.find(params[:id]) rescue nil
-    @tag.destroy if @tag
-  end 
-
-  def save_tag
-    @tag = current_user.company.tags.find(params[:id]) rescue nil
-    if @tag && !params['tag-name'].blank?
-      @existing = current_user.company.tags.find(:first, :conditions => ["name = ?", params['tag-name']] )
-      if @existing and @existing != @tag
-        @tag.tasks.each { |t| @existing.tasks << t }
-        @existing.save
-        @tag.destroy
-      else 
-        @tag.name = params['tag-name']
-        @tag.save
-      end 
-    end
-  end
-
   def get_comment
     @task = Task.find(params[:id], :conditions => "project_id IN (#{current_project_ids_query})") rescue nil
     if @task
@@ -1444,7 +1402,6 @@ class TasksController < ApplicationController
   ###
   def init_form_variables(task)
     task.due_at = tz.utc_to_local(@task.due_at) unless task.due_at.nil?
-    @tags = {}
 
     @logs = WorkLog.find(:all, :order => "work_logs.started_at desc,work_logs.id desc", :conditions => ["work_logs.task_id = ? #{"AND (work_logs.comment = 1 OR work_logs.log_type=6)" if session[:only_comments].to_i == 1}", task.id], :include => [:user, :task, :project])
     @logs ||= []
@@ -1543,8 +1500,6 @@ class TasksController < ApplicationController
   def shortlist_init
     session[:channels] += ["tasks_#{current_user.company_id}"]
     @tasks = current_shortlist_filter.tasks
-    @tags = {}
-    @tags_total = 0
     @group_ids, @groups = group_tasks(@tasks)
   end
 
@@ -1700,10 +1655,7 @@ class TasksController < ApplicationController
     groups = []
     rechecked = false
         
-    if session[:group_by].to_i == 1 # tags
-      @tag_names = @all_tags.collect{|i,j| i}
-      groups = Task.tag_groups(current_user.company_id, @tag_names, tasks)
-    elsif session[:group_by].to_i == 2 # Clients
+    if session[:group_by].to_i == 2 # Clients
       clients = Customer.find(:all, :conditions => ["company_id = ?", current_user.company_id], :order => "name")
       clients.each { |c| group_ids[c.name] = c.id }
       items = clients.collect(&:name).sort

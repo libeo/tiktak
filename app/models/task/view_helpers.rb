@@ -4,14 +4,14 @@ class Task
 
       def full_name
         if self.project
-          [self.project.full_name, self.full_tags].join(' / ')
+          self.project.full_name
         else 
           ""
         end 
       end
 
       def full_name_without_links
-        [self.project.full_name, self.full_tags_without_links].join(' / ')
+        self.project.full_name
       end
 
       def issue_name
@@ -44,7 +44,6 @@ class Task
           res = "<table id=\"task_tooltip\" cellpadding=0 cellspacing=0>"
           res << "<tr><th>#{_('Summary')}</td><td>#{self.name}</tr>"
           res << "<tr><th>#{_('Project')}</td><td>#{self.project.full_name}</td></tr>"
-          res << "<tr><th>#{_('Tags')}</td><td>#{self.full_tags}</td></tr>" unless self.full_tags.blank?
           res << "<tr><th>#{_('Assigned To')}</td><td>#{owners}</td></tr>"
           res << "<tr><th>#{_('Requested By')}</td><td>#{self.requested_by}</td></tr>" unless self.requested_by.blank?
           res << "<tr><th>#{_('Status')}</td><td>#{_(self.status_type)}</td></tr>"
