@@ -1,0 +1,9 @@
+<fieldset class="basic">
+  <legend><%= t(:show_work_log) %> - <%= @work_log.task.name %></legend>
+  <%= t(:start) %>: <%= current_user.localized_datetime(@work_log.started_at) %><br />
+  <%= t(:end) %>: <%= current_user.localized_datetime(@work_log.ended_at) %><br />
+  <%= t(:duration %>: <%= worked_nice(@work_log.duration) %><br />
+  <%= t(:note) %>: <%= @work_log.body %>
+</fieldset>
+<%= link_to 'Edit', edit_work_log_path(@work_log) %> |
+<%= link_to 'Back', work_logs_path %>

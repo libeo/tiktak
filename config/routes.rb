@@ -1,4 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :work_logs
+
+  map.resources :work_logs
+
   map.resources :notice_groups
 
 

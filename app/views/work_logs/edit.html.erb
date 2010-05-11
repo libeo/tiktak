@@ -1,0 +1,13 @@
+<fieldset class="basic">
+<legend><%=_ 'Edit Log Entry' %> - <%= @log.task.name %></legend>
+
+<%= render(:partial => "form_edit", :locals => { :work_log => @work_log, :method => :put }) %>
+
+<br />
+<% if @work_log.user == current_user or current_user.admin? or current_user.can?(@work_log.project, 'all') %>
+  <%= link_to _("Delete Log Entry"), {:controller => 'work_logs', :action => 'destroy', :id => @work_log.id }, :confirm => _("Really delete this log entry?")  %>
+<% end %>
+</fieldset>
+
+<%= link_to 'Show', @work_log %> |
+<%= link_to 'Back', work_logs_path %>

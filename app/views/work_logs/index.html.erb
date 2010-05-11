@@ -1,0 +1,29 @@
+<h1>Listing work_logs</h1>
+
+<table>
+  <tr>
+  </tr>
+  <% @work_logs.each do |work_log| %>
+
+  <tr>
+    <td>
+      <%= tz.utc_to_local(work_log.started_at).strftime(current_user.date_format + "<br />" + current_user.time_format) %>
+      <%= ' - ' + tz.utc_to_local(work_log.ended_at).strftime(current_user.time_format) + '(' + worked_nice(work_log.duration / 60) + ')' %>
+    </td>
+    <td><%= EventLog::EVENT_LABELS[work_log.log_type] ? _(EventLog::EVENT_LABELS[work_log.log_type]) : 'Unknown' %></td>
+    <td><%= work_log.user.name %></td>
+    <td>
+      <% if work_log.body && work_log.body.length > 0 %>
+        <%= wrap_text( work_log.body.gsub(/- <strong>([^<]+)<\/strong>/) {|m| "- <strong>#{_($1)}</strong>"}, 100).gsub(/\n/, "<br>") %>
+      <% end %>
+    </td>
+    <td><%= link_to 'Show', work_log %></td>
+    <td><%= link_to 'Edit', edit_work_log_path(work_log) %></td>
+    <td><%= link_to 'Destroy', work_log, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New work_log', new_work_log_path %>

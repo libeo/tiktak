@@ -37,6 +37,10 @@ javascripts:
   - jscalendar-1.0/calendar
   - jscalendar-1.0/lang/calendar-en
   - jscalendar-1.0/calendar-setup
+  - dists/jquery.utils.lite
+  - datejs/date
+  - datejs/extras
+  - durationUtils
 
 stylesheets:
 - base:

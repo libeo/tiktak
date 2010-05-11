@@ -1,0 +1,8 @@
+<fieldset class="basic">
+  <legend><%=_ 'New Log Entry' %> - <%= @log.task.name %></legend>
+
+<%= render :partial => 'form_edit', :locals => { :work_log => @work_log, :method => :post } %>
+
+</fieldset>
+
+<%= link_to 'Back', work_logs_path %>
