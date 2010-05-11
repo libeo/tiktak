@@ -305,7 +305,7 @@ class WorklogReport
         group = []
         current = wl.shift
 
-        while !current.nil? and (current.started_at < root.started_at or current.ended_at < root.ended_at)
+        while !current.nil? and (current.started_at < root.started_at or current.ended_at <= root.ended_at)
           group << current
           current = wl.shift
         end
@@ -316,7 +316,7 @@ class WorklogReport
 
           if @type == MERGED_TIMESHEET
             group.each do |g|
-              @subtract_totals[g.id] = g.ended_at < root.ended_at ? g.duration : (root.ended_at - g.started_at).to_i
+              @subtract_totals[g.id] = g.ended_at <= root.ended_at ? g.duration : (root.ended_at - g.started_at).to_i
             end
           end
 

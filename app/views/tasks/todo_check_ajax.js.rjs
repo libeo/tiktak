@@ -10,5 +10,4 @@ else
 end
 
 page << "Sortable.create('todo-#{@task.dom_id}', {containment:'todo-#{@task.dom_id}', format:/^[^-]*-(.*)$/, onUpdate:function(){new Ajax.Request('/tasks/order_todos/#{@task.id}', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize('todo-#{@task.dom_id}')})}, only:'todo-active'})"
-page.call("updateTooltips")
 page.visual_effect(:highlight, "#{@todo.dom_id}", :duration => 1.5)

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100331133911) do
+ActiveRecord::Schema.define(:version => 20100407193515) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -135,6 +135,11 @@ ActiveRecord::Schema.define(:version => 20100331133911) do
   end
 
   add_index "customers", ["company_id", "name"], :name => "customers_company_id_index"
+
+  create_table "customers_cit_stx", :force => true do |t|
+    t.integer "customer_id"
+    t.integer "rid_stx_company"
+  end
 
   create_table "default_user_permissions", :force => true do |t|
     t.integer  "user_id"
@@ -337,6 +342,23 @@ ActiveRecord::Schema.define(:version => 20100331133911) do
   add_index "pages", ["company_id", "project_id", "name"], :name => "pages_company_id_project_id_name"
   add_index "pages", ["company_id", "updated_at", "name"], :name => "pages_company_id_updated_at_name_index"
   add_index "pages", ["user_id"], :name => "fk_pages_user_id"
+
+  create_table "perm_templates", :force => true do |t|
+    t.boolean  "can_comment",    :default => true
+    t.boolean  "can_work",       :default => true
+    t.boolean  "can_report",     :default => true
+    t.boolean  "can_close",      :default => true
+    t.boolean  "can_create",     :default => false
+    t.boolean  "can_edit",       :default => false
+    t.boolean  "can_reassign",   :default => false
+    t.boolean  "can_prioritize", :default => false
+    t.boolean  "can_grant",      :default => false
+    t.boolean  "can_milestone",  :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id"
+    t.integer  "company_id"
+  end
 
   create_table "posts", :force => true do |t|
     t.integer  "user_id"

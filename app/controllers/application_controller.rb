@@ -175,6 +175,7 @@ class ApplicationController < ActionController::Base
       
       # Set current locale
       Localization.lang(current_user.locale || 'en_US')
+      I18n.locale = current_user.locale[0,2].downcase
       
       # Update session with new filters, if they don't already exist
       session[:filter_severity] ||= "-10"
@@ -390,19 +391,20 @@ class ApplicationController < ActionController::Base
   # If highlight keys is given, that text will be highlighted in 
   # the link.
   def link_to_task(task, truncate = true, highlight_keys = [])
-    link = "<strong>#{task.issue_num}</strong> "
+    #link = "<strong>#{task.issue_num}</strong> "
+    link = ""
 
     url = url_for(:id => task.task_num, :controller => 'tasks', :action => 'edit')
 
-    title = task.to_tip(:duration_format => current_user.duration_format, 
+    title = task.to_tip({:duration_format => current_user.duration_format, 
                         :workday_duration => current_user.workday_duration, 
                         :days_per_week => current_user.days_per_week, 
-                        :user => current_user)
-    title = highlight_all(title, highlight_keys)
+                        :user => current_user})
+    #title = highlight_all(title, highlight_keys)
 
-    html = { :class => "tooltip#{task.css_classes}", :title => title }
+    html = { :title => title }
     text = truncate ? task.name : self.class.helpers.truncate(task.name, 80)
-    text = highlight_all(text, highlight_keys)
+    #text = highlight_all(text, highlight_keys)
     
     link += self.class.helpers.link_to(text, url, html)
     return link

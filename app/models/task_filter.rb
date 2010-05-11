@@ -120,7 +120,7 @@ class TaskFilter < ActiveRecord::Base
       res << "(#{ sql })"
     else
       #Select tasks where user has been assigned to the task
-      res << "(users.user_id = #{ user.id })"
+      res << "(users.id = #{ user.id })"
     end
 
     # I don't think we need to include a condition to check against the company since a project does not belong to many companies
@@ -191,7 +191,7 @@ class TaskFilter < ActiveRecord::Base
   def get_includes(fields)
     return nil unless fields
 
-    singular = %w(sheets todos milestones)
+    singular = %w(sheets milestones)
     special = {'companies' => { :company => :properties}, 
       'customers_projects' => {:project => :customer}, 
       'dependencies_tasks' => :dependencies,
@@ -314,7 +314,7 @@ class TaskFilter < ActiveRecord::Base
   # class_type
   def column_name_for(class_type)
     if class_type == "User"
-      return "users.id"
+      return "task_owners.user_id"
     elsif class_type == 'Creator'
       return 'tasks.creator_id'
     elsif class_type == "Project"

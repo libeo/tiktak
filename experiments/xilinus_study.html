@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Xilinus study</title>
+    <script type='text/javascript' src='public/javascripts/prototype.js'></script>
+    <script type='text/javascript' src='public/javascripts/effects.js'></script>
+    <script type='text/javascript' src='public/javascripts/controls.js'></script>
+    <script type='text/javascript' src='public/javascripts/dragdrop.js'></script>
+    <script type='text/javascript' src='public/javascripts/builder.js'></script>
+    <script type='text/javascript' src='public/javascripts/portal.js'></script>
+</head>
+<body>
+    <div id="widget_panel">
+        <div id="widget_col_0">
+            Col 0
+        </div>
+        <div id="widget_col_1">
+            Col 1
+        </div>
+        <div id="widget_col_2">
+            Col 2
+        </div>
+      </div>
+
+    <script type='text/javascript'>
+
+      function startDrag() {
+        $('widget_col_1').setStyle({border: "1px dashed red"});
+      }
+
+      function endDrag() {
+        $('widget_col_1').setStyle({border: "1px dashed blue"});
+      }
+
+      var portal = new Xilinus.Portal("#widget_panel div", {onStartDrag: startDrag, onEndDrag: endDrag});
+
+      var widget = new Xilinus.Widget("widget", "widget_0");
+      widget.setTitle("<div>title widget 0</div>");
+      widget.setContent("<p>Content of widget 0</p>");
+      portal.add(widget, 0);
+
+      var widget = new Xilinus.Widget("widget", "widget_1");
+      widget.setTitle("<div>title widget 1</div>");
+      widget.setContent("<p>Content of widget 1</p>");
+      portal.add(widget, 0);
+
+      var widget = new Xilinus.Widget("widget", "widget_2");
+      widget.setTitle("<div>title widget 2</div>");
+      widget.setContent("<p>Content of widget 2</p>");
+      portal.add(widget, 0);
+
+    </script>
+
+</body>
+
+

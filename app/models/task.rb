@@ -16,7 +16,7 @@ class Task < ActiveRecord::Base
   belongs_to    :project
   belongs_to    :milestone
 
-  augment AssignmentsNew
+  augment Assignments
 
   has_many      :work_logs, :order => "started_at asc"
 
@@ -58,9 +58,10 @@ class Task < ActiveRecord::Base
   before_create :set_task_num
 
   after_save :save_callback
-
   after_create :create_callback
   after_update :update_callback
+
+  named_scope :open, :conditions => 'tasks.status = 0'
 
   private
 
@@ -110,7 +111,6 @@ class Task < ActiveRecord::Base
   end
 
   def send_notifications
-    debugger
     if self.has_changed?
       worklog, event_type = self.create_event_worklog
       self.deliver_notification_emails(self.updated_by, worklog, event_type)
@@ -120,7 +120,6 @@ class Task < ActiveRecord::Base
 
   #Called on NEW records
   def create_callback
-    debugger
     if self.all_notify_emails.length > 0
       begin
         Notifications::deliver_created(self, self.creator, self.all_notify_emails, (self.work_logs.first and self.work_logs.first.comment? ? self.work_logs.first.body : "") )
@@ -399,8 +398,12 @@ class Task < ActiveRecord::Base
       :log_type => EventLog::TASK_WORK_ADDED
     })
     worklog.comment = true if sheet.body and sheet.body.length > 0
-    worklog.save
-    self.save
+    if worklog.save
+      return worklog
+    else
+      return false
+    end
+
   end
 
   def close_task(user, params={})
@@ -425,6 +428,19 @@ class Task < ActiveRecord::Base
     params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
     Task.create(params)
   end
+
+  def duration_progress(user)
+    res = format_duration(self.worked_minutes, user.duration_format, user.workday_duration, user.days_per_week)
+    res += ' / ' + format_duration(self.duration, user.duration_format, user.workday_duration, user.days_per_week)
+    res
+  end
+
+  def neg_time_left(user)
+    res = ""
+
+    res += '-' if self.overdure?
+  end
+
 
 end
 

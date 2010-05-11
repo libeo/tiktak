@@ -16,6 +16,8 @@ config/environment.local.rb
 config/juggernaut_config.yml
 config/custom.gems.rb
 semantic.cache
+public/javascripts/*_packaged.js
+public/stylesheets/*_packaged.css
 public/javascripts/base_*.js
 public/javascripts/portal_*.js
 public/stylesheets/base_*.css

@@ -156,12 +156,18 @@ class ProjectsController < ApplicationController
 
   def ajax_remove_permission
     permission = ProjectPermission.find(:first, :conditions => ["user_id = ? AND project_id = ? AND company_id = ?", params[:user_id], params[:id], current_user.company_id])
-
-    if params[:perm].nil?
-      permission.destroy
+    if permission && (current_user.admin? or permission.project.project_permissions.find(:first, :conditions => {:user_id => current_user.id}).can? 'all')
+      if params[:perm].nil?
+        permission.destroy
+      else
+        permission.remove(params[:perm])
+        permission.save
+      end
     else
-      permission.remove(params[:perm])
-      permission.save
+      render :update do |page|
+        page.visual_effect(:highlight, "user-#{params[:user_id]}", :duration => 1.0, :startcolor => "'#ff9999'")
+      end
+      return
     end
 
     if params[:user_edit]
@@ -190,19 +196,28 @@ class ProjectsController < ApplicationController
       return
     end
 
-    if @project && user && ProjectPermission.count(:conditions => ["user_id = ? AND project_id = ?", user.id, @project.id]) == 0
-      permission = ProjectPermission.new
-      permission.user_id = user.id
-      permission.project_id = @project.id
-      permission.company_id = current_user.company_id
-      permission.can_comment = 1
-      permission.can_work = 1
-      permission.can_close = 1
-      permission.save
+    if @project && current_user && (current_user.admin? or @project.project_permissions.find(:first, :conditions => {:user_id => current_user.id}).can? 'all')
+      if @project && user && ProjectPermission.count(:conditions => ["user_id = ? AND project_id = ?", user.id, @project.id]) == 0
+        permission = ProjectPermission.new
+        permission.user_id = user.id
+        permission.project_id = @project.id
+        permission.company_id = current_user.company_id
+        if current_user.create_projects?
+          permission.update_attributes(current_user.perm_template.permissions)
+        else
+          permission.update_attributes({:can_work => true, :can_comment => true, :can_close => true})
+        end
+        permission.save
+      else
+        permission = ProjectPermission.find(:first, :conditions => ["user_id = ? AND project_id = ? AND company_id = ?", params[:user_id], params[:id], current_user.company_id])
+        permission.set(params[:perm])
+        permission.save
+      end
     else
-      permission = ProjectPermission.find(:first, :conditions => ["user_id = ? AND project_id = ? AND company_id = ?", params[:user_id], params[:id], current_user.company_id])
-      permission.set(params[:perm])
-      permission.save
+      render :update do |page|
+        page.visual_effect(:highlight, "user-#{params[:user_id]}", :duration => 1.0, :startcolor => "'#ff9999'")
+      end
+      return
     end
 
     if params[:user_edit] && current_user.admin?

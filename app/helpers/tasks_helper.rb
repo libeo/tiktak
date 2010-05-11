@@ -265,6 +265,16 @@ module TasksHelper
     return grouped_options_for_select(options, default)
   end
 
+  # Returns the js to watch a task's project selector
+  def task_project_watchers_js
+    js = <<-EOS
+    new Form.Element.EventObserver('task_project_id', function(element, value) {new Ajax.Updater('task_milestone_id', '/tasks/get_milestones', {asynchronous:true, evalScripts:true, onComplete:function(request){hideProgress();}, onLoading:function(request){showProgress();}, parameters:'project_id=' + value, insertion: updateSelect })});
+    new Form.Element.EventObserver('task_project_id', function(element, value) {new Ajax.Updater('task_users', '/tasks/get_owners', {asynchronous:true, evalScripts:true, onComplete:function(request){reset_owners();}, parameters:'project_id=' + value, insertion: updateSelect, onLoading:function(request){ remember_user(); } })});
+    EOS
+    
+    return javascript_tag(js)
+  end
+
   ###
   # Returns an array to use as the options for a select
   # to change a work log's status.
@@ -346,7 +356,7 @@ module TasksHelper
     values << [ _("Description"), task.description ]
     comment = task.last_comment
     if comment and comment.body
-      values << [ _("Last Comment"), "#{ comment.user.shout_nick }:<br/>#{ comment.body.gsub(/\n/, '<br/>') }" ]
+      values << [ _("Last Comment"), "#{ comment.user.shout_nick } : #{ comment.body }" ]
     end
     
     return task_tooltip(values)
@@ -382,18 +392,12 @@ module TasksHelper
     task.watchers.each do |user|
       values << [ user.name ]
     end
-
     return task_tooltip(values)
   end
 
   # Converts the given array into a table that looks good in a toolip
   def task_tooltip(names_and_values)
-    res = "<table id=\"task_tooltip\" cellpadding=0 cellspacing=0>"
-    names_and_values.each do |name, value|
-      res += "<tr><th>#{ name }</th>"
-      res += "<td>#{ value }</td></tr>"
-    end
-    res += "</table>"
+    res = names_and_values.map { |n| "#{n.first}#{n.last ? ' : ' + n.last : ''}" }.join(" / \n")
     return escape_once(res)
   end
 
@@ -434,6 +438,11 @@ module TasksHelper
                  :class => class_name, 
                  :onclick => "showTaskInPage(#{ task.task_num}); return false;"
                }, true)
+  end
+
+  def self.neg_due_date(date)
+    distance = date.to_time - Time.now.utc
+    (distance / 60 / 60 / 24).to_i.to_s + ' ' + I18n.t(:dw)
   end
 
 end

@@ -7,6 +7,9 @@ class User < ActiveRecord::Base
            :validate => false)
   include CustomAttributeMethods
 
+  has_one   :perm_template
+  accepts_nested_attributes_for :perm_template
+
   belongs_to    :company
   belongs_to    :customer
   belongs_to    :default_user_permission
@@ -257,6 +260,10 @@ class User < ActiveRecord::Base
       (self.read_clients? and self.option_externalclients?)
   end
 
+  def can_create_clients?
+    self.admin? or self.create_clients?
+  end
+
   # Returns true if this user is allowed to view the given task.
   def can_view_task?(task)
     projects.include?(task.project) || task.linked_users.include?(self)
@@ -377,6 +384,16 @@ class User < ActiveRecord::Base
     end
 
     return @visible_task_filters
+  end
+
+  def localized_date(date)
+    return nil unless date
+    self.tz.utc_to_local(date).strftime_localized(self.date_format)
+  end
+
+  def localized_datetime(datetime)
+    return nil unless datetime
+    self.tz.utc_to_local(datetime).strftime_localized("#{self.date_format} #{self.time_format}")
   end
 
   private

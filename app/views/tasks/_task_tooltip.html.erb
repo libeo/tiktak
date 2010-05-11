@@ -1,0 +1,28 @@
+<% 
+  due_at = (task.overdue? ? content_tag(:span, current_user.localized_date(task.due_at), :class => 'row_date_exceeded') : current_user.localized_date(task.due_at))
+  duration = (task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'row_time_exceeded') : worked_nice(task.worked_minutes)) + " / #{worked_nice(task.duration)}"
+  info = [ [:name, task.name], 
+        [:project, task.project.full_name], 
+        [:assigned, task.task_owners.map { |t| t.user.name }.join(', ')],
+        [:requested_by, task.requested_by], 
+        [:status, task.status_type], 
+        [:milestone, (!task.milestone.nil? ? task.milestone.name : nil)], 
+        [:due_at, due_at],
+        [:duration, duration],
+        [:tags, task.full_tags], 
+        [:dependencies, task.dependencies.map { |t| t.issue_name }.join(', ')],
+        [:dependants, task.dependants.map { |t| t.issue_name }.join(', ')]
+] %>
+<div class="tooltip">
+  <div class="tooltip_content">
+    <% info.each do |key, value| %>
+        <% if value and value != "" %>
+          <div class="row row_<%=key.to_s%>">
+            <div class="label"><%=t('tooltip_'+key.to_s)%></div>
+            <div class="content"><%=value%></div>
+            <div class="clear"></div>
+          </div>
+        <% end %>
+      <% end %>
+  </div>
+</div>
