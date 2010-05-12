@@ -9,6 +9,21 @@ class TasksController < ApplicationController
 
   private
 
+  TASK_FIELDS = 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.repeat, tasks.duration, 
+  tasks.worked_minutes, tasks.project_id, tasks.status, tasks.requested_by, tasks.completed_at, tasks.hidden,
+  dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, 
+  dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_minutes, 
+  dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.requested_by, dependencies_tasks.completed_at, dependencies_tasks.hidden,
+  customers.name, customers.contact_name, customers.contact_email,
+  projects.name,
+  milestones.name,
+  users.name, users.company_id, users.email,
+  customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
+  watchers_tasks.name,
+  task_property_values.id,
+  todos.name, todos.completed_at,
+  property_values.id, property_values.color, property_values.value, property_values.icon_url'
+
   def admin_only
     unless current_user.admin?
       flash['notice'] = translate(:admin_only)
@@ -60,15 +75,32 @@ class TasksController < ApplicationController
 
   def stop
     if @current_sheet
-      @current_sheet.task.stop(@current_sheet)
+      @work_log = @current_sheet.task.stop(@current_sheet)
+      @current_sheet.destroy
+    end
+
+    respond_to do |format|
+      #TODO: go check js partial to add notice
+      format.html do
+        @current_sheet = nil
+        redirect_to tasks_path
+      end
+      format.xml { render :xml => @current_sheet }
+      format.js
+    end
+  end
+
+  def  cancel
+    @task = nil
+    if @current_sheet
+      @task = @current_sheet.task
       @current_sheet.destroy
       @current_sheet = nil
     end
 
     respond_to do |format|
-      #TODO: go check js partial to add notice
       format.html { redirect_to tasks_path }
-      format.xml { render :xml => @sheet }
+      format.xml { render :xml => @task }
       format.js
     end
   end
@@ -105,7 +137,15 @@ class TasksController < ApplicationController
   # GET /tasks
   # GET /tasks.xml
   def index
-    @tasks = Task.all
+
+    tf = current_task_filter
+    if tf.qualifiers.length == 0
+      tf.qualifiers = default_qualifiers
+      tf.save
+    end
+
+    @tasks = tf.tasks_paginated(nil, :page => params[:page], :select => TASK_FIELDS)
+    session[:channels] += ["tasks_#{current_user.company_id}"]
 
     respond_to do |format|
       format.html # index.html.erb
@@ -116,8 +156,6 @@ class TasksController < ApplicationController
   # GET /tasks/1
   # GET /tasks/1.xml
   def show
-    @task = Task.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @task }
@@ -138,7 +176,6 @@ class TasksController < ApplicationController
 
   # GET /tasks/1/edit
   def edit
-    @task = Task.find(params[:id])
   end
 
   # POST /tasks
@@ -161,8 +198,6 @@ class TasksController < ApplicationController
   # PUT /tasks/1
   # PUT /tasks/1.xml
   def update
-    @task = Task.find(params[:id])
-
     respond_to do |format|
       if @task.update_attributes(params[:task])
         flash[:notice] = 'Task was successfully updated.'
@@ -178,7 +213,6 @@ class TasksController < ApplicationController
   # DELETE /tasks/1
   # DELETE /tasks/1.xml
   def destroy
-    @task = Task.find(params[:id])
     @task.destroy
 
     respond_to do |format|

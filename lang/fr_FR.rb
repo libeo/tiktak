@@ -1,3 +1,4 @@
+#coding: utf-8
 Localization.define('fr_FR') do |l|
  l.store "Task created through the short list", "Tâche créee dans la fenêtre d'activité"
  l.store "Time added lately", "Temps ajouté récemment"
