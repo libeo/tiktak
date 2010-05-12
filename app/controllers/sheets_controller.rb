@@ -1,20 +1,12 @@
 class SheetsController < ApplicationController
-  before_filter :authorized
-
-  private
-
-  def authorized
-    @task = Task.find(:first, :conditions => ["tasks.task_num = ? and tasks.project_id in (#{current_project_ids_query})", params[:task_num]])
-    unless @task
-      flash['notice'] = translate(:no_task_or_access_denied)
-      redirect_to :back
-    end
-  end
-
-  public
+  #Filter in app controller
+  before_filter :task_if_allowed, :except => [:refresh]
 
   def start
-    @current_sheet.task.stop(@current_sheet) if @current_sheet
+    if @current_sheet
+      @old_task = @current_sheet.task
+      @current_sheet.task.stop(@current_sheet)
+    end
     @current_sheet = Sheet.new({:task => @task, :project => @task.project, :user => current_user})
 
     respond_to do |format|
@@ -25,6 +17,7 @@ class SheetsController < ApplicationController
   end
 
   def stop
+    @work_log = nil
     if @current_sheet
       @work_log = @current_sheet.task.stop(@current_sheet)
       @current_sheet.destroy
@@ -56,8 +49,7 @@ class SheetsController < ApplicationController
     end
   end
 
-  def get_update
-
+  def refresh
   end
 
 end

@@ -387,6 +387,48 @@ class ApplicationController < ActionController::Base
 
   private
 
+  #######################FILTERS##################################
+  #######################FILTERS##################################
+  #######################FILTERS##################################
+  #Filters that can be used in controllers
+
+  # Controller filter that only lets admins of the company pass through
+  def admin_only
+    unless current_user.admin?
+      respond_to do |format|
+        format.html do
+          flash['notice'] = translate(:admin_only)
+          redirect_to :back
+        end
+        format.xml { render :text => translate(:admin_only), :status => :unauthorized }
+        format.js { render :text => translate(:admin_only), :status => :unauthorized }
+      end
+    end
+  end
+
+  # Controller filter that loads task only if user has access to that task.
+  # A user has access to a task if he is admin or if he's included in the tasks' project.
+  # params[:task_num] is used to find the task. If the user as access, the task is assigned
+  # to the variable @task.
+  def task_if_allowed
+    if current_user.admin?
+      @task = current_user.company.tasks.find_by_task_num(params[:task_num])
+    else
+      @task = Task.find(:first, :conditions => ["tasks.task_num = ? and tasks.project_id in (#{current_project_ids_query})", params[:task_num]])
+    end
+
+    unless @task
+      respond_to do |format|
+        format.html do
+          flash['notice'] = translate(:no_task_or_access_denied)
+          redirect_to :back
+        end
+        format.xml { render :text => translate(:no_task_or_access_denied), :status => :unauthorized }
+        format.js { render :text => translate(:no_task_or_access_denied), :status => :unauthorized }
+      end
+    end
+  end
+
   # Returns a link to the given task. 
   # If highlight keys is given, that text will be highlighted in 
   # the link.
