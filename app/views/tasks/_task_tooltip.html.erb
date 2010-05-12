@@ -3,7 +3,7 @@
   duration = (task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'row_time_exceeded') : worked_nice(task.worked_minutes)) + " / #{worked_nice(task.duration)}"
   info = [ [:name, task.name], 
         [:project, task.project.full_name], 
-        [:assigned, task.task_owners.map { |t| t.user.name }.join(', ')],
+        [:assigned, task.assigned_users.map { |u| u.name }.join(', ')],
         [:requested_by, task.requested_by], 
         [:status, task.status_type], 
         [:milestone, (!task.milestone.nil? ? task.milestone.name : nil)], 

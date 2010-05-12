@@ -412,9 +412,9 @@ class ApplicationController < ActionController::Base
   # to the variable @task.
   def task_if_allowed
     if current_user.admin?
-      @task = current_user.company.tasks.find_by_task_num(params[:task_num])
+      @task = current_user.company.tasks.find_by_task_num(params[:id])
     else
-      @task = Task.find(:first, :conditions => ["tasks.task_num = ? and tasks.project_id in (#{current_project_ids_query})", params[:task_num]])
+      @task = Task.find(:first, :conditions => ["tasks.id = ? and tasks.project_id in (#{current_project_ids_query})", params[:id]])
     end
 
     unless @task

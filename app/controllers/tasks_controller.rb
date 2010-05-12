@@ -53,6 +53,32 @@ class TasksController < ApplicationController
 
   public
 
+  def close
+    @task.close_task(current_user)
+
+    respond_to do |format|
+      format.html do
+        flash['notice'] = translate(:task_closed)
+        redirect_to tasks_path
+      end
+      format.xml { render :xml => @task }
+      format.js
+    end
+  end
+
+  def open
+    @task.open_task(current_user)
+
+    respond_to do |format|
+      format.html do
+        flash['notice'] = translate(:task_opened)
+        redirect_to tasks_path
+      end
+      format.xml { render :xml => @task }
+      format.js
+    end
+  end
+
   # Hides a task so that it no longer appears in task lists, widgets, or searches
   def hide
     @task.update_attributes {:hidden => true}

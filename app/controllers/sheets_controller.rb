@@ -19,6 +19,7 @@ class SheetsController < ApplicationController
   def stop
     @work_log = nil
     if @current_sheet
+      @current_sheet.body = params[:text] if params[:text] and params[:text].strip != ''
       @work_log = @current_sheet.task.stop(@current_sheet)
       @current_sheet.destroy
     end
@@ -45,6 +46,16 @@ class SheetsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to tasks_path }
       format.xml { render :xml => @task }
+      format.js
+    end
+  end
+
+  def updatelog
+    @current_sheet.update_attributes({:body => params[:text]})
+
+    respond_to do |format|
+      format.html { redirect_to tasks_path }
+      format.xml { render :xml => @current_sheet }
       format.js
     end
   end

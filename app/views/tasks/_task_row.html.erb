@@ -14,8 +14,8 @@
          end
       %>
 
-      <%= link_to_function image_tag( img, :alt => t(:bookmark_task), :title => t(:bookmark_task), :id => "bookmark_#{task.id}" ), 
-          "toggleTaskUnread(#{task.id});",
+      <%= link_to_function image_tag( img, :alt => t(:bookmark_task), :title => t(:bookmark_task) ), 
+          "toggleTaskBookmarked(#{task.id});",
           :class => cls %>
 
       <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
@@ -26,7 +26,7 @@
           "sendWorkLogJournal();", {:class => 'entry_icon_clock'} %>
       <% elsif current_user.can?(task.project, 'work') %>
         <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
-          :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
+          :url => { :controller => 'sheet', :action => 'start', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
       <% end %>
     </div>
 
@@ -35,7 +35,7 @@
       <div class="entry_task">
         <span class="entry_no">#<%= task.task_num %></span>
         <span class="entry_task_text">
-          <%= link_to task.name, :controller => 'tasks', :action => 'edit', :id => task.task_num %>
+          <%= link_to task.name, :controller => 'tasks', :action => 'edit', :id => task.id %>
           <%# link_to_task(task) -%>
           <!-- tooltip showing info about the task -->
           <%= render :partial => 'tasks/task_tooltip', :locals => {:task => task} %>
@@ -71,11 +71,11 @@
       <% if task.open? -%>
         <%= link_to_remote image_tag( 'task/img_co_icon-classify.png', :alt => t(:close_task), :title => t(:close_task) ),
           :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_close),
-          :url => {:controller => 'tasks', :action => 'ajax_check', :id => task.id} %>
+          :url => {:controller => 'tasks', :action => 'close', :id => task.id} %>
       <% else %>
         <%= link_to_remote image_tag( 'task/img_co_icon-declassify.png', :alt => t(:open_task), :title => t(:open_task) ),
           :loading => 'showProgress();', :complete => 'hideProgress();',
-          :url => {:controller => 'tasks', :action => 'ajax_uncheck', :id => task.id} %>
+          :url => {:controller => 'tasks', :action => 'open', :id => task.id} %>
       <% end %>
     <% end %>
 
@@ -84,11 +84,11 @@
       <% unless task.hidden? %>
         <%= link_to_remote image_tag( 'task/img_co_icon-archive.png', :alt => t(:archive_task), :title => t(:archive_task) ),
             :loading => 'showProgress();', :complete => 'hideProgress();', :confirm => t(:confirm_archive),
-            :url => {:controller => 'tasks', :action => 'ajax_hide', :id => task.id} %>
+            :url => {:controller => 'tasks', :action => 'hide', :id => task.id} %>
       <% else %>
         <%= link_to_remote image_tag( 'task/img_co_icon-dearchive.png', :alt => t(:unarchive_task), :title => t(:unarchive_task) ),
             :loading => 'showProgress();', :complete => 'hideProgress();',
-            :url => {:controller => 'tasks', :action => 'ajax_restore', :id => task.id} %>
+            :url => {:controller => 'tasks', :action => 'restore', :id => task.id} %>
       <% end %>
     <% end %>
 

@@ -1,4 +1,5 @@
 var intervalId = null;
+var intervalSecs = 75;
 
 function updateSheetInfo() {
   jQuery.ajax({dataType:'script', type:'post', url:'/tasks/update_sheet_info?format=js'});
@@ -6,21 +7,23 @@ function updateSheetInfo() {
 
 function toggleUpdater() {
   if (intervalId == null) {
-    intervalId = setInterval("updateSheetInfo()", 75 * 1000);
+    intervalId = setInterval("updateSheetInfo()", intervalSecs * 1000);
   } else {
     clearInterval(intervalId);
     intervalId = null;
   }
 }
 
+/*
 function sendSheetText(text) {
-  jQuery.post('/tasks/updatelog', {text: text})
+  jQuery.post('/sheets/updatelog', {description: text})
 }
 
 function updateLog() {
   sendSheetText(jQuery('#worklog_body').val());
   return true;
 }
+*/
 
 function toggleWorkLogJournal() {
   if ( jQuery('#worklog_form').is(':visible') ) {
@@ -52,9 +55,9 @@ function sendWorkLogJournal() {
   showProgress();
   /*if (!warnWorkLogJournal()) {*/
   jQuery.ajax({
-    data: {description: jQuery('#worklog_body').val()},
+    data: {description: jQuery('#worklog_body').val(), format:'js'},
     dataType: 'script',
-    url: '/tasks/ajax_stop_work?format=js',
+    url: '/sheets/stop',
     type: 'post'
   });
   hideProgress();
@@ -81,20 +84,16 @@ function defineToggleRightColumn() {
   );
 }
 
-/*
- Marks the task sender belongs to as unread.
- Also removes the "unread" class from the img html.
- */
-function toggleTaskUnread(taskId) {
+function toggleTaskBookmarked(taskId) {
   var links = jQuery('.entry_icon_bookmark', '.tasks-' + taskId);
   var imgs = jQuery('img', links);
-  var unread = imgs.hasClass('unread');
+  var bookmarked = imgs.hasClass('bookmarked');
 
   if (unread) {
     imgs.attr('src', '/images/task/img_co_icon-bookmark-up.png');
   } else {
     imgs.attr('src', '/images/task/img_co_icon-bookmark-select.png');
   }
-  imgs.toggleClass('unread');
-  jQuery.post('/tasks/set_unread', {id: taskId, read: unread});
+  imgs.toggleClass('bookmarked');
+  jQuery.post('/tasks/bookmark', {id: taskId, bookmark: !bookmarked});
 }
