@@ -1,5 +1,5 @@
 class Task
-  module AssignmentsNew
+  module Assignments
     augmentation do 
 
       def mark_new_assignment(assignment)

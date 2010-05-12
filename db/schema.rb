@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100407193515) do
+ActiveRecord::Schema.define(:version => 20100510194220) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -28,10 +28,9 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
   create_table "assignments", :force => true do |t|
     t.integer "task_id"
     t.integer "user_id"
-    t.boolean "assigned",             :default => true
-    t.boolean "notified",             :default => true
-    t.boolean "unread",               :default => false
-    t.boolean "notified_last_change", :default => false
+    t.boolean "assigned",   :default => true
+    t.boolean "notified",   :default => true
+    t.boolean "bookmarked", :default => false
   end
 
   create_table "chat_messages", :force => true do |t|
@@ -668,12 +667,41 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
     t.datetime "updated_at"
   end
 
-  create_table "tags", :force => true do |t|
-    t.integer "company_id"
-    t.string  "name"
+  create_table "stx_rapports_facturee", :force => true do |t|
+    t.integer "rapport_id"
+    t.boolean "facturee"
   end
 
-  add_index "tags", ["company_id", "name"], :name => "index_tags_on_company_id_and_name"
+  create_table "stx_work_logs", :force => true do |t|
+    t.integer  "rapport_id"
+    t.integer  "distance",         :default => 0
+    t.datetime "started_at"
+    t.integer  "duration",         :default => 0
+    t.integer  "paused_duration",  :default => 0
+    t.text     "body"
+    t.string   "task_name",        :default => ""
+    t.integer  "rate_schedule_id", :default => 0
+    t.integer  "num__weight",      :default => 0
+    t.integer  "work_log_id"
+    t.integer  "user_id"
+  end
+
+  create_table "stx_work_logs_archives", :force => true do |t|
+    t.integer  "rapport_id"
+    t.integer  "distance",         :default => 0
+    t.datetime "started_at"
+    t.integer  "duration",         :default => 0
+    t.integer  "paused_duration",  :default => 0
+    t.text     "body"
+    t.string   "task_name",        :default => ""
+    t.integer  "rate_schedule_id", :default => 0
+    t.integer  "num__weight",      :default => 0
+    t.datetime "archive_start"
+    t.datetime "archive_end"
+    t.integer  "work_log_id"
+    t.integer  "user_id"
+    t.integer  "stx_work_log_id"
+  end
 
   create_table "task_customers", :force => true do |t|
     t.integer  "customer_id"
@@ -717,14 +745,6 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
   add_index "task_property_values", ["property_id"], :name => "index_task_property_values_on_property_id"
   add_index "task_property_values", ["task_id"], :name => "index_task_property_values_on_task_id"
 
-  create_table "task_tags", :id => false, :force => true do |t|
-    t.integer "tag_id"
-    t.integer "task_id"
-  end
-
-  add_index "task_tags", ["tag_id", "task_id"], :name => "task_tags_tag_id_task_id_index"
-  add_index "task_tags", ["task_id", "tag_id"], :name => "task_tags_task_id_tag_id_index"
-
   create_table "tasks", :force => true do |t|
     t.string   "name",               :limit => 200, :default => "",    :null => false
     t.integer  "project_id",                        :default => 0,     :null => false
@@ -750,9 +770,6 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
     t.integer  "scheduled_duration"
     t.boolean  "scheduled",                         :default => false
     t.integer  "worked_minutes",                    :default => 0
-    t.integer  "priority",                          :default => 0
-    t.integer  "severity_id",                       :default => 0
-    t.integer  "type_id",                           :default => 0
   end
 
   add_index "tasks", ["company_id"], :name => "tasks_company_id_index"
@@ -866,7 +883,6 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
     t.string  "filter_project_id",   :default => "0"
     t.string  "filter_milestone_id", :default => "0"
     t.string  "filter_user_id",      :default => "0"
-    t.string  "filter_tags",         :default => ""
     t.string  "filter_status",       :default => "0"
     t.integer "filter_type_id",      :default => 0
     t.integer "hide_deferred"
@@ -947,24 +963,18 @@ ActiveRecord::Schema.define(:version => 20100407193515) do
   add_index "wiki_revisions", ["wiki_page_id"], :name => "wiki_revisions_wiki_page_id_index"
 
   create_table "work_logs", :force => true do |t|
-    t.integer  "user_id",                          :default => 0,     :null => false
+    t.integer  "user_id",          :default => 0,     :null => false
     t.integer  "task_id"
-    t.integer  "project_id",                       :default => 0,     :null => false
-    t.integer  "company_id",                       :default => 0,     :null => false
-    t.integer  "customer_id",                      :default => 0,     :null => false
-    t.datetime "started_at",                                          :null => false
-    t.integer  "duration",                         :default => 0,     :null => false
+    t.integer  "project_id",       :default => 0,     :null => false
+    t.integer  "company_id",       :default => 0,     :null => false
+    t.integer  "customer_id",      :default => 0,     :null => false
+    t.datetime "started_at",                          :null => false
+    t.integer  "duration",         :default => 0,     :null => false
     t.text     "body"
-    t.integer  "log_type",                         :default => 0
+    t.integer  "log_type",         :default => 0
     t.integer  "scm_changeset_id"
-    t.integer  "paused_duration",                  :default => 0
-    t.boolean  "comment",                          :default => false
-    t.integer  "facturable",          :limit => 1, :default => 0
-    t.integer  "distance",                         :default => 0
-    t.integer  "minute_displacement",              :default => 0
-    t.integer  "type_displacement",   :limit => 2, :default => 0
-    t.integer  "visible",             :limit => 1, :default => -1
-    t.integer  "rapport_id",                       :default => 0,     :null => false
+    t.integer  "paused_duration",  :default => 0
+    t.boolean  "comment",          :default => false
     t.datetime "exported"
     t.boolean  "approved"
   end

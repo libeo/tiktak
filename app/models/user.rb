@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
   #has_many      :task_owners, :dependent => :destroy
   #has_many      :tasks, :through => :task_owners
   
+  has_many  :assignments
   has_many  :tasks, :through => :assignments
   has_many  :notifications, :through => :assignments, :conditions => 'assignments.notified = true'
   has_many  :notifies, :through => :assignments, :conditions => 'assignments.notified = true', :source => :task

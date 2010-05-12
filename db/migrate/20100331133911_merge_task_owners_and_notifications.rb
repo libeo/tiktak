@@ -31,12 +31,18 @@ class MergeTaskOwnersAndNotifications < ActiveRecord::Migration
           notifications = notifications.delete_if { |n| n.user_id == owner.user_id }
           e.delete 'id'
           e['bookmarked'] = e['unread']
-          e.delte 'unread'
+          e.delete 'unread'
+          e.delete 'notified_last_change'
           new << e
         end
 
         notifications.each do |n|
-          new << n.attributes.merge({'assigned' => false, 'notified' => true})
+          n = n.attributes
+          n['bookmarked'] = n['unread']
+          n.delete 'unread'
+          n.delete 'notified_last_change'
+          n.delete 'id'
+          new << n.merge({'assigned' => false, 'notified' => true})
         end
 
         Assignment.create(new)

@@ -1,6 +1,6 @@
-<% if @current_sheet && @current_sheet.task -%>
+<% if @current_sheet and @current_sheet.task %>
+  <% task = current_user.tasks.find( @current_sheet.task_id, {:include => [:project]} ) %>
   <%
-    task = Task.find(@current_sheet.task_id, :conditions => ["tasks.company_id = ?", current_user.company_id], :include => [:project] )
     info_string = worked_nice(@current_sheet.duration/60)
     if task.duration.to_i > 0
       info_string += "(#{worked_nice(task.worked_minutes + @current_sheet.duration/60)}"
