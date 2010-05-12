@@ -1,4 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :todos
+
+  map.resources :milestones
+
   map.resources :sheets
 
   map.resources :tasks

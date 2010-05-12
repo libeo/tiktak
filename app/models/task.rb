@@ -42,6 +42,7 @@ class Task < ActiveRecord::Base
   accepts_nested_attributes_for :dependencies
   accepts_nested_attributes_for :dependants
   accepts_nested_attributes_for :todos
+  accepts_nested_attributes_for :milestone
 
   augment RepeatDate
   augment Attributes

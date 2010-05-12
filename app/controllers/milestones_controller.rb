@@ -1,5 +1,6 @@
 # Handle basic CRUD functionality regarding Milestones
 class MilestonesController < ApplicationController
+  #TODO: Make this controller more RESTful (tough one)
 
   cache_sweeper :cache_sweeper, :only => [:update, :destroy]
 
@@ -18,6 +19,7 @@ class MilestonesController < ApplicationController
     @milestone.project_id = params[:project_id]
   end
 
+  #TODO: remove this ?
   def quick_new
     self.new
     @popup = true
