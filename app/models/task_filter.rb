@@ -84,13 +84,13 @@ class TaskFilter < ActiveRecord::Base
 
   # Returns a count to display for this filter. The count represents the
   # number of tasks that look they need attention for the given user - 
-  # unassigned tasks and unread tasks are counted.
+  # unassigned tasks are counted
   # The value will be cached and re-used unless force_recount is passed.
   def display_count(user, force_recount = false)
     @display_count = nil if force_recount
 
     count_conditions = []
-    count_conditions << "(assignments.unread = 1 and assignments.user_id = #{ user.id })" 
+    count_conditions << "(assignments.user_id = #{ user.id })" 
     count_conditions << "(assignments.id is null)"
 
     sql = count_conditions.join(" or ")
@@ -314,7 +314,7 @@ class TaskFilter < ActiveRecord::Base
   # class_type
   def column_name_for(class_type)
     if class_type == "User"
-      return "task_owners.user_id"
+      return "assignments.user_id"
     elsif class_type == 'Creator'
       return 'tasks.creator_id'
     elsif class_type == "Project"

@@ -18,9 +18,9 @@ class Project < ActiveRecord::Base
   has_many      :shout_channels, :dependent => :destroy
   has_and_belongs_to_many :notice_groups
 
-  named_scope :can, lambda do |user, perm|
+  named_scope :can, Proc.new { |user, perm|
     { :conditions => ["project_permissions.user_id = ? and project_permissions.can_#{perm.to_s} = true", user.id], :include => :project_permissions }
-  end
+  }
 
   validates_length_of           :name,  :maximum=>200
   validates_presence_of         :name

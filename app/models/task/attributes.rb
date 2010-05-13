@@ -15,6 +15,14 @@ class Task
         ["Open", "Closed", "Won't fix", "Invalid", "Duplicate"]
       end
 
+      def open?
+        self.status == 0
+      end
+
+      def closed?
+        self.status > 0
+      end
+
       def done?
         self.status > 1 && self.completed_at != nil
       end

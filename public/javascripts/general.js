@@ -2,7 +2,14 @@ var intervalId = null;
 var intervalSecs = 75;
 
 function updateSheetInfo() {
-  jQuery.ajax({dataType:'script', type:'post', url:'/tasks/update_sheet_info?format=js'});
+  jQuery.ajax(
+    {
+      dataType:'script', 
+      type:'post', 
+      url:'/sheets/refresh',
+      data: {format: 'js'}
+    }
+  );
 }
 
 function toggleUpdater() {
@@ -51,11 +58,11 @@ function warnWorkLogJournal() {
   return empty;
 }
 
-function sendWorkLogJournal() {
+function sendWorkLogJournal(taskId) {
   showProgress();
   /*if (!warnWorkLogJournal()) {*/
   jQuery.ajax({
-    data: {description: jQuery('#worklog_body').val(), format:'js'},
+    data: {description: jQuery('#worklog_body').val(), format:'js', id:taskId},
     dataType: 'script',
     url: '/sheets/stop',
     type: 'post'

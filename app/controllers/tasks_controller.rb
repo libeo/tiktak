@@ -47,6 +47,7 @@ class TasksController < ApplicationController
 
   # Sends updates on task modifications through juggernaut
   def update_juggernaut
+    @task.send_notifications
     Juggernaut.send("do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
     Juggernaut.send("do_update(#{current_user.id}, '#{url_for(:controller => 'tasks', :action => 'update_tasks', :id => @task.id)}');", ["tasks_#{current_user.company_id}"])
   end

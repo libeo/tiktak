@@ -12,7 +12,6 @@ class Notifications < ActionMailer::Base
       :header => ""
     }.merge(options)
 
-    task.mark_as_unread(user)
     @task = task
     @duration_format = options[:duration_format] if options[:duration_format]
  
@@ -45,7 +44,6 @@ class Notifications < ActionMailer::Base
   end
 
   def changed(update_type, task, user, recipients, change, sent_at = Time.now)
-    task.mark_as_unread(user)
     @task = task
 
     @subject = case update_type

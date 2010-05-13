@@ -118,7 +118,7 @@ class Task
       end
 
       def bookmarked?(user)
-        self.assignments.exists?(:conditions => ["assignments.user_id = ? and assignments.bookmarked = true", user.id])
+        self.assignments.exists?(["assignments.user_id = ? and assignments.bookmarked = true", user.id])
       end
 
       has_many  :assignments, :after_add => :mark_new_assignment, :after_remove => :mark_removed_assignment

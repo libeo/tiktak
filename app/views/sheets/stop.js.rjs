@@ -1,5 +1,5 @@
 if @work_log
-  flash['notice'] = t(:worklog_saved) + " (#{link_to t(:modify_details), :controller => 'tasks', :action => 'edit_log', :id => @work_log.id })"
+  flash['notice'] = t(:worklog_saved) + " (#{link_to t(:modify_details), edit_work_log_path(@work_log)})" 
   page.replace_html 'notice_msg', :partial => 'layouts/notice_message'
   page.replace_html 'sheet_info', :partial => 'header/sheet_info'
   page.replace_html 'time_left', :partial => 'header/time_left'

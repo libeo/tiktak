@@ -217,8 +217,6 @@ class Mailman < ActionMailer::Base
       end
     end
 
-    task.notified_last_change = sent
-    task.mark_as_unread(user)
   end
 
 end

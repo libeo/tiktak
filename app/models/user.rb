@@ -30,9 +30,9 @@ class User < ActiveRecord::Base
   
   has_many  :assignments
   has_many  :tasks, :through => :assignments
-  has_many  :notifications, :through => :assignments, :conditions => 'assignments.notified = true'
+  has_many  :notified_tasks, :through => :assignments, :conditions => 'assignments.notified = true'
   has_many  :notifies, :through => :assignments, :conditions => 'assignments.notified = true', :source => :task
-  has_many  :task_owners, :through => :assignments, :conditions => 'assignments.assigned = true'
+  has_many  :assigned_tasks, :through => :assignments, :conditions => 'assignments.assigned = true'
 
   has_many      :forums, :through => :moderatorships, :order => 'forums.name'
   has_many      :moderatorships, :dependent => :destroy

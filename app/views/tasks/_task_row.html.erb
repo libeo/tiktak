@@ -5,9 +5,9 @@
 
     <div class="col_entry_icon">
       <!-- bookmark task -->
-      <% if task.unread_with_assoc?(current_user)
+      <% if task.bookmarked?(current_user)
            img = 'task/img_co_icon-bookmark-select.png'
-           cls = 'unread entry_icon_bookmark'
+           cls = 'bookmarked entry_icon_bookmark'
          else
            img = 'task/img_co_icon-bookmark-up.png'
            cls = 'entry_icon_bookmark'
@@ -23,10 +23,10 @@
         <%# link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
           { :controller => 'tasks', :action => 'stop_work', :id => task.id }, :class => 'entry_icon_clock' -%>
         <%= link_to_function image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
-          "sendWorkLogJournal();", {:class => 'entry_icon_clock'} %>
+          "sendWorkLogJournal(#{task.id});", {:class => 'entry_icon_clock'} %>
       <% elsif current_user.can?(task.project, 'work') %>
         <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
-          :url => { :controller => 'sheet', :action => 'start', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
+          :url => { :controller => 'sheets', :action => 'start', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
       <% end %>
     </div>
 

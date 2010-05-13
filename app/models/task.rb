@@ -108,7 +108,7 @@ class Task < ActiveRecord::Base
 
   #Called on EXISTING records
   def update_callback
-    send_notifications
+    #send_notifications
   end
 
   def send_notifications
@@ -371,7 +371,7 @@ class Task < ActiveRecord::Base
       end
     end
 
-    errors.add 'project_id', translate(:project_cannot_create) unless self.updated_by.can?(self.project, 'create')
+    errors.add 'project_id', i18n.translate(:project_cannot_create) unless self.updated_by.can?(self.project, 'create')
 
     return res
   end

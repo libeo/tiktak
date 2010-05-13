@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   helper :users
   helper :date_and_time
   helper :javascript
+  helper :sheets
 #  helper :all
 
   helper_method :last_active
@@ -412,10 +413,11 @@ class ApplicationController < ActionController::Base
   # to the variable @task.
   def task_if_allowed
     if current_user.admin?
-      @task = current_user.company.tasks.find_by_task_num(params[:id])
+      @task = current_user.company.tasks.find(params[:id])
     else
       @task = Task.find(:first, :conditions => ["tasks.id = ? and tasks.project_id in (#{current_project_ids_query})", params[:id]])
     end
+    debugger
 
     unless @task
       respond_to do |format|

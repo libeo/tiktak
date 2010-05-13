@@ -101,7 +101,7 @@ class Company < ActiveRecord::Base
   def sort(tasks, user = nil)
     res = tasks.sort_by do |task| 
       array = []
-      array << (task.unread?(user) ? 1 : 0) if user
+      array << (task.bookmarked?(user) ? 1 : 0) if user
       array << rank_by_properties(task)
       array << - (task.due_date || 9999999999).to_i
       array << -task.completed_at.to_i

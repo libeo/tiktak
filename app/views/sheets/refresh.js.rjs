@@ -3,8 +3,4 @@ page.replace_html 'sheet_info', :partial => 'header/sheet_info'
 page.replace_html 'time_left', :partial => 'header/time_left'
 page << "}"
 
-page << "if(jQuery('#shortlist-legend')) {"
-page.replace_html "shortlist-legend", :partial => "short_legend"
-page << "}"
-
 page.call "UpdateDnD"

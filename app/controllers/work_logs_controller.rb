@@ -96,6 +96,7 @@ class WorkLogsController < ApplicationController
   # PUT /work_logs/1
   # PUT /work_logs/1.xml
   def update
+    debugger
     respond_to do |format|
       if @work_log.update_attributes(params[:work_log])
         flash[:notice] = 'WorkLog was successfully updated.'

@@ -6,6 +6,18 @@ module ApplicationHelper
 
   include Misc
 
+  def sheet_infos(truncate_length = 45)
+    task = Task.find(@current_sheet.task_id, :conditions => ["tasks.company_id = ?", current_user.company_id], :include => [:project] )
+    info_string = worked_nice(@current_sheet.duration/60)
+    if task.duration.to_i > 0
+      info_string += "(#{worked_nice(task.worked_minutes + @current_sheet.duration/60)}"
+      info_string += " / #{worked_nice(task.duration)})"
+    end
+    
+    task_label = task.issue_name + ' - ' + task.project.name + "#{task.full_tags unless task.full_tags.empty?}"
+    task_label = task_label[0,truncate_length] + '...' if task_label.length > truncate_length 
+  end
+
   def tooltip_options(html)
     html = "<table cellpadding='0' cellspacing='0'><tr><td>" + h(html) + "</td></tr></table>"
     return {:class => 'tooltip', :title => h(html)}

@@ -10,7 +10,7 @@ class WidgetsController < ApplicationController
   dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description, dependencies_tasks.milestone_id, dependants_tasks.milestone_id,
   projects.name,
   projects.company_id,
-  assignments.unread, assignments.user_id,
+  assignments.bookmarked, assignments.user_id,
   customers.name, customers.company_id,
   milestones.name,
   users.name, users.company_id, users.email,
@@ -18,7 +18,7 @@ class WidgetsController < ApplicationController
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
-  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}]
+  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :assignments, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}]
   #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
 
   def show
@@ -47,11 +47,12 @@ class WidgetsController < ApplicationController
       # Tasks
       filter = filter_from_filter_by
 
+      #"(tasks.status = 0 or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
       conditions = ["tasks.project_id in (#{current_project_ids_query})",
-        "(tasks.completed_at is null or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
+        "(tasks.status = 0 )",
         "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
       ]
-      conditions << "tasks.id in (select task_id from task_owners where task_owners.user_id = #{current_user.id})" if @widget.mine?
+      conditions << "tasks.id in (select task_id from assignments where assignments.user_id = #{current_user.id})" if @widget.mine?
       #conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
       order, extra, includes = @widget.order_by_sql

@@ -19,6 +19,8 @@ class WorkLog < ActiveRecord::Base
   has_many    :work_log_notifications, :dependent => :destroy
   has_many    :users, :through => :work_log_notifications
 
+  attr_writer :ended_at
+
   validates_presence_of :task_id
   
   after_update { |r|
@@ -74,6 +76,15 @@ class WorkLog < ActiveRecord::Base
   #    model.errors.add attr, "Cannot modify a work log 24 hours after creation"
   #  end
   #end
+  
+  def validate
+    debugger
+    if @ended_at
+      if self.started_at.to_time + self.duration != @ended_at.to_time
+        errors.add 'ended_at', I18n.translate(:duration_ended_at_do_not_concurr)
+      end
+    end
+  end
 
   def self.per_page
     40
@@ -134,6 +145,7 @@ class WorkLog < ActiveRecord::Base
   #end
 
   def ended_at
+    return @ended_at if @ended_at
     self.started_at + self.duration + self.paused_duration
   end
 

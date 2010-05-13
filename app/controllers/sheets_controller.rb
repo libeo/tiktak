@@ -7,7 +7,7 @@ class SheetsController < ApplicationController
       @old_task = @current_sheet.task
       @current_sheet.task.stop(@current_sheet)
     end
-    @current_sheet = Sheet.new({:task => @task, :project => @task.project, :user => current_user})
+    @current_sheet = Sheet.create({:task => @task, :project => @task.project, :user => current_user})
 
     respond_to do |format|
       format.html { redirect_to tasks_path }
@@ -19,7 +19,7 @@ class SheetsController < ApplicationController
   def stop
     @work_log = nil
     if @current_sheet
-      @current_sheet.body = params[:text] if params[:text] and params[:text].strip != ''
+      @current_sheet.body = params[:description] if params[:descrption] and params[:description].strip != ''
       @work_log = @current_sheet.task.stop(@current_sheet)
       @current_sheet.destroy
     end
@@ -31,7 +31,9 @@ class SheetsController < ApplicationController
         redirect_to tasks_path
       end
       format.xml { render :xml => @current_sheet }
-      format.js
+      format.js do
+        @current_sheet = nil
+      end
     end
   end
 

@@ -13,6 +13,13 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
     drop_table :tags
     drop_table :task_tags
 
+
+    Task.all.each do |task|
+      task.status = task.status - 1
+      task.completed_at = Time.now.utc if task.status > 0 and task.completed_at.nil?
+      task.save(false)
+    end
+
   end
 
   def self.down
@@ -34,6 +41,11 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
     create_table "task_tags", :id => false do |t|
       t.integer "tag_id"
       t.integer "task_id"
+    end
+
+    Task.all.each do |task|
+      task.status = task.status + 1
+      task.save(false)
     end
 
   end
