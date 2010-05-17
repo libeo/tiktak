@@ -39,6 +39,10 @@ module ApplicationHelper
     pages = Page.find(:all, :order => 'updated_at, name', :conditions => [ "company_id = ? AND project_id IN (#{current_project_ids})", current_user.company_id ] )
   end
 
+  def worked_nice(seconds)
+    return current_user.duration_converter.format(seconds)
+  end
+
   def urlize(name)
     name.to_s.gsub(/ /, "-").downcase
   end

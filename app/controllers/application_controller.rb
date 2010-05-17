@@ -2,6 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
   include Misc
+  include TimeUtils
   include DateAndTimeHelper
   include ExceptionNotifiable
 
@@ -102,9 +103,9 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def worked_nice(minutes)
-    return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
-  end
+  #def worked_nice(minutes)
+  #  return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
+  #end
 
   # Make sure the session is logged in
   def authorize
@@ -191,9 +192,13 @@ class ApplicationController < ActionController::Base
   end
 
   # Parse <tt>1w 2d 3h 4m</tt> or <tt>1:2:3:4</tt> => minutes or seconds
-  def parse_time(input, minutes = false)
-    TimeParser.parse_time(current_user, input, minutes)
+  def parse_duration(text)
+    return current_user.duration_converter.parse(text)
   end
+
+  #def parse_time(input, minutes = false)
+  #  TimeParser.parse_time(current_user, input, minutes)
+  #end
 
   def parse_repeat(r)
     # every monday

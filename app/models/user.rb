@@ -104,6 +104,14 @@ class User < ActiveRecord::Base
     return company.users.find(:all, :conditions => conds)
   end
 
+  def datetime_converter
+    @datetime_converter ||= DateTimeConverter.new(self.date_format, self.time_format)
+  end
+
+  def duration_converter
+    @duration_converter ||= DurationConverter.new(self.duration_format, self.workday_duration, self.days_per_week, self.datetime_converter)
+  end
+
   def path
     File.join("#{RAILS_ROOT}", 'store', 'avatars', self.company_id.to_s)
   end

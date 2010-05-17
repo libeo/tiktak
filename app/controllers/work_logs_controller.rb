@@ -1,5 +1,6 @@
 class WorkLogsController < ApplicationController
   before_filter :allowed, :only => [:edit, :update, :destroy]
+  before_filter :transform_params, :only => [:edit, :update]
 
   private
   
@@ -15,6 +16,10 @@ class WorkLogsController < ApplicationController
       flash['notice'] = "Work log does not exist or user does not have access"
       redirect_to :back
     end
+  end
+
+  def transform_params
+
   end
 
   public
