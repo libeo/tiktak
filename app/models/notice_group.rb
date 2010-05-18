@@ -22,10 +22,12 @@ class NoticeGroup < ActiveRecord::Base
     options[:subject] = self.template_transform(self.message_subject, [task, user]) if self.message_subject != ""
     options[:header] = self.template_transform(self.message_header, [task, user]) if self.message_header and self.message_header != ""
 
-    if state == :created
-      Notifications::deliver_created(task, user, emails, "", options) 
-    else
-      Notifications::deliver_changed(state, task, user, emails, "", options)
+    if emails.length > 0
+      if state == :created
+        Notifications::deliver_created(task, user, emails, "", options) 
+      else
+        Notifications::deliver_changed(state, task, user, emails, "", options)
+      end
     end
 	end
 

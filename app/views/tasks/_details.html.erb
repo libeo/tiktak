@@ -35,4 +35,9 @@
 
   <label for="task_status"><%= _("Status") %></label>
   <%= status_field(@task) %>
+
+  <% if @task.closed? and current_user.admin? %>
+    <label for="task_hidden"> <%= _("Hide task") %></label>
+    <%= check_box :task, :hidden %>
+  <% end %>
 </fieldset>

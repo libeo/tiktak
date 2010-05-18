@@ -247,7 +247,7 @@ class TasksController < ApplicationController
       end
 
       if params[:task][:status] == "2"
-        @task.close_task({:user => current_user})
+        @task.close_task(current_user)
       end
 
       Juggernaut.send("do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
