@@ -43,7 +43,10 @@ class Notifications < ActionMailer::Base
 	  #@sent_at = sent_at
   end
 
-  def changed(update_type, task, user, recipients, change, sent_at = Time.now)
+  def changed(update_type, task, user, recipients, change, options={})
+
+    options = {:sent_at => Time.now.utc}.merge(options)
+
     task.mark_as_unread(user)
     @task = task
 
@@ -61,7 +64,7 @@ class Notifications < ActionMailer::Base
     @recipients = recipients
 
     @from       = "#{$CONFIG[:from]}@#{$CONFIG[:email_domain]}"
-    @sent_on    = sent_at
+    @sent_on    = options[:sent_at]
     @reply_to   = "task-#{task.task_num}@#{user.company.subdomain}.#{$CONFIG[:email_domain]}"
   end
 

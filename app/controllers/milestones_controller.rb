@@ -73,7 +73,12 @@ class MilestonesController < ApplicationController
     @milestone.attributes = params[:milestone]
     due_date = nil
     if !params[:milestone][:due_at].nil? && params[:milestone][:due_at].length > 0
-      due_date = DateTime.strptime( params[:milestone][:due_at], current_user.date_format )
+      begin
+        due_date = DateTime.strptime( params[:milestone][:due_at], current_user.date_format )
+      rescue
+        flash['notice'] = _ "Invalid due date"
+        redirect_from_last
+      end
       @milestone.due_at = tz.local_to_utc(due_date.to_time + 1.day - 1.minute)
     end
     if @milestone.save
@@ -96,10 +101,10 @@ class MilestonesController < ApplicationController
   def destroy
     @milestone = Milestone.find(params[:id], :conditions => ["company_id = ?", current_user.company_id])
 
-    @milestone.tasks.each { |t|
+    @milestone.tasks.each do |t|
       t.milestone = nil
       t.save
-    }
+    end
 
     if session[:filter_milestone].to_i == @milestone.id
       session[:filter_milestone] = "0"
