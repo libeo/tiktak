@@ -294,26 +294,21 @@ class WorklogReport
     #EXTREMELY UGLY, I KNOW. If ever I have the time, I want to refactor the WHOLE worklog report and its views
     ########################
     merged_time = {}
-    work_logs.group_by{ |work_log| work_log.user_id }.each do |user, wl|
-      #wl.map do |i|
-      #  i.started_at -= i.started_at.sec
-      #  i.duration -= i.duration % 60
-      #end
-      
-      root = wl.shift
-      while wl.size > 0
-        group = []
-        current = wl.shift
+    work_logs.group_by{ |work_log| work_log.user_id }.each do |user, list|
 
-        while !current.nil? and (current.started_at < root.started_at or current.ended_at <= root.ended_at)
-          group << current
-          current = wl.shift
+      root = list.shift
+      head = list.shift
+      group = []
+      while head
+
+        while head and (head.started_at < root.ended_at or head.ended_at <= root.ended_at)
+          group << head
+          head = list.shift
         end
 
         if group.length > 0
-          @warnings =  @warnings | group
-          @warnings << root if !@warnings.include? root
 
+          @warnings = @warnings | (group + [root])
           if @type == MERGED_TIMESHEET
             group.each do |g|
               @subtract_totals[g.id] = g.ended_at <= root.ended_at ? g.duration : (root.ended_at - g.started_at).to_i
@@ -321,10 +316,15 @@ class WorklogReport
           end
 
           root = group.last
+          group = []
+
         else
-          root = current
+          root = head
+          head = list.shift
         end
+
       end
+
     end
 
     for w in work_logs
