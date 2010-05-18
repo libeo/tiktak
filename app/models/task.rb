@@ -232,8 +232,8 @@ class Task < ActiveRecord::Base
     25
   end
 
-  def recalculate_worked_minutes
-    self.worked_minutes = WorkLog.sum(:duration, :conditions => ["task_id = ?", self.id]).to_i / 60
+  def recalculate_worked_seconds
+    self.worked_seconds = WorkLog.sum(:duration, :conditions => ["task_id = ?", self.id]).to_i
   end
 
   def to_s
@@ -317,7 +317,7 @@ class Task < ActiveRecord::Base
                  end
     end 
 
-    worked_part = worked_on? ? "1#{worked_minutes}" : "0#{worked_minutes}"
+    worked_part = worked_on? ? "1#{worked_seconds}" : "0#{worked_seconds}"
     config_part = current_user.show_type_icons? ? "1" : "0" 
     config_part << current_user.option_tracktime.to_s
     locale_part = current_user.locale.to_s
@@ -433,12 +433,6 @@ class Task < ActiveRecord::Base
     Task.create(params)
   end
 
-  def duration_progress(user)
-    res = format_duration(self.worked_minutes, user.duration_format, user.workday_duration, user.days_per_week)
-    res += ' / ' + format_duration(self.duration, user.duration_format, user.workday_duration, user.days_per_week)
-    res
-  end
-
   def neg_time_left(user)
     res = ""
 
@@ -479,6 +473,6 @@ end
 #  scheduled_at       :datetime
 #  scheduled_duration :integer(4)
 #  scheduled          :boolean(1)      default(FALSE)
-#  worked_minutes     :integer(4)      default(0)
+#  worked_seconds     :integer(4)      default(0)
 #
 

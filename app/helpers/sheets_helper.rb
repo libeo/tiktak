@@ -7,10 +7,10 @@ module SheetsHelper
   end
 
   def progress_label(sheet)
-    res = worked_nice(sheet.duration / 60)
+    res = format_duration(sheet.duration)
     if sheet.task.duration > 0
-      res += "(#{worked_nice(sheet.task.worked_minutes + sheet.duration / 60)}"
-      res += " / #{worked_nice(sheet.task.duration)})"
+      res += "(#{format_duration(sheet.task.worked_seconds + sheet.duration)}"
+      res += " / #{format_duration(sheet.task.duration)})"
     end
     res
   end

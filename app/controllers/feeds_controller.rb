@@ -172,7 +172,7 @@ class FeedsController < ApplicationController
   end
 
   def to_duration(dur)
-    format_duration(dur/60, 1, 8 * 60).upcase
+    format_duration(dur).upcase
   end
 
   def ical_all

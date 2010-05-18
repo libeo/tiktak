@@ -439,8 +439,8 @@ class User < ActiveRecord::Base
     end
   end
 
-  def format_duration(minutes)
-    return format_duration(minutes, self.duration_format, self.workday_duration, self.days_per_week)
+  def format_duration(seconds)
+    return self.duration_converter.format(seconds)
   end
 
 end

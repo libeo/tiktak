@@ -43,8 +43,8 @@
 
         <!-- total time worked on the task -->
         <% if current_user.option_tracktime? %>
-          <span class="entry_time"><%= task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'entry_time_exceeded') : worked_nice(task.worked_minutes) %>
-            / <%= worked_nice(task.duration) %></span>
+          <span class="entry_time"><%= task.overworked? ? content_tag(:span, format_duration(task.worked_seconds), :class => 'entry_time_exceeded') : format_duration(task.worked_seconds) %>
+            / <%= format_duration(task.duration) %></span>
         <% end %>
 
         <!-- task due date -->

@@ -66,7 +66,7 @@ class Task
       end
 
       def started?
-        worked_minutes > 0 || self.worked_on?
+        worked_seconds > 0 || self.worked_on?
       end
 
       def due_date
@@ -111,19 +111,19 @@ class Task
         end 
       end
 
-      def minutes_left
-        self.duration.to_i - self.worked_minutes 
+      def seconds_left
+        self.duration - self.worked_seconds
       end
 
-      def scheduled_minutes_left
-        d = self.scheduled_duration.to_i - self.worked_minutes 
-        d = 240 if d < 0 && self.scheduled_duration.to_i > 0
+      def scheduled_seconds_left
+        d = self.scheduled_duration - self.worked_seconds
+        d = 240 if d < 0 && self.scheduled_duration > 0
         d = 0 if d < 0
         d
       end 
 
       def overworked?
-        ((self.duration.to_i - self.worked_minutes) < 0 && (self.duration.to_i) > 0)
+        ((self.duration - self.worked_seconds) < 0 && (self.duration) > 0)
       end
 
       def due

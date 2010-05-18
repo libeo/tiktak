@@ -1,7 +1,7 @@
 class TaskShortlistController < ApplicationController
 
-  TASK_ROW_SELECT = 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.duration, tasks.worked_minutes, tasks.project_id, tasks.status, tasks.description, tasks.due_at, tasks.repeat, tasks.requested_by,
-        dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.duration, dependencies_tasks.worked_minutes, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.description, dependencies_tasks.due_at, dependencies_tasks.repeat, dependencies_tasks.requested_by,
+  TASK_ROW_SELECT = 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.duration, tasks.worked_seconds, tasks.project_id, tasks.status, tasks.description, tasks.due_at, tasks.repeat, tasks.requested_by,
+        dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, dependencies_tasks.milestone_id, dependencies_tasks.duration, dependencies_tasks.worked_seconds, dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.description, dependencies_tasks.due_at, dependencies_tasks.repeat, dependencies_tasks.requested_by,
         projects.name,
         customers.name,
         users.name, users.company_id, users.email,

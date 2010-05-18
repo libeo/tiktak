@@ -1,6 +1,6 @@
 <% 
   due_at = (task.overdue? ? content_tag(:span, current_user.localized_date(task.due_at), :class => 'row_date_exceeded') : current_user.localized_date(task.due_at))
-  duration = (task.overworked? ? content_tag(:span, worked_nice(task.worked_minutes), :class => 'row_time_exceeded') : worked_nice(task.worked_minutes)) + " / #{worked_nice(task.duration)}"
+  duration = (task.overworked? ? content_tag(:span, format_duration(task.worked_seconds), :class => 'row_time_exceeded') : format_duration(task.worked_seconds)) + " / #{format_duration(task.duration)}"
   info = [ [:name, task.name], 
         [:project, task.project.full_name], 
         [:assigned, task.assigned_users.map { |u| u.name }.join(', ')],

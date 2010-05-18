@@ -1,6 +1,5 @@
 class NoticeGroupsController < ApplicationController
   
-  helper_method :worked_nice
   before_filter do |controller|
     unless controller.current_user.admin?
       controller.get_flash['notice'] = _ "You must be an administrator to edit the notice groups"

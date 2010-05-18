@@ -12,9 +12,9 @@ class TasksController < ApplicationController
   private
 
   TASK_FIELDS = 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.repeat, tasks.duration, 
-  tasks.worked_minutes, tasks.project_id, tasks.status, tasks.requested_by, tasks.completed_at, tasks.hidden,
+  tasks.worked_seconds, tasks.project_id, tasks.status, tasks.requested_by, tasks.completed_at, tasks.hidden,
   dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, 
-  dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_minutes, 
+  dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_seconds, 
   dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.requested_by, dependencies_tasks.completed_at, dependencies_tasks.hidden,
   customers.name, customers.contact_name, customers.contact_email,
   projects.name,

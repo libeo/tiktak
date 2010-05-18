@@ -8,7 +8,7 @@
   <tr>
     <td>
       <%= tz.utc_to_local(work_log.started_at).strftime(current_user.date_format + "<br />" + current_user.time_format) %>
-      <%= ' - ' + tz.utc_to_local(work_log.ended_at).strftime(current_user.time_format) + '(' + worked_nice(work_log.duration / 60) + ')' %>
+      <%= ' - ' + tz.utc_to_local(work_log.ended_at).strftime(current_user.time_format) + '(' + format_duration(work_log.duration) + ')' %>
     </td>
     <td><%= EventLog::EVENT_LABELS[work_log.log_type] ? _(EventLog::EVENT_LABELS[work_log.log_type]) : 'Unknown' %></td>
     <td><%= work_log.user.name %></td>

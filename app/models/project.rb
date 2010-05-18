@@ -83,11 +83,11 @@ class Project < ActiveRecord::Base
   end 
 
   def work_done
-    tasks.sum(:worked_minutes).to_i
+    tasks.sum(:worked_seconds).to_i
   end 
 
   def overtime
-    tasks.sum('worked_minutes - duration', :conditions => "worked_minutes > duration").to_i
+    tasks.sum('worked_seconds - duration', :conditions => "worked_seconds > duration").to_i
   end
 
   def total_tasks_count

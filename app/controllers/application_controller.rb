@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_project_ids_query
   helper_method :user_project_ids_query
   helper_method :completed_milestone_ids
-  helper_method :worked_nice
+  helper_method :duration_format
   helper_method :link_to_task
   helper_method :current_task_filter
 
@@ -103,9 +103,6 @@ class ApplicationController < ActionController::Base
 
   end
 
-  #def worked_nice(minutes)
-  #  return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
-  #end
 
   # Make sure the session is logged in
   def authorize

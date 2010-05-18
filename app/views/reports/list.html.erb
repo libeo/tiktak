@@ -52,7 +52,7 @@
                 <% next if k == '__' %>
                 <td class="row_value">&nbsp;</td>
                 <% end %>
-                <td class="row_subtotal"><%= worked_nice(subtotal/60) %></td>
+                <td class="row_subtotal"><%= format_duration(subtotal) %></td>
               </tr>
               <% subtotal = 0 %>
               <% end %>
@@ -63,10 +63,10 @@
                 <% last_key = value['__'] %>
                 <% @column_headers.sort.each do |k,v| %>
                 <% next if k == '__' %>
-                <td class="row_value<%=" audit" if params[:report][:type] == "2"%><%=" task" if ["3","5"].include?(params[:report][:type])%>"><%=(value[k] && value[k].is_a?(Fixnum)) ?  worked_nice(value[k]/60) : value[k] %></td>
+                <td class="row_value<%=" audit" if params[:report][:type] == "2"%><%=" task" if ["3","5"].include?(params[:report][:type])%>"><%=(value[k] && value[k].is_a?(Fixnum)) ?  format_duration(value[k]) : value[k] %></td>
                 <% end %>
                 <% subtotal += @row_totals[key] - @subtract_totals[key] if params[:report][:subtotals] == "1" %>
-                <td class="row_total"><%= worked_nice(@row_totals[key]/60) %></td>
+                <td class="row_total"><%= format_duration(@row_totals[key]) %></td>
                 <% end %>
               </tr>
               <% end %>
@@ -79,7 +79,7 @@
                 <% next if k == '__' %>
                 <td class="row_value">&nbsp;</td>
                 <% end %>
-                <td class="row_subtotal"><%= worked_nice(subtotal/60) %></td>
+                <td class="row_subtotal"><%= format_duration(subtotal) %></td>
               </tr>
               <% subtotal = 0 %>
               <% end %>
@@ -88,9 +88,9 @@
                 <th class="row_header">&nbsp;</th>
                 <% @column_headers.sort.each do |key,value| %>
                 <% next if key == '__' %>
-                <th class="row_total"><%= worked_nice(@column_totals[key]/60) if @column_totals[key] > 0 %></th>
+                <th class="row_total"><%= format_duration(@column_totals[key]) if @column_totals[key] > 0 %></th>
                 <% end %>
-                <th class="row_total_total" style="padding-left:1em;"><%= worked_nice((@total/60).to_i) %></th>
+                <th class="row_total_total" style="padding-left:1em;"><%= format_duration(@total.to_i) %></th>
               </tr>
               <% end %>
             </table>

@@ -55,8 +55,8 @@ module TimeUtils
 
     #/^\s*((\d+)w)?\s*((\d+)d)?\s*((\d+)h)?\s*((\d+)m)?\s*$/,
     FORMAT_REGEXES = [
-      Regexp.new("\\s((\\s+)#{i18n.t(:w)})?\\s*((\\d+)#{i18n.t(:d)})?\\s*((\\d+)#{i18n.t(:h)})?\\s*((\\d+)#{i18n.t(:m)})?\\s*$"),
-      Regexp.new("\\s((\\s+)#{i18n.t(:w)})?\\s*((\\d+)#{i18n.t(:d)})?\\s*((\\d+)#{i18n.t(:h)})?\\s*((\\d+)#{i18n.t(:m)})?\\s*$"),
+      Regexp.new("\\s((\\s+)#{I18n.t(:w)})?\\s*((\\d+)#{I18n.t(:d)})?\\s*((\\d+)#{I18n.t(:h)})?\\s*((\\d+)#{I18n.t(:m)})?\\s*$"),
+      Regexp.new("\\s((\\s+)#{I18n.t(:w)})?\\s*((\\d+)#{I18n.t(:d)})?\\s*((\\d+)#{I18n.t(:h)})?\\s*((\\d+)#{I18n.t(:m)})?\\s*$"),
       /((\d+):)?((\d+):)?((\d+):)?(\d{2})/,
       /((\d+):)?(\d{2})/,
       #/\d+:\d{2}/,
@@ -84,7 +84,7 @@ module TimeUtils
       d[:hours] = secs / 60 / 60
       secs %= 60 * 60
       d[:minutes] = secs / 60
-      d[:seconds ] secs % 60
+      d[:seconds] = secs % 60
       return d
     end
 

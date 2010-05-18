@@ -116,7 +116,7 @@ class ScheduleController < ApplicationController
       next unless free
       
       date_check = date
-      dur = t.scheduled_minutes_left
+      dur = t.scheduled_seconds_left / 60
       while dur > 0 && free
         day_dur = dur > u.workday_duration ? u.workday_duration : dur
 
@@ -151,7 +151,7 @@ class ScheduleController < ApplicationController
     end_date = date
     start_date = date.midnight
     t.assigned_users.each do |u|
-      dur = t.scheduled_minutes_left
+      dur = t.scheduled_seconds_left / 60
       day = date + dates[date][u.id].minutes
       start_date = day if day > start_date
       while dur > 0
@@ -197,7 +197,7 @@ class ScheduleController < ApplicationController
         logger.debug "--> #{t.id}[##{t.task_num}] forwards due to #{day} < #{current_user.tz.now.midnight}"
       end
       
-      logger.info("--> #{t.id}[##{t.task_num}]}: [#{t.scheduled_minutes_left}] [#{t.scheduled_date}] => #{day} : #{rev ? "backwards" : "forwards"}")
+      logger.info("--> #{t.id}[##{t.task_num}]}: [#{t.scheduled_scheduled_seconds_left / 60}] [#{t.scheduled_date}] => #{day} : #{rev ? "backwards" : "forwards"}")
     else 
       day = (current_user.tz.now.midnight)
       rev = false
@@ -249,8 +249,8 @@ class ScheduleController < ApplicationController
 
     logger.debug "--> #{t.id} override got day[#{day.to_s}], before[#{before}], after[#{after}], due[#{t.scheduled_due_at}], #{rev}"
 
-    days = ((t.scheduled_minutes_left) / current_user.workday_duration).to_i
-    rem = t.scheduled_minutes_left - (days * current_user.workday_duration)
+    days = ((t.scheduled_seconds_left / 60) / current_user.workday_duration).to_i
+    rem = t.scheduled_seconds_left / 60 - (days * current_user.workday_duration)
 
     dur = days.days + rem.minutes
     if dur > 7.days
@@ -437,7 +437,7 @@ class ScheduleController < ApplicationController
     logger.debug "--> #{t.id} scheduling got adjusted day[#{day.to_s}], before[#{before}], after[#{after}], due[#{t.scheduled_due_at}] - #{rev ? "backwards" : "forwards"}"
 
 
-    if t.scheduled_minutes_left == 0
+    if t.scheduled_seconds_left == 0
       return [day,day]
     end
 
@@ -450,7 +450,7 @@ class ScheduleController < ApplicationController
       if users_gantt_free(dates, t, day)
         day, end_date = users_gantt_mark(dates, t, day)
         if t.users.empty?
-          end_date = day + t.scheduled_minutes_left.minutes
+          end_date = day + t.scheduled_seconds_left / 60
         end
         
         return [day, end_date]
@@ -519,7 +519,7 @@ class ScheduleController < ApplicationController
       @milestone_end[t.milestone_id]   = range[1] if @milestone_end[t.milestone_id] < range[1]
     end
     
-    logger.info "== #{t.id}[##{t.task_num}] [#{format_duration(t.scheduled_minutes_left, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)}] : #{@start[t.id]} -> #{@end[t.id]}"
+    logger.info "== #{t.id}[##{t.task_num}] [#{format_duration(t.scheduled_seconds_left, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)}] : #{@start[t.id]} -> #{@end[t.id]}"
     @stack.pop
     
     return range
@@ -620,7 +620,7 @@ class ScheduleController < ApplicationController
         t.due_at = t.scheduled_at
       end 
       if t.scheduled_duration.to_i != t.duration.to_i
-        body << "- <strong>Estimate</strong>: #{worked_nice(t.duration).strip} -> #{worked_nice(t.scheduled_duration)}\n"
+        body << "- <strong>Estimate</strong>: #{format_duration(t.duration).strip} -> #{format_duration(t.scheduled_duration)}\n"
         t.duration = t.scheduled_duration
       end 
 
@@ -720,7 +720,7 @@ class ScheduleController < ApplicationController
         page << "jQuery('#gantt-save-revert').hide();"
       end
       
-      page["duration-#{@task.dom_id}"].value = worked_nice(@task.scheduled_duration)
+      page["duration-#{@task.dom_id}"].value = format_duration(@task.scheduled_duration)
       page["duration-#{@task.dom_id}"].className = ((@task.scheduled? && @task.scheduled_duration != @task.duration) ? "scheduled" : "")
       page["due-#{@task.dom_id}"].value = (@task.scheduled_at ? @task.scheduled_at.strftime_localized(current_user.date_format) : "")
       page["due-#{@task.dom_id}"].className = ((@task.scheduled? && @task.scheduled_at != @task.due_at) ? "scheduled" : "")
@@ -737,7 +737,7 @@ class ScheduleController < ApplicationController
       end
       
       milestones.values.each do |m|
-        page.replace_html "duration-#{m.dom_id}", worked_nice(m.duration)
+        page.replace_html "duration-#{m.dom_id}", format_duration(m.duration)
         if m.scheduled_date
           page << "$('offset-due-#{m.dom_id}').setStyle({ left:'#{gantt_offset(m.scheduled_date.midnight.to_time)}'});"
         else 
@@ -804,7 +804,7 @@ class ScheduleController < ApplicationController
       end
 
       milestones.values.each do |m|
-        page.replace_html "duration-#{m.dom_id}", worked_nice(m.duration)
+        page.replace_html "duration-#{m.dom_id}", format_duration(m.duration)
         if m.scheduled_date
           page << "$('offset-due-#{m.dom_id}').setStyle({ left:'#{gantt_offset(m.scheduled_date.midnight.to_time)}'});"
         else 
@@ -886,7 +886,7 @@ class ScheduleController < ApplicationController
       end
       
       milestones.values.each do |m|
-        page.replace_html "duration-#{m.dom_id}", worked_nice(m.duration)
+        page.replace_html "duration-#{m.dom_id}", format_duration(m.duration)
         if m.scheduled_date
           page << "$('offset-due-#{m.dom_id}').setStyle({ left:'#{gantt_offset(m.scheduled_date.midnight.to_time)}'});"
         else 

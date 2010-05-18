@@ -82,12 +82,12 @@ jQuery('#project_<%= project.id %>').hover(function () {
         <div class="prog-border"  style="float: right; height: 15px;position:relative;">
 	  <% if @widget.order_by == 'work' %>
 
-	  <% critical_tooltip = "#{number_to_percentage( critical_percent, :precision => 0)} (#{worked_nice(critical_count)}) #{_'Over Estimate'}<br/>" +
-                                "#{number_to_percentage( critical_percent + normal_percent, :precision => 0)} (#{worked_nice(critical_count + normal_count)}) #{_'Total Done'}<br/>"
-             normal_tooltip   = "#{number_to_percentage( normal_percent, :precision => 0)} (#{worked_nice(normal_count)}) #{_'Estimated'}<br/>" +
-                                "#{number_to_percentage( critical_percent + normal_percent, :precision => 0)} (#{worked_nice(critical_count + normal_count)}) #{_'Total Done'}<br/>"
-             low_tooltip      = "#{number_to_percentage( low_percent, :precision => 0)} (#{worked_nice(low_count)}) #{_'Left'}<br/>" +
-                                "#{number_to_percentage( critical_percent + normal_percent + low_percent, :precision => 0)} (#{worked_nice(critical_count + normal_count + low_count)}) #{_'Total'}<br/>"
+	  <% critical_tooltip = "#{number_to_percentage( critical_percent, :precision => 0)} (#{format_duration(critical_count)}) #{_'Over Estimate'}<br/>" +
+                                "#{number_to_percentage( critical_percent + normal_percent, :precision => 0)} (#{format_duration(critical_count + normal_count)}) #{_'Total Done'}<br/>"
+             normal_tooltip   = "#{number_to_percentage( normal_percent, :precision => 0)} (#{format_duration(normal_count)}) #{_'Estimated'}<br/>" +
+                                "#{number_to_percentage( critical_percent + normal_percent, :precision => 0)} (#{format_duration(critical_count + normal_count)}) #{_'Total Done'}<br/>"
+             low_tooltip      = "#{number_to_percentage( low_percent, :precision => 0)} (#{format_duration(low_count)}) #{_'Left'}<br/>" +
+                                "#{number_to_percentage( critical_percent + normal_percent + low_percent, :precision => 0)} (#{format_duration(critical_count + normal_count + low_count)}) #{_'Total'}<br/>"
           %>
           <div class="prog-bar-high tooltip" style="width:<%= number_to_percentage( critical_percent, :precision => 0)%>;position:absolute;" title="<%= critical_tooltip %>" </div>
           <div class="prog-bar-medium tooltip" style="width:<%= number_to_percentage( normal_percent, :precision => 0)%>;position:absolute;left:<%= number_to_percentage( critical_percent, :precision => 0)%>" title="<%= normal_tooltip%>"> </div>

@@ -82,9 +82,9 @@ class Widget < ActiveRecord::Base
       when 'due_date_asc':
         order = 'UNIX_TIMESTAMP(UTC_TIMESTAMP()) - UNIX_TIMESTAMP(tasks.due_at) asc'
       when 'duration_desc':
-        order = 'tasks.worked_minutes / tasks.duration desc'
+        order = 'tasks.worked_seconds / tasks.duration desc'
       when 'duration_asc':
-        order = 'tasks.worked_minutes / tasks.duration asc'
+        order = 'tasks.worked_seconds / tasks.duration asc'
       when 'date_desc':
         order = 'tasks.created_at desc'
       when 'date_asc':

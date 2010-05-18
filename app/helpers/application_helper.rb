@@ -8,10 +8,10 @@ module ApplicationHelper
 
   def sheet_infos(truncate_length = 45)
     task = Task.find(@current_sheet.task_id, :conditions => ["tasks.company_id = ?", current_user.company_id], :include => [:project] )
-    info_string = worked_nice(@current_sheet.duration/60)
+    info_string = format_duration(@current_sheet.duration)
     if task.duration.to_i > 0
-      info_string += "(#{worked_nice(task.worked_minutes + @current_sheet.duration/60)}"
-      info_string += " / #{worked_nice(task.duration)})"
+      info_string += "(#{format_duration(task.worked_seconds + @current_sheet.duration)}"
+      info_string += " / #{format_duration(task.duration)})"
     end
     
     task_label = task.issue_name + ' - ' + task.project.name + "#{task.full_tags unless task.full_tags.empty?}"
@@ -39,8 +39,12 @@ module ApplicationHelper
     pages = Page.find(:all, :order => 'updated_at, name', :conditions => [ "company_id = ? AND project_id IN (#{current_project_ids})", current_user.company_id ] )
   end
 
-  def worked_nice(seconds)
-    return current_user.duration_converter.format(seconds)
+  #def worked_nice(minutes)
+  #  return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
+  #end
+
+  def format_duration(seconds)
+    current_user.duration_converter.format(seconds)
   end
 
   def urlize(name)
@@ -51,9 +55,9 @@ module ApplicationHelper
     return @total_today if @total_today
     @total_today = 0
     start = tz.local_to_utc(tz.now.at_midnight)
-    @total_today = WorkLog.sum(:duration, :conditions => ["user_id = ? AND started_at > ? AND started_at < ?", current_user.id, start, start + 1.day]).to_i / 60
+    @total_today = WorkLog.sum(:duration, :conditions => ["user_id = ? AND started_at > ? AND started_at < ?", current_user.id, start, start + 1.day]).to_i
     
-    @total_today += @current_sheet.duration / 60 if @current_sheet
+    @total_today += @current_sheet.duration if @current_sheet
     @total_today
   end
 

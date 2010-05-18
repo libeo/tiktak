@@ -34,7 +34,7 @@ class WorkLog < ActiveRecord::Base
     r.project = r.task.project if r.task and r.project != r.task.project
 
     if r.task && r.duration.to_i > 0
-      r.task.recalculate_worked_minutes
+      r.task.recalculate_worked_seconds
       r.task.save
     end
   
@@ -57,7 +57,7 @@ class WorkLog < ActiveRecord::Base
 
     
     if r.task && r.duration.to_i > 0
-      r.task.recalculate_worked_minutes
+      r.task.recalculate_worked_seconds
       r.task.save
     end
     
@@ -65,7 +65,7 @@ class WorkLog < ActiveRecord::Base
 
   after_destroy { |r|
     if r.task
-      r.task.recalculate_worked_minutes
+      r.task.recalculate_worked_seconds
       r.task.save
     end
   
