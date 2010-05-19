@@ -970,22 +970,34 @@ class TasksController < ApplicationController
 		valid = true
 
 		# parse some params
-		params[:work_log][:started_at] = date_from_params(params[:work_log], :started_at)
-    ended_at = date_from_params(params[:work_log], :ended_at)
-    params[:work_log].delete(:ended_at)
-		params[:work_log][:duration] = parse_time(params[:work_log][:duration])
-		params[:work_log][:comment] = !params[:work_log][:body].blank?
+    debugger
+    if params[:work_log][:started_at].nil? or params[:work_log][:ended_at].nil?
+      valid = false
+      flash["notice"] = _("Cannot save : start and end dates are required")
+    elsif params[:work_log][:started_at].strip == '' or params[:work_log][:ended_at].strip == ''
+      valid = false
+      flash["notice"] = _("Cannot save : start and end dates are required")
+    elsif params[:work_log][:duration].nil? or (params[:work_log][:duration] and params[:work_log][:duration].strip == '')
+      valid = false
+      flash["notice"] = _("Cannot save : duration is required")
+    else
+      params[:work_log][:started_at] = date_from_params(params[:work_log], :started_at)
+      ended_at = date_from_params(params[:work_log], :ended_at)
+      params[:work_log].delete(:ended_at)
+      params[:work_log][:duration] = parse_time(params[:work_log][:duration])
+      params[:work_log][:comment] = !params[:work_log][:body].blank?
 
-		if not (@log.user == current_user or @log.project.owner == current_user)
-			flash["notice"] = _("Cannot save: You are not the owner of log or the project admin")
-			valid = false
-        elsif params[:work_log][:started_at].to_time + params[:work_log][:duration] != ended_at.to_time
-            flash['notice'] = _("Cannot save : The start and end of the work log do not concurr with the duration")
-            valid = false
-		elsif not @log.update_attributes(params[:work_log])
-			flash["notice"] = _("Error saving log entry")
-			valid = false
-		end
+      if not (@log.user == current_user or @log.project.owner == current_user)
+        flash["notice"] = _("Cannot save: You are not the owner of log or the project admin")
+        valid = false
+      elsif params[:work_log][:started_at].to_time + params[:work_log][:duration] != ended_at.to_time
+        flash['notice'] = _("Cannot save : The start and end of the work log do not concurr with the duration")
+        valid = false
+      elsif not @log.update_attributes(params[:work_log])
+        flash["notice"] = _("Error saving log entry")
+        valid = false
+      end
+    end
 
 		if valid
 			update_task_for_log(@log, params[:task])
@@ -994,7 +1006,7 @@ class TasksController < ApplicationController
 			Juggernaut.send( "do_update(#{current_user.id}, '#{url_for(:controller => 'activities', :action => 'refresh')}');", ["activity_#{current_user.company_id}"])
 			redirect_from_last
 		else
-            @log.started_at = tz.utc_to_local(@log.started_at.utc).to_time
+      @log.started_at = tz.utc_to_local(@log.started_at.utc).to_time
 			render :edit_log
 		end
 
