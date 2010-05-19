@@ -968,10 +968,11 @@ class TasksController < ApplicationController
 		@log = current_user.company.work_logs.find(params[:id])
 		@task = @log.task
 		valid = true
-
-		# parse some params
-    debugger
-    if params[:work_log][:started_at].nil? or params[:work_log][:ended_at].nil?
+    
+    if params[:work_log].nil?
+      valid = false
+      flash["notice"] = _("Cannot save : no work log")
+    elsif params[:work_log][:started_at].nil? or params[:work_log][:ended_at].nil?
       valid = false
       flash["notice"] = _("Cannot save : start and end dates are required")
     elsif params[:work_log][:started_at].strip == '' or params[:work_log][:ended_at].strip == ''
