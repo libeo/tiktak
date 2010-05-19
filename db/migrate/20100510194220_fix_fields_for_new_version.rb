@@ -15,14 +15,17 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
 
 
     say "Adjusting statuses for all tasks"
-    count = 0
+    count = 1
     total = Task.count(:all)
     Task.all.each do |task|
       say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
       task.status = task.status - 1
       task.completed_at = Time.now.utc if task.status > 0 and task.completed_at.nil?
       task.save(false)
+      count += 1
     end
+
+
 
   end
 
@@ -48,12 +51,13 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
     end
 
     say "Adjusting statuses for all tasks"
-    count = 0
+    count = 1
     total = Task.count(:all)
     Task.all.each do |task|
       say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
       task.status = task.status + 1
       task.save(false)
+      count += 1
     end
 
   end

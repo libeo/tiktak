@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100510194220) do
+ActiveRecord::Schema.define(:version => 20100518145415) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -753,7 +753,7 @@ ActiveRecord::Schema.define(:version => 20100510194220) do
     t.datetime "due_at"
     t.datetime "updated_at",                                           :null => false
     t.datetime "completed_at"
-    t.integer  "duration",                          :default => 1
+    t.integer  "duration",                          :default => 0
     t.integer  "hidden",                            :default => 0
     t.integer  "milestone_id"
     t.text     "description"
@@ -767,9 +767,9 @@ ActiveRecord::Schema.define(:version => 20100510194220) do
     t.string   "repeat"
     t.datetime "hide_until"
     t.datetime "scheduled_at"
-    t.integer  "scheduled_duration"
+    t.integer  "scheduled_duration",                :default => 0
     t.boolean  "scheduled",                         :default => false
-    t.integer  "worked_minutes",                    :default => 0
+    t.integer  "worked_seconds",                    :default => 0
   end
 
   add_index "tasks", ["company_id"], :name => "tasks_company_id_index"

@@ -116,23 +116,23 @@ module TimeUtils
       res = ''
       weeks = days = hours = 0
 
-      day_duration ||= 480
-      orig_minutes ||= 0
-      minutes = orig_seconds / 60
+      day_duration ||= 480 * 60
+      orig_seconds ||= 0
+      seconds = orig_seconds
 
       case duration_format
       when 0, 1
         #Worded
         if minutes >= 60
 
-          days = minutes / day_duration
-          minutes = minutes - (days * day_duration) if days > 0
+          days = seconds / day_duration
+          minutes = seconds - (days * day_duration) if days > 0
 
           weeks = days / days_per_week
           days = days - (weeks * days_per_week) if weeks > 0
 
-          hours = minutes / 60
-          minutes = minutes - (hours * 60) if hours > 0
+          hours = seconds / 3600
+          seconds = seconds - (hours * 3600) if hours > 0
 
           res += "#{weeks}#{I18n.t(:w)}#{' ' if duration_format == 0}" if weeks > 0
           res += "#{days}#{I18n.t(:d)}#{' ' if duration_format == 0}" if days > 0
@@ -142,18 +142,18 @@ module TimeUtils
       when 2
         #columned
         res = if weeks > 0
-                format("%d:%d:%d:%02d", weeks, days, hours, minutes)
+                Kernel.format("%d:%d:%d:%02d", weeks, days, hours, seconds / 60)
               elsif days > 0
-                format("%d:%d:%02d", days, hours, minutes)
+                Kernel.format("%d:%d:%02d", days, hours, seconds / 60)
               else
-                format("%d:%02d", hours, minutes)
+                Kernel.format("%d:%02d", hours, seconds / 60)
               end
       when 3
         #hours:minutes
-        res = format("%d:%02d", orig_seconds / 3600, orig_seconds % 3600)
+        res = Kernel.format("%d:%02d", orig_seconds / 3600, orig_seconds % 3600)
       when 4
         #decimal
-        res = format("%.2f", orig_seconds/3600.0)
+        res = Kernel.format("%.2f", orig_seconds/3600.0)
       end
 
       res.strip
