@@ -1552,7 +1552,7 @@ class TasksController < ApplicationController
     # Subscribe to the juggernaut channel for Task updates
     session[:channels] += ["tasks_#{current_user.company_id}"]
     #@tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => "tasks.id, tasks.task_num, tasks.name, tasks.due_at, property_values.id, customers.id, customers.name, projects.id, projects.name, milestones.id, milestones.name, users.id, users.name")
-    @tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => TASK_FIELDS)
+    @tasks = current_task_filter.tasks_paginated(nil, :page => params[:page], :select => TASK_FIELDS, :order => "tasks.status < 2 desc")
 
   end
 

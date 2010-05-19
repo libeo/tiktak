@@ -1,33 +1,35 @@
-<div class="task_entry <%= task.dom_id%>">
+<div class="<%= "closed " if task.closed?%>task_entry <%= task.dom_id%>">
 
   <!-- Stuff that's on the left like the clock icon, task num, task name, worked time, project / client -->
   <div class="col_entry_task">
 
     <div class="col_entry_icon">
-      <!-- bookmark task -->
-      <% if task.unread_with_assoc?(current_user)
-           img = 'task/img_co_icon-bookmark-select.png'
-           cls = 'unread entry_icon_bookmark'
-         else
-           img = 'task/img_co_icon-bookmark-up.png'
-           cls = 'entry_icon_bookmark'
-         end
-      %>
+      <% if task.open? -%>
+        <!-- bookmark task -->
+        <% if task.unread_with_assoc?(current_user)
+             img = 'task/img_co_icon-bookmark-select.png'
+             cls = 'unread entry_icon_bookmark'
+           else
+             img = 'task/img_co_icon-bookmark-up.png'
+             cls = 'entry_icon_bookmark'
+           end
+        -%>
 
-      <%= link_to_function image_tag( img, :alt => t(:bookmark_task), :title => t(:bookmark_task), :id => "bookmark_#{task.id}" ), 
-          "toggleTaskUnread(#{task.id});",
-          :class => cls %>
+        <%= link_to_function image_tag( img, :alt => t(:bookmark_task), :title => t(:bookmark_task), :id => "bookmark_#{task.id}" ), 
+            "toggleTaskUnread(#{task.id});",
+            :class => cls %>
 
-      <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
-      <% if @current_sheet and @current_sheet.task_id == task.id %>
-        <%# link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
-          { :controller => 'tasks', :action => 'stop_work', :id => task.id }, :class => 'entry_icon_clock' -%>
-        <%= link_to_function image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
-          "sendWorkLogJournal();", {:class => 'entry_icon_clock'} %>
-      <% elsif current_user.can?(task.project, 'work') %>
-        <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
-          :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
-      <% end %>
+        <!-- Shows a clock if the user has permission to work on the task or is already working on the task -->
+        <% if @current_sheet and @current_sheet.task_id == task.id -%>
+          <%# link_to image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
+            { :controller => 'tasks', :action => 'stop_work', :id => task.id }, :class => 'entry_icon_clock' -%>
+          <%= link_to_function image_tag( 'task/img_co_clock.png', :alt => t(:stop_task), :title => t(:stop_task) ), 
+            "sendWorkLogJournal();", {:class => 'entry_icon_clock'} %>
+        <% elsif current_user.can?(task.project, 'work') -%>
+          <%= link_to_remote image_tag( 'task/img_co_unclock.png', :alt => t(:start_task), :title => t(:start_task) ), 
+            :url => { :controller => 'tasks', :action => 'start_work_ajax', :id => task.id }, :class => 'entry_icon_clock', :loading => 'showProgress();', :complete => 'hideProgress();' -%>
+        <% end -%>
+      <% end -%>
     </div>
 
     <!-- Useful information like task num, task name, etc -->

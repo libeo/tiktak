@@ -12,6 +12,16 @@
     position:relative;
 }
 
+.closed .col_entry_task .entry_no, 
+  .closed .col_entry_task .entry_task_text a, 
+  .closed .col_entry_task .col_entry_time_task .entry_time, 
+  .closed .col_entry_task .col_entry_time_task .entry_date, 
+  .closed .col_entry_task .col_entry_time_task .entry_project,
+  .closed .col_entry_task .col_entry_time_task .entry_time .entry_time_exceeded,
+  .closed .col_entry_task .col_entry_time_task .entry_date .entry_date_exceeded {
+  color: #adadad;
+}
+
     /*L'icône de l'horloge*/
     
 				.task_entry .col_entry_icon {
@@ -51,7 +61,7 @@
 							color:#335600;
 							text-decoration:none;
 						}
-						
+
 						.task_entry .entry_task_text a:hover {
 							text-decoration:underline;
 						}
@@ -64,7 +74,7 @@
 							padding-left:10px;
 							background:url(../../images/task/img_co_icon-hourglass.png) no-repeat left 2px;
 						}
-						
+
 						.task_entry .col_entry_time_task .entry_date {
 							margin:0 10px 0 0;
 							color:#000;
@@ -74,7 +84,7 @@
 							word-spacing:-2px;
 							background:url(../../images/task/img_co_icon-calendar.png) no-repeat left 2px;
 						}
-					
+
 						.task_entry .col_entry_time_task .entry_time .entry_time_exceeded, .task_entry .col_entry_time_task .entry_date .entry_date_exceeded {
 							color:#b8121a;
 							font-weight:bold;
