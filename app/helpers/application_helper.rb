@@ -47,6 +47,10 @@ module ApplicationHelper
     current_user.duration_converter.format(seconds)
   end
 
+  def parse_duration(text)
+    current_user.duration_converter.parse(text)
+  end
+
   def urlize(name)
     name.to_s.gsub(/ /, "-").downcase
   end

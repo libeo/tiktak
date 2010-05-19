@@ -104,8 +104,8 @@ class WorkLog < ActiveRecord::Base
       :duration => 0,
       :started_at => Time.now.utc}
 
-    params[:duration] = TimeParser.parse_time(user, params[:duration]) if params[:duration].is_a? String
-    params[:started_at] = TimeParser.parse_time(user, params[:started_at]) if params[:started_at].is_a? String
+    params[:duration] = user.duration_converter.parse(params[:duration]) if params[:duration].is_a? String
+    params[:started_at] = user.datetime_converter.parse(params[:started_at]) if params[:started_at].is_a? String
 
     params = defaults.merge(params)
 

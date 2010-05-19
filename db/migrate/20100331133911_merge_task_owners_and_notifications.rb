@@ -1,3 +1,17 @@
+class TaskOwner < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :task
+
+  named_scope :unread, :conditions => { :unread => true }
+end
+
+class Notification < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :task
+
+  named_scope :unread, :conditions => { :unread => true }
+end
+
 class MergeTaskOwnersAndNotifications < ActiveRecord::Migration
   def self.up
     create_table :assignments do |t|

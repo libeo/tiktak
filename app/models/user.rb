@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
            # set validate = false because validate method is over-ridden and does that for us
            :validate => false)
   include CustomAttributeMethods
+  include TimeUtils
 
   has_one   :perm_template
   accepts_nested_attributes_for :perm_template
@@ -105,7 +106,7 @@ class User < ActiveRecord::Base
   end
 
   def datetime_converter
-    @datetime_converter ||= DateTimeConverter.new(self.date_format, self.time_format)
+    @datetime_converter ||= DateTimeConverter.new(self.date_format, self.time_format, Timezone.get(self.time_zone))
   end
 
   def duration_converter

@@ -282,7 +282,7 @@ module TasksHelper
     options = { 
       :id => "due_at", :class => "tooltip", :title => date_tooltip,
       :size => 12,
-      :value => formatted_date_for_current_user(task.due_date)
+      :value => current_user.datetime_converter.format(task.due_date)
     }
     options = options.merge(permissions["prioritize"])
 
@@ -335,7 +335,7 @@ module TasksHelper
   def task_milestone_tip(task)
     return if task.milestone_id.to_i <= 0
 
-    return task_tooltip([ [ _("Milestone Due Date"), formatted_date_for_current_user(task.milestone.due_date) ] ])
+    return task_tooltip([ [ _("Milestone Due Date"), current_user.datetime_converter.format(task.milestone.due_date) ] ])
   end
 
   # Returns a tooltip showing the users linked to a task

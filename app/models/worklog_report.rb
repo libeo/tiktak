@@ -514,7 +514,7 @@ class WorklogReport
 
     @column_totals[ key ] += w.duration unless ["comment", "1_start", "2_end", "3_task", "4_note"].include?(key) or @type == WorklogReport::MERGED_TIMESHEET
 
-    elsif key == "comment"
+    if key == "comment"
       rkey = key_from_worklog(w, 15).to_s
       row_name = name_from_worklog(w, 1)
       body = w.body

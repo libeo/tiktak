@@ -41,7 +41,7 @@ class Company < ActiveRecord::Base
 
   def set_payperiod_date(date, format, tz)
     if date.is_a? String
-      date = TimeParser.datetime_from_format(date, format)
+      date = DateTimeConverver.parse(date, format)
       date = tz.local_to_utc(date)
     end
     if date

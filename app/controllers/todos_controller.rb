@@ -4,7 +4,7 @@ class TodosController < ApplicationController
   # GET /todos.xml
   def index
     @todos = Todo.find(:all, 
-      :conditions => "todos.task_id in (select task_id from assignments where user_id = ? and assigned = true)"
+      :conditions => "todos.task_id in (select task_id from assignments where user_id = ? and assigned = true)",
       :include => [:task],
       :order => "todos.completed_at is null, todos.completed_at desc, tasks.name"
     )

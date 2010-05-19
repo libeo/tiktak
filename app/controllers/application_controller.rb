@@ -3,15 +3,13 @@
 class ApplicationController < ActionController::Base
   include Misc
   include TimeUtils
-  include DateAndTimeHelper
   include ExceptionNotifiable
 
   helper :task_filter
   helper :users
-  helper :date_and_time
   helper :javascript
   helper :sheets
-#  helper :all
+  #helper :all
 
   helper_method :last_active
   helper_method :render_to_string
@@ -192,10 +190,6 @@ class ApplicationController < ActionController::Base
   def parse_duration(text)
     return current_user.duration_converter.parse(text)
   end
-
-  #def parse_time(input, minutes = false)
-  #  TimeParser.parse_time(current_user, input, minutes)
-  #end
 
   def parse_repeat(r)
     # every monday

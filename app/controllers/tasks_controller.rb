@@ -82,7 +82,7 @@ class TasksController < ApplicationController
 
   # Hides a task so that it no longer appears in task lists, widgets, or searches
   def hide
-    @task.update_attributes {:hidden => true}
+    @task.update_attributes({:hidden => true})
 
     respond_to do |format|
       format.html do
@@ -96,12 +96,13 @@ class TasksController < ApplicationController
 
   # Unhides a task that was hidden
   def restore
-    @task.update_attributes {:hidden => false}
+    @task.update_attributes({:hidden => false})
 
     respond_to do |format|
       format.html { redirect_to tasks_path}
       format.xml { render :xml => @task }
       format.js 
+    end
   end
 
   # Bookmarks a task so that it appears first in widgets the order by priority

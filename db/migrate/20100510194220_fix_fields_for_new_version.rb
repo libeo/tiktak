@@ -14,7 +14,11 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
     drop_table :task_tags
 
 
+    say "Adjusting statuses for all tasks"
+    count = 0
+    total = Task.count(:all)
     Task.all.each do |task|
+      say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
       task.status = task.status - 1
       task.completed_at = Time.now.utc if task.status > 0 and task.completed_at.nil?
       task.save(false)
@@ -43,7 +47,11 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
       t.integer "task_id"
     end
 
+    say "Adjusting statuses for all tasks"
+    count = 0
+    total = Task.count(:all)
     Task.all.each do |task|
+      say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
       task.status = task.status + 1
       task.save(false)
     end

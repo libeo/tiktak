@@ -428,8 +428,8 @@ class Task < ActiveRecord::Base
 
   def self.create_for_user(user, project, params={})
     params = {:project => project, :company => project.company, :creator => user, :updated_by_id => user.id, :duration => 0, :description => ""}.merge(params)
-    params[:due_at] = TimeParser.datetime_from_format(params[:due_at], user.date_format) if params[:due_at].is_a? String
-    params[:duration] = TimeParser.parse_time(user, params[:duration], true) if params[:duration].is_a? String
+    params[:due_at] = user.datetime_converter.parse(params[:due_at]) if params[:due_at].is_a? String
+    params[:duration] = user.duration_converter.parse(params[:duration]) if params[:duration].is_a? String
     Task.create(params)
   end
 

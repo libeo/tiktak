@@ -17,12 +17,12 @@ class ReportsController < ApplicationController
         options.delete(:start_date)
         options.delete(:stop_date)
       end
-      if options[:start_date] and not TimeParser.validate_date(current_user.date_format, options[:start_date])
-          valid = false
-          flash['notice'] = _("Invalid start date")
-      elsif options[:stop_date] and not TimeParser.validate_date(current_user.date_format, options[:stop_date])
-          valid = false
-          flash['notice'] = _("Invalid stop date")
+      if options[:start_date] and not current_user.datetime_converter.valid_date?(options[:start_date])
+        valid = false
+        flash['notice'] = _("Invalid start date")
+      elsif options[:stop_date] and not current_user.datetime_converter.valid_date?(options[:stop_date])
+        valid = false
+        flash['notice'] = _("Invalid stop date")
       end
       if valid
         @worklog_report = WorklogReport.new(self, options)
