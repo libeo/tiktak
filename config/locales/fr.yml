@@ -1,4 +1,9 @@
 fr:
+  #durations
+  w : "s"
+  d : "j"
+  h : "h"
+  m : "mn"
   #WorkLog
   worklog_saved : "Le temps a bien été enregistré"
   modify_details : "modifier l'enregistrement"

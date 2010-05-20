@@ -94,13 +94,13 @@ function defineToggleRightColumn() {
 function toggleTaskBookmarked(taskId) {
   var links = jQuery('.entry_icon_bookmark', '.tasks-' + taskId);
   var imgs = jQuery('img', links);
-  var bookmarked = imgs.hasClass('bookmarked');
+  var bookmarked = links.hasClass('bookmarked');
 
-  if (unread) {
+  if (bookmarked) {
     imgs.attr('src', '/images/task/img_co_icon-bookmark-up.png');
   } else {
     imgs.attr('src', '/images/task/img_co_icon-bookmark-select.png');
   }
-  imgs.toggleClass('bookmarked');
+  links.toggleClass('bookmarked');
   jQuery.post('/tasks/bookmark', {id: taskId, bookmark: !bookmarked});
 }

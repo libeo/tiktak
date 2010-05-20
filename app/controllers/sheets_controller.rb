@@ -22,17 +22,16 @@ class SheetsController < ApplicationController
       @current_sheet.body = params[:description] if params[:descrption] and params[:description].strip != ''
       @work_log = @current_sheet.task.stop(@current_sheet)
       @current_sheet.destroy
+      @current_sheet = nil
     end
 
     respond_to do |format|
       #TODO: go check js partial to add notice
       format.html do
-        @current_sheet = nil
         redirect_to tasks_path
       end
-      format.xml { render :xml => @current_sheet }
+      format.xml { render :xml => @work_log }
       format.js do
-        @current_sheet = nil
       end
     end
   end

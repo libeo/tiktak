@@ -2,7 +2,7 @@ require 'fastercsv'
 
 class TasksController < ApplicationController
   #filter in app controller
-  before_filter :task_if_allowed, :only => [:edit, :show, :update, :destroy, :close, :open]
+  before_filter :task_if_allowed, :only => [:edit, :show, :update, :destroy, :close, :open, :bookmark]
   before_filter :any_projects, :only => [:new]
   #filter in app controller
   before_filter :admin_only, :only => [:hide, :restore]
@@ -21,7 +21,6 @@ class TasksController < ApplicationController
   milestones.name,
   users.name, users.company_id, users.email,
   customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
-  watchers_tasks.name,
   task_property_values.id,
   todos.name, todos.completed_at,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
@@ -108,12 +107,14 @@ class TasksController < ApplicationController
   # Bookmarks a task so that it appears first in widgets the order by priority
   def bookmark
     bookmarked = params[:bookmarked] || !@task.bookmarked?(current_user) 
-    @task.bookmark(bookmarked)
+    @task.bookmark(current_user, bookmarked)
     @task.save
 
-    format.html { redirect_to tasks_path }
-    format.xml { render :xml => @task }
-    format.js { render :text => "" }
+    respond_to do |format|
+      format.html { redirect_to tasks_path }
+      format.xml { render :xml => @task }
+      format.js { render :text => "" }
+    end
   end
 
   # By default, the index lists all tasks returned by the task filter

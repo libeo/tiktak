@@ -111,13 +111,6 @@ class Task < ActiveRecord::Base
     #send_notifications
   end
 
-  def send_notifications
-    if self.has_changed?
-      worklog, event_type = self.create_event_worklog
-      self.deliver_notification_emails(self.updated_by, worklog, event_type)
-      @new_assignments, @removed_assignments, @new_dependencies, @removed_dependencies, @new_dependants, @removed_dependants = [nil] * 6
-    end
-  end
 
   #Called on NEW records
   def create_callback
@@ -135,6 +128,14 @@ class Task < ActiveRecord::Base
   end
 
   public
+
+  def send_notifications
+    if self.has_changed?
+      worklog, event_type = self.create_event_worklog
+      self.deliver_notification_emails(self.updated_by, worklog, event_type)
+      @new_assignments, @removed_assignments, @new_dependencies, @removed_dependencies, @new_dependants, @removed_dependants = [nil] * 6
+    end
+  end
 
   def has_changed?
     self.changed? or 

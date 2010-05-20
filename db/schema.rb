@@ -78,11 +78,6 @@ ActiveRecord::Schema.define(:version => 20100518145415) do
   add_index "companies", ["name"], :name => "companies_name_index"
   add_index "companies", ["subdomain"], :name => "companies_subdomain_index", :unique => true
 
-  create_table "companies_cit_stx", :force => true do |t|
-    t.integer "company_id"
-    t.integer "rid_stx_company"
-  end
-
   create_table "custom_attribute_choices", :force => true do |t|
     t.integer  "custom_attribute_id"
     t.string   "value"

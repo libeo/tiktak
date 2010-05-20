@@ -112,48 +112,49 @@ module TimeUtils
       return d
     end
 
-    def self.format(orig_seconds, duration_format, day_duration, days_per_week = 5)
+    def self.format(seconds, duration_format, day_duration, days_per_week = 5)
+      seconds = seconds.to_i
       res = ''
-      weeks = days = hours = 0
-
-      day_duration ||= 480 * 60
-      orig_seconds ||= 0
-      seconds = orig_seconds
+      weeks = days = hours = minutes = 0
 
       case duration_format
-      when 0, 1
-        #Worded
-        if minutes >= 60
+      when 0, 1, 2
+    
+        weeks = seconds / (day_duration * days_per_week)
+        seconds %= (day_duration * days_per_week)
 
-          days = seconds / day_duration
-          minutes = seconds - (days * day_duration) if days > 0
+        days = seconds / day_duration
+        seconds %= day_duration
 
-          weeks = days / days_per_week
-          days = days - (weeks * days_per_week) if weeks > 0
+        hours = seconds / 3600
+        seconds %= 3600
 
-          hours = seconds / 3600
-          seconds = seconds - (hours * 3600) if hours > 0
+        minutes = seconds / 60
+        seconds %= 60
 
-          res += "#{weeks}#{I18n.t(:w)}#{' ' if duration_format == 0}" if weeks > 0
-          res += "#{days}#{I18n.t(:d)}#{' ' if duration_format == 0}" if days > 0
-          res += "#{hours}#{I18n.t(:h)}#{' ' if duration_format == 0}" if hours > 0
+        cap = []
+        cap << "#{weeks}#{I18n.t(:w)}" if weeks > 0
+        cap << "#{days}#{I18n.t(:d)}" if days > 0
+        cap << "#{hours}#{I18n.t(:h)}" if hours > 0
+        cap << "#{minutes}#{I18n.t(:m)}" if minutes > 0 or cap.length == 0
+
+        case duration_format
+        when 0
+          res = cap.join ' '
+        when 1
+          res = cap.join ''
+        when 2
+          res = cap.join ':'
         end
-        res += "#{minutes}#{I18n.t(:m)}" if minutes > 0 || res == ''
-      when 2
-        #columned
-        res = if weeks > 0
-                Kernel.format("%d:%d:%d:%02d", weeks, days, hours, seconds / 60)
-              elsif days > 0
-                Kernel.format("%d:%d:%02d", days, hours, seconds / 60)
-              else
-                Kernel.format("%d:%02d", hours, seconds / 60)
-              end
+
       when 3
         #hours:minutes
-        res = Kernel.format("%d:%02d", orig_seconds / 3600, orig_seconds % 3600)
+        hours = seconds / 3600
+        minutes = (seconds % 3600) / 60
+        res = Kernel.format("%d:%02d", hours, minutes)
       when 4
         #decimal
-        res = Kernel.format("%.2f", orig_seconds/3600.0)
+        res = Kernel.format("%.2f", seconds/3600.0)
       end
 
       res.strip

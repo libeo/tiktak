@@ -111,9 +111,11 @@ class Task
         return self.new_record? ? user.receive_notifications? : self.notified_users.exists?(user.id)
       end
 
-      def bookmark(user)
-        self.assignments.all(:conditions => ["assignments.user_id = ?", user.id]).each do |a|
-          a.update_attribute(:bookmarked, true)
+      def bookmark(user, bookmarked=nil)
+        a = self.assignments.find(:first, :conditions => {:user_id => user.id})
+        if a
+          bookmarked ||= !a.bookmarked?
+          a.update_attribute(:bookmarked, bookmarked)
         end
       end
 

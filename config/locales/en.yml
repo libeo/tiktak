@@ -2,6 +2,11 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #duration
+  w : "w"
+  d : "d"
+  h : "h"
+  m : "m"
   #WorkLog
   worklog_saved : "Work log has been saved"
   modify_details : "edit entry"

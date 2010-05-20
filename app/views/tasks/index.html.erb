@@ -8,6 +8,6 @@
   <div id="task_list_old">
     <%= will_paginate @tasks %>
     <div id="print_title"><%= print_title %></div>
-    <%= render(:partial => "tag_row", :locals => {:groups => @groups, :parent => ""}) %>
+    <%= render :partial => "task_row", :collection => @tasks, :as => :task %>
   </div>
 </div>
