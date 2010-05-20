@@ -446,7 +446,7 @@ class WorklogReport
 
   def name_from_worklog(w,r)
     if r == 1
-      "#{w.task.issue_num} <a href=\"/tasks/view/#{w.task.task_num}\">#{w.task.name}</a> <br /><small>#{w.task.full_name}</small>"
+      "#{w.task.issue_num} <a href=\"/tasks/#{w.task.task_num}/edit\">#{w.task.name}</a> <br /><small>#{w.task.full_name}</small>"
     elsif r == 2
       "none"
     elsif r == 3
@@ -524,7 +524,7 @@ class WorklogReport
     elsif key == "1_start"
       rkey = key_from_worklog(w, 13).to_s
       row_name = name_from_worklog(w, 15)
-      do_row(rkey, row_name, key, "<a href=\"/tasks/edit_log/#{w.id}\">#{tz.utc_to_local(w.started_at).strftime_localized(current_user.time_format)}</a>")
+      do_row(rkey, row_name, key, "<a href=\"/work_logs/#{w.id}/edit\">#{tz.utc_to_local(w.started_at).strftime_localized(current_user.time_format)}</a>")
       @row_totals[rkey] += w.duration
     elsif key == "2_end"
       rkey = key_from_worklog(w, 13).to_s
@@ -533,7 +533,7 @@ class WorklogReport
     elsif key == "3_task"
       rkey = key_from_worklog(w, 13).to_s
       row_name = name_from_worklog(w, 15)
-      do_row(rkey, row_name, key, "#{w.task.issue_num} <a href=\"/tasks/view/#{w.task.task_num}\">#{w.task.name}</a> <br/><small>#{w.task.full_name}</small>")
+      do_row(rkey, row_name, key, "#{w.task.issue_num} <a href=\"/tasks/#{w.task.task_num}/edit\">#{w.task.name}</a> <br/><small>#{w.task.full_name}</small>")
     elsif key == "4_user"
       rkey = key_from_worklog(w, 13).to_s
       row_name = name_from_worklog(w, 15)

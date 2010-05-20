@@ -39,7 +39,7 @@ class Task
       def to_tip(options = { })
         unless @tip
           owners = "No one"
-          owners = self.users.collect{|u| u.name}.join(', ') unless self.users.empty?
+          owners = self.assigned_users.collect{|u| u.name}.join(', ') unless self.assigned_users.empty?
 
           res = "<table id=\"task_tooltip\" cellpadding=0 cellspacing=0>"
           res << "<tr><th>#{_('Summary')}</td><td>#{self.name}</tr>"
@@ -56,7 +56,7 @@ class Task
           unless self.dependants.empty?
             res << "<tr><th valign=\"top\">#{_('Depended on by')}</td><td>#{self.dependants.collect { |t| t.issue_name }.join('<br />')}</td></tr>"
           end
-          res << "<tr><th>#{_('Progress')}</td><td>#{format_duration(self.worked_seconds, options[:duration_format], options[:workday_duration], options[:days_per_week])} / #{format_duration( self.duration, options[:duration_format], options[:workday_duration], options[:days_per_week] )}</tr>"
+          res << "<tr><th>#{_('Progress')}</td><td>#{TimeUtils::DurationConverter.format(self.worked_seconds, options[:duration_format], options[:workday_duration], options[:days_per_week])} / #{TimeUtils::DurationConverter.format( self.duration, options[:duration_format], options[:workday_duration], options[:days_per_week] )}</tr>"
           res << "<tr><th>#{_('Description')}</th><td class=\"tip_description\">#{self.description_wrapped.gsub(/\n/, '<br/>').gsub(/\"/,'&quot;').gsub(/</,'&lt;').gsub(/>/,'&gt;')}</td></tr>" unless self.description.blank?
           res << "</table>"
           @tip = res.gsub(/\"/,'&quot;')

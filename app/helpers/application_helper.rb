@@ -43,10 +43,6 @@ module ApplicationHelper
   #  return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
   #end
 
-  def format_duration(seconds)
-    current_user.duration_converter.format(seconds)
-  end
-
   def parse_duration(text)
     current_user.duration_converter.parse(text)
   end
@@ -426,31 +422,6 @@ END_OF_HTML
     end        
 
     return can
-  end
-
-  ###
-  # Returns the html for lis and links for the different task views.
-  ###
-  def task_view_links
-    links = []
-    links << [ "List", { :controller => "tasks", :action => "list_new" } ]
-    links << [ "Schedule", { :controller => "schedule", :action => "list" } ]
-    links << [ "Gantt", { :controller => "schedule", :action => "gantt" } ]
-    links << [ "List (old)", { :controller => "tasks", :action => "list_old" } ]
-
-    res = ""
-    links.each_with_index do |opts, i|
-      name, url_opts = opts
-      link = link_to(name, url_opts)
-      class_names = []
-      class_names << "first" if i == 0
-      class_names << "last" if i == links.length - 1
-      class_names << "active" if params.merge(url_opts) == params
-
-      res += content_tag(:li, link, :class => class_names.join(" "))
-    end
-
-    return res
   end
 
   ###

@@ -1,10 +1,12 @@
 # Generate a calendar showing completed and due Tasks for a Company
 # TODO: Simple Events
 class ScheduleController < ApplicationController
+  include ApplicationHelper
 
   helper_method :gantt_offset
   helper_method :gantt_width
   helper_method :gantt_color
+  helper :tasks
   
   def list
 
@@ -197,7 +199,7 @@ class ScheduleController < ApplicationController
         logger.debug "--> #{t.id}[##{t.task_num}] forwards due to #{day} < #{current_user.tz.now.midnight}"
       end
       
-      logger.info("--> #{t.id}[##{t.task_num}]}: [#{t.scheduled_scheduled_seconds_left / 60}] [#{t.scheduled_date}] => #{day} : #{rev ? "backwards" : "forwards"}")
+      logger.info("--> #{t.id}[##{t.task_num}]}: [#{t.scheduled_seconds_left / 60}] [#{t.scheduled_date}] => #{day} : #{rev ? "backwards" : "forwards"}")
     else 
       day = (current_user.tz.now.midnight)
       rev = false
@@ -449,7 +451,7 @@ class ScheduleController < ApplicationController
       
       if users_gantt_free(dates, t, day)
         day, end_date = users_gantt_mark(dates, t, day)
-        if t.users.empty?
+        if t.assigned_users.empty?
           end_date = day + t.scheduled_seconds_left / 60
         end
         
@@ -519,7 +521,7 @@ class ScheduleController < ApplicationController
       @milestone_end[t.milestone_id]   = range[1] if @milestone_end[t.milestone_id] < range[1]
     end
     
-    logger.info "== #{t.id}[##{t.task_num}] [#{format_duration(t.scheduled_seconds_left, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)}] : #{@start[t.id]} -> #{@end[t.id]}"
+    logger.info "== #{t.id}[##{t.task_num}] [#{current_user.duration_converter.format(t.scheduled_seconds_left)}] : #{@start[t.id]} -> #{@end[t.id]}"
     @stack.pop
     
     return range

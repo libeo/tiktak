@@ -7,7 +7,7 @@ class TasksController < ApplicationController
   #filter in app controller
   before_filter :admin_only, :only => [:hide, :restore]
   after_filter :set_updater, :except => [:index, :show]
-  after_filter :update_juggernaut
+  after_filter :update_juggernaut, :except => [:index, :show]
 
   private
 

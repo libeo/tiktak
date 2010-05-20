@@ -9,7 +9,6 @@ class ApplicationController < ActionController::Base
   helper :users
   helper :javascript
   helper :sheets
-  #helper :all
 
   helper_method :last_active
   helper_method :render_to_string
@@ -26,6 +25,7 @@ class ApplicationController < ActionController::Base
   helper_method :duration_format
   helper_method :link_to_task
   helper_method :current_task_filter
+  helper_method :format_duration
 
   before_filter :authorize, :except => [ :login, :validate, :signup, :take_signup, :forgotten_password,
                                          :take_forgotten, :show_logo, :about, :screenshots, :terms, :policy,
@@ -38,6 +38,10 @@ class ApplicationController < ActionController::Base
   after_filter :set_charset
 
 #  protect_from_forgery :secret => '112141be0ba20082c17b05c78c63f357'
+  #
+  def format_duration(seconds)
+    current_user.duration_converter.format(seconds)
+  end
 
   def current_user(options={})
     if @current_user.nil? or options[:reload]

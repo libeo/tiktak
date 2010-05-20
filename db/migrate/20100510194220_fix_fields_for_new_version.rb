@@ -25,7 +25,14 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
       count += 1
     end
 
+    say "Removing unused statuses"
+    Status.find(:all :conditions => 'name = "In Progress"').each do |status|
+      status.destroy
+    end
 
+    TaskFilterQualifier.all(:conditions => "qualifiable_type = 'status' and qualifiable_id = 2").each do |tf|
+      tf.destroy
+    end
 
   end
 

@@ -1,9 +1,12 @@
+<% content_for :javascript_includes do %>
+  <%= javascript_include_merged :task_filter %>
+<% end %>
 <div id="content">
   <div class="page_header">
     <div class="right"><%= link_to( _('Export'), {:controller => 'tasks', :action => 'get_csv'}) %></div>
     <div><%= _ 'Tasks' %> <%= " / #{session[:view].name}" unless session[:view].nil? %></div>
   </div>
-  <%= render(:partial => "search_filter", :locals => { :redirect_action => "index", :redirect_params => { :tag => params[:tag] }}) %>
+  <%= render :partial => "search_filter", :locals => { :redirect_action => "index" } %>
   
   <div id="task_list_old">
     <%= will_paginate @tasks %>
