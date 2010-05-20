@@ -57,7 +57,8 @@
   </div>
 
 <% else %>
-  
-    <p class="time_spent"><%= distance_of_time_in_words(total_today.minutes) + ' ' + t(:worked_today) %></p>
+
+  <p class="time_spent"><%= t(:you_have_worked) + ' ' + worked_nice(total_today) + ' ' + t(:today) %>
+  <%# distance_of_time_in_words(total_today.minutes) %>
 
 <% end %>

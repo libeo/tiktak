@@ -70,6 +70,8 @@ en:
   give_feedback : "Feedback and suggestions"
   report_bugs : "Report bugs"
   #Header
+  you_have_worked : "You have worked"
+  today : "today"
   notes : "Notes"
   company_settings : "Company settings"
   custom_properties : "Custom properties"

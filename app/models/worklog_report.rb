@@ -298,10 +298,14 @@ class WorklogReport
 
       root = list.shift
       head = list.shift
+
       group = []
       while head
 
-        while head and (head.started_at < root.ended_at or head.ended_at <= root.ended_at)
+        while head and 
+          ( (head.started_at - head.started_at.sec) < (root.ended_at - root.ended_at.sec) or 
+            (head.ended_at - head.ended_at.sec) <= (root.ended_at - root.ended_at.sec) )
+
           group << head
           head = list.shift
         end

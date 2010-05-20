@@ -68,6 +68,8 @@ fr:
   give_feedback : "Remarques ou Suggestions"
   report_bugs : "Bogues"
   #Header
+  you_have_worked : "Vous avez travaillé"
+  today: "aujourd'hui"
   notes : "Notes"
   company_settings : "Configuration de la compagnie"
   custom_properties : "Propriétés optionelles"
