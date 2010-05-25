@@ -308,7 +308,7 @@ class TaskFilter < ActiveRecord::Base
     end
 
     old_status_ids = old_status_ids.join(",")
-    return "tasks.status in (#{ old_status_ids })" if !old_status_ids.blank?
+    return "tasks.status_id in (#{ old_status_ids })" if !old_status_ids.blank?
   end
 
 

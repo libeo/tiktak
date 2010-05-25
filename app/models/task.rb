@@ -36,6 +36,8 @@ class Task < ActiveRecord::Base
   has_many      :todos, :order => "completed_at IS NULL desc, completed_at desc, position"
   has_many      :sheets
 
+  has_one :status
+
   accepts_nested_attributes_for :task_property_values
   accepts_nested_attributes_for :assignments
   accepts_nested_attributes_for :work_logs
@@ -62,7 +64,9 @@ class Task < ActiveRecord::Base
   after_create :create_callback
   after_update :update_callback
 
-  named_scope :open, :conditions => 'tasks.status = 0'
+  named_scope :open, :conditions => 'statuses.name = "Open"', :include => [:status]
+  named_scope :closed, :conditions => 'statuses.name != "Open"', :include => [:status]
+
 
   private
 
@@ -96,9 +100,9 @@ class Task < ActiveRecord::Base
 
     self.milestone.update_counts if self.milestone
 
-    if self.status > 0
+    if self.closed?
       self.completed_at = Time.now.utc
-    elsif self.status == 0 and self.completed_at
+    elsif self.open? and self.completed_at
       self.completed_at = nil
     end
 
@@ -181,8 +185,8 @@ class Task < ActiveRecord::Base
         before = self.due_at_was ? self.updated_by.tz.utc_to_local(values.first).strftime_localized("%A, %d %B %Y") : 'none'
         after = self.due_at ? self.updated_by.tz.utc_to_local(values.last).strftime_localized("%A, %d %B %Y") : 'none'
         body << "Due: #{before} -> #{after}"
-      when 'status'
-        body << "Status: #{self.status_types[values.first]} -> #{self.status_types[values.last]}"
+      when 'status_id'
+        body << "Status: #{self.status_was.name} -> #{self.status.name}"
       else
         body << "#{attr.capitalize}: #{values.first} -> #{values.last}"
       end
@@ -214,8 +218,8 @@ class Task < ActiveRecord::Base
         :body => body.join("\n")
       }
       worklog = WorkLog.create_for_task(self, self.updated_by, defaults)
-      if self.status_changed?
-        if self.status == 0
+      if self.status_id_changed?
+        if self.open?
           worklog.log_type = EventLog::TASK_REVERTED
           update_type = :reverted
         else
@@ -412,7 +416,7 @@ class Task < ActiveRecord::Base
   alias :stop :close_current_work_log
 
   def close_task(user, params={})
-    if self.status == 0
+    if self.open?
       self.status = EventLog::TASK_COMPLETED
       self.updated_by_id = user.id
       self.save
@@ -420,7 +424,7 @@ class Task < ActiveRecord::Base
   end
 
   def open_task(user, params={})
-    if self.status > 0
+    if self.closed?
       self.status = EventLog::TASK_REVERTED
       self.updated_by_id = user.id
       self.save
@@ -436,7 +440,6 @@ class Task < ActiveRecord::Base
 
   def neg_time_left(user)
     res = ""
-
     res += '-' if self.overdure?
   end
 

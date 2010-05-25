@@ -13,27 +13,6 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
     drop_table :tags
     drop_table :task_tags
 
-
-    say "Adjusting statuses for all tasks"
-    count = 1
-    total = Task.count(:all)
-    Task.all.each do |task|
-      say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
-      task.status = task.status - 1
-      task.completed_at = Time.now.utc if task.status > 0 and task.completed_at.nil?
-      task.save(false)
-      count += 1
-    end
-
-    say "Removing unused statuses"
-    Status.find(:all :conditions => 'name = "In Progress"').each do |status|
-      status.destroy
-    end
-
-    TaskFilterQualifier.all(:conditions => "qualifiable_type = 'status' and qualifiable_id = 2").each do |tf|
-      tf.destroy
-    end
-
   end
 
   def self.down
@@ -55,16 +34,6 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
     create_table "task_tags", :id => false do |t|
       t.integer "tag_id"
       t.integer "task_id"
-    end
-
-    say "Adjusting statuses for all tasks"
-    count = 1
-    total = Task.count(:all)
-    Task.all.each do |task|
-      say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
-      task.status = task.status + 1
-      task.save(false)
-      count += 1
     end
 
   end

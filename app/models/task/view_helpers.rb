@@ -19,7 +19,7 @@ class Task
       end
 
       def issue_num
-        if self.status > 0
+        if self.closed?
           "<strike>##{self.task_num}</strike>"
         else
           "##{self.task_num}"
@@ -46,7 +46,7 @@ class Task
           res << "<tr><th>#{_('Project')}</td><td>#{self.project.full_name}</td></tr>"
           res << "<tr><th>#{_('Assigned To')}</td><td>#{owners}</td></tr>"
           res << "<tr><th>#{_('Requested By')}</td><td>#{self.requested_by}</td></tr>" unless self.requested_by.blank?
-          res << "<tr><th>#{_('Status')}</td><td>#{_(self.status_type)}</td></tr>"
+          res << "<tr><th>#{_('Status')}</td><td>#{_(self.status.name)}</td></tr>"
           res << "<tr><th>#{_('Milestone')}</td><td>#{self.milestone.name}</td></tr>" if self.milestone_id.to_i > 0
           res << "<tr><th>#{_('Completed')}</td><td>#{options[:user].tz.utc_to_local(self.completed_at).strftime_localized(options[:user].date_format)}</td></tr>" if self.completed_at
           res << "<tr><th>#{_('Due Date')}</td><td>#{options[:user].tz.utc_to_local(due).strftime_localized(options[:user].date_format)}</td></tr>" if self.due
@@ -74,13 +74,8 @@ class Task
 
       def css_classes
         unless @css
-          @css = case self.status
-                 when 0 then ""
-                 when 1 then " in_progress"
-                 when 2 then " closed"
-                 else 
-                   " invalid"
-                 end
+          @css = self.status.name.downcase if ['Open', 'Closed'].include? self.status.name
+          @css ||= "invalid"
         end   
         @css
       end

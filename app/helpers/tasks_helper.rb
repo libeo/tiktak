@@ -153,35 +153,20 @@ module TasksHelper
   ###
   def status_field(task)
     options = []
-    options << [_("Leave Open"), 0] if task.status == 0
-    options << [_("Revert to Open"), 0] if task.status != 0
-    options << [_("Close"), 2] if task.status == 0
-    options << [_("Leave Closed"), 2] if task.status == 1
-    options << [_("Set as Won't Fix"), 3] if task.status == 0
-    options << [_("Leave as Won't Fix"), 3] if task.status == 2
-    options << [_("Set as Invalid"), 4] if task.status == 0
-    options << [_("Leave as Invalid"), 4] if task.status == 3
-    options << [_("Set as Duplicate"), 5] if task.status == 0
-    options << [_("Leave as Duplicate"), 5] if task.status == 4
-    options << [_("Wait Until"), 6] if task.status < 1
+    Status.each do |status|
+      if task.status == status
+        options << [_("Leave to") + ' ' + _(status.name), status.id]
+      else
+        options << [_("Set as") + ' ' + _(status.name), status.id]
+      end
+    end
     
     can_close = {}
     if task.project and !current_user.can?(task.project, 'close')
       can_close[:disabled] = "disabled"
     end
 					
-    defer_options = [ "" ]
-    defer_options << [_("Tomorrow"), tz.local_to_utc(tz.now.at_midnight + 1.days).to_s(:db)  ]
-    defer_options << [_("End of week"), tz.local_to_utc(tz.now.beginning_of_week + 4.days).to_s(:db)  ]
-    defer_options << [_("Next week"), tz.local_to_utc(tz.now.beginning_of_week + 7.days).to_s(:db) ]
-    defer_options << [_("One week"), tz.local_to_utc(tz.now.at_midnight + 7.days).to_s(:db) ]
-    defer_options << [_("Next month"), tz.local_to_utc(tz.now.next_month.beginning_of_month).to_s(:db)]
-    defer_options << [_("One month"), tz.local_to_utc(tz.now.next_month.at_midnight).to_s(:db)]				
-    
-    res = select('task', 'status', options, {:selected => @task.status}, can_close)
-    res += '<div id="defer_options" style="display:none;">'
-    res += select('task', 'hide_until', defer_options, { :selected => "" })
-    res += "</div>"
+    res = select('task', 'status', options, {:selected => @task.status.id}, can_close)
 
     return res
   end

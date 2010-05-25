@@ -319,7 +319,7 @@ class FeedsController < ApplicationController
       event.organizer = todo.organizer
       event.url = todo.url
       event.summary = "#{t.issue_name} - #{t.owners}" unless t.done?
-      event.summary = "#{t.status_type} #{t.issue_name} (#{t.owners})" if t.done?
+      event.summary = "#{t.status.name} #{t.issue_name} (#{t.assigned_users})" if t.done?
       event.description = todo.description
 
       unless t.ical_entry
@@ -421,28 +421,23 @@ class FeedsController < ApplicationController
     elsif params[:up_show_order] && params[:up_show_order] == "Status Pie-Chart"
       completed = 0
       open = 0
-      in_progress = 0
 
       if params[:up_show_mine] && params[:up_show_mine] == "All Tasks"
         @projects.each do |p|
           open += p.tasks.count(:conditions => ["completed_at IS NULL"])
           completed += p.tasks.count(:conditions => ["completed_at IS NOT NULL"])
-          in_progress += p.tasks.count(:conditions => ["completed_at IS NULL AND status = 1"])
         end
         GoogleChart::PieChart.new('280x200', "#{user.company.name} Status", false) do |pc|
           pc.data "Open", open
           pc.data "Closed", completed
-          pc.data "In Progress", in_progress
           @chart = pc.to_url
         end
       else
         open = user.tasks.count(:conditions => ["completed_at IS NULL AND project_id IN (#{pids})"])
         completed = user.tasks.count(:conditions => ["completed_at IS NOT NULL AND project_id IN (#{pids})"])
-        in_progress = user.tasks.count(:conditions => ["completed_at IS NULL AND status = 1 AND project_id IN (#{pids})"])
         GoogleChart::PieChart.new('280x200', "#{user.company.name} Status", false) do |pc|
           pc.data "Open", open
           pc.data "Closed", completed
-          pc.data "In Progress", in_progress
           @chart = pc.to_url
         end
       end
@@ -478,7 +473,6 @@ class FeedsController < ApplicationController
     else
       completed = 0
       open = 0
-      in_progress = 0
 
       if params[:up_show_mine] && params[:up_show_mine] == "All Tasks"
         GoogleChart::PieChart.new('280x200', "#{user.company.name} Projects", false) do |pc|

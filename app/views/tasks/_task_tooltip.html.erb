@@ -5,7 +5,7 @@
         [:project, task.project.full_name], 
         [:assigned, task.assigned_users.map { |u| u.name }.join(', ')],
         [:requested_by, task.requested_by], 
-        [:status, task.status_type], 
+        [:status, task.status.name], 
         [:milestone, (!task.milestone.nil? ? task.milestone.name : nil)], 
         [:due_at, due_at],
         [:duration, duration],

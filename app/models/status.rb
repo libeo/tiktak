@@ -15,4 +15,12 @@ class Status < ActiveRecord::Base
     name
   end
 
+  def self.open
+    Status.first(:conditions => 'name = "Open"')
+  end
+
+  def self.closed
+    Status.first(:conditions => 'name = "Closed"')
+  end
+
 end

@@ -3,28 +3,20 @@ class Task
   module Attributes
     augmentation do
 
-      def status_type
-        Task.status_types[self.status]
-      end
-
-      def Task.status_type(type)
-        Task.status_types[type]
-      end
-
-      def Task.status_types
-        ["Open", "Closed", "Won't fix", "Invalid", "Duplicate"]
+      def Task.statuses
+        Status.all(:select => 'name').map { |s| s.name }
       end
 
       def open?
-        self.status == 0
+        self.status.name == "Open"
       end
 
       def closed?
-        self.status > 0
+        self.status.name != "Open"
       end
 
       def done?
-        self.status > 1 && self.completed_at != nil
+        self.closed? and self.completed_at != nil
       end
 
       def ready?
@@ -72,7 +64,7 @@ class Task
       def due_date
         if self.due_at?
           self.due_at
-        elsif self.milestone_id.to_i > 0 && milestone && milestone.due_at?
+        elsif self.milestone? and milestone.due_at?
           milestone.due_at
         else 
           nil
@@ -117,7 +109,7 @@ class Task
 
       def scheduled_seconds_left
         d = self.scheduled_duration - self.worked_seconds
-        d = 240 if d < 0 && self.scheduled_duration > 0
+        d = 240 * 60 if d < 0 && self.scheduled_duration > 0
         d = 0 if d < 0
         d
       end 

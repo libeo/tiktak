@@ -26,16 +26,16 @@ module WorkLogsHelper
   ###
   def work_log_status_options(task)
     options = []
-    options << [_("Leave Open"), 0] if task.status == 0
-    options << [_("Revert to Open"), 0] if task.status != 0
-    options << [_("Close"), 2] if task.status > 0
-    options << [_("Leave Closed"), 2] if task.status == 1
-    options << [_("Set as Won't Fix"), 3] if task.status == 0
-    options << [_("Leave as Won't Fix"), 3] if task.status == 2
-    options << [_("Set as Invalid"), 4] if task.status == 0
-    options << [_("Leave as Invalid"), 4] if task.status == 3
-    options << [_("Set as Duplicate"), 5] if task.status == 0
-    options << [_("Leave as Duplicate"), 5] if task.status == 4
+    options << [_("Leave Open"), 0] if task.open?
+    options << [_("Revert to Open"), 0] if task.closed?
+    options << [_("Close"), 2] if task.open?
+    options << [_("Leave Closed"), 2] if task.closed?
+    options << [_("Set as Won't Fix"), 3] if task.open?
+    options << [_("Leave as Won't Fix"), 3] if task.status.name == "Won't fix"
+    options << [_("Set as Invalid"), 4] if task.open?
+    options << [_("Leave as Invalid"), 4] if task.status.name == "Invalid"
+    options << [_("Set as Duplicate"), 5] if task.open?
+    options << [_("Leave as Duplicate"), 5] if task.status.name == "Duplicate"
 
     return options
   end

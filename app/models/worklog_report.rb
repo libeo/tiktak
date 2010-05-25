@@ -410,7 +410,7 @@ class WorklogReport
     elsif r == 7
       get_date_key(w)
     elsif r == 8
-      w.task.status
+      w.task.status.id
     elsif r == 12
       "comment"
     elsif r == 13
@@ -460,7 +460,7 @@ class WorklogReport
     elsif r == 7
       get_date_header(w)
     elsif r == 8
-      "#{w.task.status_type}"
+      "#{w.task.status.name}"
     elsif r == 12
       _("Notes")
     elsif r == 13

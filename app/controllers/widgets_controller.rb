@@ -6,7 +6,7 @@ class WidgetsController < ApplicationController
   THIS_WEEK  = 3
   NEXT_WEEK  = 4
 
-  TASK_ROW_SELECT = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_seconds, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat, tasks.company_id tasks.milestone_id,
+  TASK_ROW_SELECT = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_seconds, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status_id, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat, tasks.company_id tasks.milestone_id,
   dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description, dependencies_tasks.milestone_id, dependants_tasks.milestone_id,
   projects.name,
   projects.company_id,
@@ -18,7 +18,7 @@ class WidgetsController < ApplicationController
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 
-  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :assignments, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}]
+  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :assignments, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}, :status]
   #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
 
   def show
@@ -47,9 +47,8 @@ class WidgetsController < ApplicationController
       # Tasks
       filter = filter_from_filter_by
 
-      #"(tasks.status = 0 or tasks.hide_until < '#{tz.now.utc.to_s(:db)}')",
       conditions = ["tasks.project_id in (#{current_project_ids_query})",
-        "(tasks.status = 0 )",
+        "(statuses.name = 'Open' )",
         "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
       ]
       conditions << "tasks.id in (select task_id from assignments where assignments.user_id = #{current_user.id})" if @widget.mine?
