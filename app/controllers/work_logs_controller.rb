@@ -1,6 +1,6 @@
 class WorkLogsController < ApplicationController
   before_filter :allowed, :only => [:edit, :update, :destroy]
-  before_filter :transform_params, :only => [:edit, :update]
+  before_filter :transform_params, :only => [:create, :edit, :update]
 
   private
   
@@ -19,7 +19,11 @@ class WorkLogsController < ApplicationController
   end
 
   def transform_params
+    [:started_at, :due_at].each do |i|
+      params[:work_log][i] = parse_datetime(params[:work_log][i]
+    end
 
+    params[:work_log][:duration] = parse_duration(params[:work_log][:duration]
   end
 
   public
@@ -101,7 +105,6 @@ class WorkLogsController < ApplicationController
   # PUT /work_logs/1
   # PUT /work_logs/1.xml
   def update
-    debugger
     respond_to do |format|
       if @work_log.update_attributes(params[:work_log])
         flash[:notice] = 'WorkLog was successfully updated.'

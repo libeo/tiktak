@@ -4,6 +4,8 @@ class TransfromTaskStatus < ActiveRecord::Migration
     Task.after_save.clear
 
     rename_column :tasks, :status, :status_id
+    
+    Task.reset_column_information
 
     say "Adjusting statuses for all tasks"
     count = 1
@@ -11,31 +13,34 @@ class TransfromTaskStatus < ActiveRecord::Migration
     Task.all.each do |task|
       say "processing task #{task.id} (##{task.task_num}) (#{count} of #{total})"
       case task.status_id
-      when 0, 1:
+      when 0
+        cond = "name = 'Open'"
+      when 1
         cond = "name = 'Open'"
       when 2
         cond = "name = 'Closed'"
-      when 3 
-        cond = "Won't fix"
+      when 3
+        cond = "name = \"Won't fix\""
       when 4
-        cond = "Invalid"
+        cond = "name = 'Invalid'"
       when 5
-        cond = "Duplicate"
+        cond = "name = 'Duplicate'"
       end
-      task.status_id = task.company.statuses.find(:first, :conditions => cond)
+      s = task.company.statuses.find(:first, :conditions => cond)
+      task.status_id = s.id
 
-      task.completed_at = Time.now.utc if task.status_id != open.id and task.completed_at.nil?
+      task.completed_at = Time.now.utc if task.status.name != "Open"
       task.save(false)
       count += 1
     end
 
     say "removing unused task qualifiers"
-    TaskFilterQualifier.all(:conditions => ["qualifiable_type = 'status' and qualifiable_id = ?", in_progress.id]).each do |tf|
+    TaskFilterQualifier.all(:conditions => ["task_filter_qualifiers.qualifiable_type = 'status' and statuses.name = 'In Progress'"], :joins => "left outer join statuses on statuses.id = task_filter_qualifiers.qualifiable_id").each do |tf|
       tf.destroy
     end
 
     say "removing unused statuses"
-    in_progress.destroy
+    Status.destroy_all({:name => "In Progress"})
 
   end
 
@@ -43,7 +48,9 @@ class TransfromTaskStatus < ActiveRecord::Migration
 
     Task.after_save.clear
 
-    in_progress = Status.create({:name => 'In Progress'})
+    Company.all.each do |c|
+      c.statuses.create({:name => 'In Progress'})
+    end
     rename_column :tasks, :status_id, :status
 
   end

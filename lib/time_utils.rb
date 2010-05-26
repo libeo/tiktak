@@ -69,6 +69,10 @@ module TimeUtils
       DateTimeConverter.parse_datetime(text, datetime_format, @time_zone)
     end
 
+    def parse_time(text)
+      DateTimeConverter.parse_datetime(text, @time_format, @time_zone).to_time
+    end
+
     def datetime_format
       "#{@date_format} #{@time_format}"
     end

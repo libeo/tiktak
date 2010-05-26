@@ -22,6 +22,8 @@ class WorkLog < ActiveRecord::Base
   attr_writer :ended_at
 
   validates_presence_of :task_id
+  validates_presence_of :started_at
+  validates_presence_of :duration
   
   after_update { |r|
     r.ical_entry.destroy if r.ical_entry
@@ -33,12 +35,14 @@ class WorkLog < ActiveRecord::Base
     #update : I suspect that it might have been in the old version when you created a work_log at the same time as you changed the project of a task
     r.project = r.task.project if r.task and r.project != r.task.project
 
-    if r.task && r.duration.to_i > 0
-      r.task.recalculate_worked_seconds
-      r.task.save
-    end
-  
   }
+
+  after_save do |worklog|
+    if worklog.task and worklog.duration > 0
+      worklog.task.recalculate_worked_seconds
+      worklog.task.save
+    end
+  end
 
   before_create do |worklog|
     worklog.started_at = Time.now.utc unless worklog.started_at
@@ -54,21 +58,14 @@ class WorkLog < ActiveRecord::Base
     l.event_type = r.log_type
     l.created_at = r.started_at
     l.save
-
-    
-    if r.task && r.duration.to_i > 0
-      r.task.recalculate_worked_seconds
-      r.task.save
-    end
     
   }
 
   after_destroy { |r|
-    if r.task
+    if r.task and r.duration > 0
       r.task.recalculate_worked_seconds
       r.task.save
     end
-  
   }
 
   #validates_each :started_at, :on => :update do |model, attr, value|
@@ -78,7 +75,6 @@ class WorkLog < ActiveRecord::Base
   #end
   
   def validate
-    debugger
     if @ended_at
       if self.started_at.to_time + self.duration != @ended_at.to_time
         errors.add 'ended_at', I18n.translate(:duration_ended_at_do_not_concurr)

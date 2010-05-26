@@ -1,13 +1,9 @@
 <% content_for(:javascript_includes) do %>
-  <%= javascript_include_merged :worklogs %>
+  <%= javascript_include_merged :calendar %>
 <% end %>
 <% content_for(:stylesheet_includes) do %>
-  <%= stylesheet_link_merged :worklogs %>
+  <%= stylesheet_link_merged :calendar %>
 <% end %>
-<%= calendar_date_select_includes %>
-<% CalendarDateSelect.format = :fucked %>
-<%= stylesheet_link_tag "calendar_date_select/blue" %>
-<%= javascript_include_tag "calendar_date_select/calendar_date_select" %>
 <fieldset class="basic">
 <legend><%=_ 'Edit Log Entry' %> - <%= @work_log.task.name %></legend>
 

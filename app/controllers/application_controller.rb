@@ -48,6 +48,18 @@ class ApplicationController < ActionController::Base
     current_user.duration_converter.format(seconds)
   end
 
+  def format_date(date)
+    current_user.datetime_converter.format_date(date)
+  end
+
+  def format_datetime(datetime)
+    current_user.datetime_converter.format_datetime(date)
+  end
+
+  def format_time(time)
+    current_user.datetime_converter.format_time(time)
+  end
+
   def current_user(options={})
     if @current_user.nil? or options[:reload]
       options = {:include => [:projects, {:company => :properties} ],
@@ -198,6 +210,18 @@ class ApplicationController < ActionController::Base
   # Parse <tt>1w 2d 3h 4m</tt> or <tt>1:2:3:4</tt> => minutes or seconds
   def parse_duration(text)
     return current_user.duration_converter.parse(text)
+  end
+
+  def parse_datetime(text)
+    return current_user.datetime_converter.parse_datetime(text)
+  end
+
+  def parse_time(text)
+    return current_user.datetime_converter.parse_time(text)
+  end
+
+  def parse_date(text)
+    return current_user.datetime_converter.parse_date(text)
   end
 
   def parse_repeat(r)

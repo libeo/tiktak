@@ -43,10 +43,6 @@ module ApplicationHelper
   #  return format_duration(minutes, current_user.duration_format, current_user.workday_duration, current_user.days_per_week)
   #end
 
-  def parse_duration(text)
-    current_user.duration_converter.parse(text)
-  end
-
   def urlize(name)
     name.to_s.gsub(/ /, "-").downcase
   end

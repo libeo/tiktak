@@ -5,10 +5,10 @@
   <%= f.error_messages %>
 
   <%= f.label :started_at, _("Start") %>
-  <%= f.calendar_date_select :started_at, :time => true %>
+  <%= f.datetime_select(:started_at, :default => @work_log.started_at - @work_log.started_at.sec, :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :onClose => "calendarOnSelect") %>
   <br />
   <%= f.label :ended_at, _("End") %>
-  <%= f.calendar_date_select :ended_at, :time => true %>
+  <%= f.datetime_select(:ended_at, :default => @work_log.ended_at - @work_log.ended_at.sec, :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :onClose => "calendarOnSelect") %>
   <br/>
 
   <%= render(:partial => "/common/custom_attributes", :locals => { :object => work_log }) %>

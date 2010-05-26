@@ -33,7 +33,7 @@ javascripts:
   - tz
   - frontpage
 #- worklogs: [jscalendar-1.0/calendar, jscalendar-1.0/lang/calendar-en, jscalendar-1.0/calendar-setup]
-- worklogs:
+- calendar:
   - jscalendar-1.0/calendar
   - jscalendar-1.0/lang/calendar-en
   - jscalendar-1.0/calendar-setup
@@ -57,5 +57,5 @@ stylesheets:
 - forums:
   - beast
 #- worklogs: [../javascripts/jscalendar-1.0/calendar-blue]
-- worklogs:
+- calendar:
   - ../javascripts/jscalendar-1.0/calendar-blue

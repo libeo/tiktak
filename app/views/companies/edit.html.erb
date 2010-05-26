@@ -1,3 +1,9 @@
+<% content_for(:javascript_includes) do %>
+  <%= javascript_include_merged :calendar %>
+<% end %>
+<% content_for(:stylesheet_includes) do %>
+  <%= stylesheet_link_merged :calendar %>
+<% end %>
 <fieldset class="basic">
 <legend><%=_ 'Company Settings' %></legend>
 <% form_tag :action => 'update' do %>
