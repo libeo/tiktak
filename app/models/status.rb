@@ -2,6 +2,9 @@ class Status < ActiveRecord::Base
   belongs_to :company
   validates_presence_of :company
 
+  named_scope :open, :conditions => 'name = "Open"'
+  named_scope :closed, :conditions => 'name != "Open"'
+
   # Creates the default statuses expected in the system 
   def self.create_default_statuses(company)
     company.statuses.build(:name => "Open").save!
@@ -13,14 +16,6 @@ class Status < ActiveRecord::Base
 
   def to_s
     name
-  end
-
-  def self.open
-    Status.first(:conditions => 'name = "Open"')
-  end
-
-  def self.closed
-    Status.first(:conditions => 'name = "Closed"')
   end
 
 end

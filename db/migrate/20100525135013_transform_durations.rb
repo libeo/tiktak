@@ -6,6 +6,7 @@ class TransformDurations < ActiveRecord::Migration
     add_column :tasks, :worked_seconds, :integer, :default => 0
 
     Task.reset_column_information
+    Task.after_save.clear
 
     say "adjusting durations in tasks"
     total = Task.count(:all)
@@ -36,6 +37,7 @@ class TransformDurations < ActiveRecord::Migration
     add_column :tasks, :worked_minutes, :integer, :default => 0
 
     Task.reset_column_information
+    Task.after_save.clear
 
     say "adjusting durations in tasks"
     total = Task.count(:all)

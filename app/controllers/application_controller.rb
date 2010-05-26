@@ -26,6 +26,7 @@ class ApplicationController < ActionController::Base
   helper_method :link_to_task
   helper_method :current_task_filter
   helper_method :format_duration
+  helper_method :current_statuses
 
   before_filter :authorize, :except => [ :login, :validate, :signup, :take_signup, :forgotten_password,
                                          :take_forgotten, :show_logo, :about, :screenshots, :terms, :policy,
@@ -33,12 +34,16 @@ class ApplicationController < ActionController::Base
                                          :igoogle_setup, :igoogle
                                        ]
                                        
-#  before_filter :clear_cache
+  #  before_filter :clear_cache
                                        
   after_filter :set_charset
 
-#  protect_from_forgery :secret => '112141be0ba20082c17b05c78c63f357'
-  #
+  #  protect_from_forgery :secret => '112141be0ba20082c17b05c78c63f357'
+  
+  def company_statuses
+    current_user.company.stauses
+  end
+
   def format_duration(seconds)
     current_user.duration_converter.format(seconds)
   end

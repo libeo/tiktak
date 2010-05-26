@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100518145415) do
+ActiveRecord::Schema.define(:version => 20100525135013) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",       :default => 0,  :null => false
@@ -755,7 +755,7 @@ ActiveRecord::Schema.define(:version => 20100518145415) do
     t.integer  "company_id"
     t.integer  "updated_by_id"
     t.integer  "task_num",                          :default => 0
-    t.integer  "status",                            :default => 0
+    t.integer  "status_id",                         :default => 0
     t.string   "requested_by"
     t.integer  "creator_id"
     t.string   "notify_emails"

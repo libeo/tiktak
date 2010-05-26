@@ -18,7 +18,7 @@ class Task
       # Creates a clone of the current task to be used when creating repeated tasks
       def repeat_task
         task = self.clone
-        task.status = Status.open
+        task.status = current_statuses.open.first
         task.project_id = self.project_id
         task.company_id = self.company_id
         task.creator_id = self.creator_id

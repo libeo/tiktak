@@ -29,39 +29,37 @@ class MergeTaskOwnersAndNotifications < ActiveRecord::Migration
     counter = 1
     Task.all(:select => 'id, task_num').each do |task|
 
-      say_with_time "Processing task #{task.id} (##{task.task_num}) (#{counter} out of #{total})" do 
+      say "Processing task #{task.id} (##{task.task_num}) (#{counter} out of #{total})"
 
-        owners = TaskOwner.all(:conditions => ["task_id = ?", task.id])
-        notifications = Notification.all(:conditions => ["task_id = ?", task.id])
-        n_ids = notifications.map { |n| n.user_id }
+      owners = TaskOwner.all(:conditions => ["task_id = ?", task.id])
+      notifications = Notification.all(:conditions => ["task_id = ?", task.id])
+      n_ids = notifications.map { |n| n.user_id }
 
-        new = []
-        owners.each do |owner|
-          if n_ids.include? owner.user_id
-            e = owner.attributes.merge({'assigned' => true, 'notified' => true})
-          else
-            e = owner.attributes.merge({'assigned' => true, 'notified' => false})
-          end
-          notifications = notifications.delete_if { |n| n.user_id == owner.user_id }
-          e.delete 'id'
-          e['bookmarked'] = e['unread']
-          e.delete 'unread'
-          e.delete 'notified_last_change'
-          new << e
+      new = []
+      owners.each do |owner|
+        if n_ids.include? owner.user_id
+          e = owner.attributes.merge({'assigned' => true, 'notified' => true})
+        else
+          e = owner.attributes.merge({'assigned' => true, 'notified' => false})
         end
-
-        notifications.each do |n|
-          n = n.attributes
-          n['bookmarked'] = n['unread']
-          n.delete 'unread'
-          n.delete 'notified_last_change'
-          n.delete 'id'
-          new << n.merge({'assigned' => false, 'notified' => true})
-        end
-
-        Assignment.create(new)
-
+        notifications = notifications.delete_if { |n| n.user_id == owner.user_id }
+        e.delete 'id'
+        e['bookmarked'] = e['unread']
+        e.delete 'unread'
+        e.delete 'notified_last_change'
+        new << e
       end
+
+      notifications.each do |n|
+        n = n.attributes
+        n['bookmarked'] = n['unread']
+        n.delete 'unread'
+        n.delete 'notified_last_change'
+        n.delete 'id'
+        new << n.merge({'assigned' => false, 'notified' => true})
+      end
+
+      Assignment.create(new)
       counter += 1
 
     end

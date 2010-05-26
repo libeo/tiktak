@@ -36,7 +36,7 @@ class Task < ActiveRecord::Base
   has_many      :todos, :order => "completed_at IS NULL desc, completed_at desc, position"
   has_many      :sheets
 
-  has_one :status
+  belongs_to :status
 
   accepts_nested_attributes_for :task_property_values
   accepts_nested_attributes_for :assignments
