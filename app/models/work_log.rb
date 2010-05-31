@@ -75,6 +75,7 @@ class WorkLog < ActiveRecord::Base
   #end
   
   def validate
+    debugger
     if @ended_at
       if self.started_at.to_time + self.duration != @ended_at.to_time
         errors.add 'ended_at', I18n.translate(:duration_ended_at_do_not_concurr)

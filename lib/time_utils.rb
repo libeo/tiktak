@@ -174,7 +174,7 @@ module TimeUtils
       when 4 then
         res = DurationConverter.parse_decimaled(text)
       end
-      res = DurationConverter.parse_worded(text) if res.nil? and [0,1].include?(format)
+      res = DurationConverter.parse_worded(text, workday_duration, days_per_week) if res.nil? and [0,1].include?(format)
 
       return res
     end

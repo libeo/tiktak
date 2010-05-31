@@ -64,7 +64,7 @@ class Task
       def due_date
         if self.due_at?
           self.due_at
-        elsif self.milestone? and milestone.due_at?
+        elsif self.milestone and milestone.due_at?
           milestone.due_at
         else 
           nil

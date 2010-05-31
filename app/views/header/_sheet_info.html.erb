@@ -38,7 +38,7 @@
       </div>
 
       <!-- Cancel working on task -->
-      <div class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'tasks', :action => 'cancel_work_ajax' },
+      <div class="task_cancel"><%= link_to_remote t(:cancel_worked_time), :title => t(:cancel_worked_time), :alt => t(:cancel_worked_time), :url => {:controller => 'sheets', :action => 'cancel' },
         :confirm => t(:confirm_cancel_work), :loading => "showProgress();", :complete => "hideProgress();" %></div>
     </div>
   </div>

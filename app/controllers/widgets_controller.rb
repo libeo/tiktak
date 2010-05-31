@@ -15,6 +15,7 @@ class WidgetsController < ApplicationController
   milestones.name,
   users.name, users.company_id, users.email,
   todos.name, todos.completed_at,
+  statuses.name,
   task_property_values.id,
   property_values.id, property_values.color, property_values.value, property_values.icon_url'
 

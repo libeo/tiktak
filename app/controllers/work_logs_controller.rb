@@ -19,11 +19,12 @@ class WorkLogsController < ApplicationController
   end
 
   def transform_params
-    [:started_at, :due_at].each do |i|
-      params[:work_log][i] = parse_datetime(params[:work_log][i]
+    if params[:work_log]
+      [:started_at, :ended_at].each do |i|
+        params[:work_log][i] = parse_datetime(params[:work_log][i]) if params[:work_log][i]
+      end
+      params[:work_log][:duration] = parse_duration(params[:work_log][:duration]) if params[:work_log][:duration]
     end
-
-    params[:work_log][:duration] = parse_duration(params[:work_log][:duration]
   end
 
   public
@@ -108,7 +109,7 @@ class WorkLogsController < ApplicationController
     respond_to do |format|
       if @work_log.update_attributes(params[:work_log])
         flash[:notice] = 'WorkLog was successfully updated.'
-        format.html { redirect_to(@work_log) }
+        format.html { redirect_to :back }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

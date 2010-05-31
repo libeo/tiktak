@@ -1,6 +1,6 @@
 class SheetsController < ApplicationController
   #Filter in app controller
-  before_filter :task_if_allowed, :except => [:refresh]
+  before_filter :task_if_allowed, :only => [:start]
 
   def start
     if @current_sheet

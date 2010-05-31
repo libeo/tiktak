@@ -376,9 +376,11 @@ class Task < ActiveRecord::Base
       end
     end
 
-    errors.add 'project_id', i18n.translate(:project_cannot_create) unless self.updated_by.can?(self.project, 'create')
-
     return res
+  end
+
+  def validate_on_create
+    errors.add 'project_id', I18n.translate(:project_cannot_create) unless self.updated_by.can?(self.project, 'create')
   end
 
   # Creates a new work log for this task using the given params
