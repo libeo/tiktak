@@ -18,6 +18,21 @@ class Project < ActiveRecord::Base
   has_many      :shout_channels, :dependent => :destroy
   has_and_belongs_to_many :notice_groups
 
+  named_scope :open, :conditions => "completed_at is null"
+  named_scope :closed, :conditions => "completed_at is not null"
+  named_scope :can, Proc.new { |perm|
+    conds = []
+    perms = ['comment', 'work', 'close', 'report', 'create', 'edit', 'reassign', 'prioritize', 'milestone', 'grant']
+    if perm == 'all'
+      perms.each do |p|
+        conds << "project_permissions.can_#{p} = true"
+      end
+    elsif perms.include?(perm)
+      conds << "project_permissions.can_#{perm} = true"
+    end
+    {:conditions => conds.join(" AND "), :include => [:project_permissions]}
+  }
+
   validates_length_of           :name,  :maximum=>200
   validates_presence_of         :name
 

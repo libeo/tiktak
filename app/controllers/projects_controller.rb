@@ -1,9 +1,28 @@
 # Handle Projects for a company, including permissions
 class ProjectsController < ApplicationController
+  before_filter :project_exists, :only => [:edit, :update, :destroy]
 
   cache_sweeper :project_sweeper, :only => [ :create, :edit, :update, :destroy, :ajax_remove_permission, :ajax_add_permission ]
+
+  private
+
+  def project_exists
+    if current_user.admin?
+      @project = current_user.company.projects.find(params[:id])
+    elsif current_user.create_projects?
+      @project = current_user.projects.find(params[:id])
+    end
+
+    unless @project
+      flash['notice'] = "Error : You are not an admin or project does not exist"
+      redirect_from_last
+    end
+  end
+
+  public
+
   def new
-    unless current_user.create_projects?
+    if not (current_user.create_projects? or current_user.admin?)
       flash['notice'] = _"You're not allowed to create new projects. Have your admin give you access."
       redirect_from_last
       return
@@ -13,7 +32,7 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    unless current_user.create_projects?
+    if not (current_user.create_projects? or current_user.admin?)
       flash['notice'] = _"You're not allowed to create new projects. Have your admin give you access."
       redirect_from_last
       return
@@ -24,7 +43,6 @@ class ProjectsController < ApplicationController
     @project.company_id = current_user.company_id
 
     if @project.save
-
 
       if params[:copy_project].to_i > 0
         project = current_user.all_projects.find(params[:copy_project])
@@ -146,11 +164,6 @@ class ProjectsController < ApplicationController
   end
 
   def edit
-    @project = current_user.projects.find(params[:id])
-    if @project.nil?
-      redirect_to :controller => 'activities', :action => 'list'
-      return false
-    end
     @users = User.find(:all, :conditions => ["company_id = ?", current_user.company_id], :order => "users.name")
   end
 
@@ -174,7 +187,7 @@ class ProjectsController < ApplicationController
       @user = current_user.company.users.find(params[:user_id])
       render :partial => "/users/project_permissions"
     else 
-      @project = current_user.projects.find(params[:id])
+      @project = permission.project
       @users = Company.find(current_user.company_id).users.find(:all, :order => "users.name")
       render :partial => "permission_list"
     end 
@@ -230,7 +243,6 @@ class ProjectsController < ApplicationController
   end
 
   def update
-    @project = current_user.projects.find(params[:id])
     old_client = @project.customer_id
     old_name = @project.name
 
@@ -266,7 +278,6 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
-    @project = current_user.projects.find(params[:id])
     @project.pages.destroy_all
     @project.sheets.destroy_all
     @project.tasks.destroy_all
@@ -307,17 +318,28 @@ class ProjectsController < ApplicationController
   end
 
   def list_completed
-    @completed_projects = current_user.completed_projects.find(:all, :conditions => ["completed_at IS NOT NULL"], :order => "completed_at DESC")
+    if current_user.admin?
+      @completed_projects = current_user.company.projects.closed.all(:order => "projects.completed_at desc")
+    else
+      @completed_projects = current_user.completed_projects.can('all').all(:order => 'projects.completed_at desc')
+    end
   end
 
   def list
-    #@projects = current_user.projects.paginate(:all, 
-    @projects = Project.paginate(:all,
-      :conditions => "projects.id in (#{current_project_ids_query})",
+    options = {
       :order => 'customers.name, projects.name',
       :page => params[:page],
       :include => [:customer, :users],
-      :select => 'customers.id, customers.name, projects.name, projects.user_id, projects.created_at, projects.description, users.id, users.name');
-    @completed_projects = current_user.completed_projects.find(:all)
+      :select => 'customers.id, customers.name, projects.name, projects.user_id, projects.created_at, projects.description, users.id, users.name'
+    }
+
+    if current_user.admin?
+      @projects = current_user.company.projects.open.paginate(:all, options)
+      @completed_projects = current_user.company.projects.closed.count(:all)
+    else
+      @projects = current_user.projects.paginate(:all, options)
+      @completed_projects = current_user.completed_projects.can('all').count(:all)
+    end
   end
+
 end

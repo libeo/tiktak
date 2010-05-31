@@ -63,13 +63,20 @@ class WidgetsController < ApplicationController
 
     when 1
       # Project List
-      @projects = current_user.projects.find(:all, :order => 'customers.name, projects.name, milestones.due_at IS NULL, milestones.due_at, milestones.name', 
+      if current_user.admin?
+        finder  = current_user.company.projects
+        @completed_projects = current_user.company.projects.closed.count
+      else
+        finder = current_user.projects
+        @completed_projects = current_user.completed_projects.count
+      end
+
+      @projects = finder.find(:all, :order => 'customers.name, projects.name, milestones.due_at IS NULL, milestones.due_at, milestones.name', 
                                              :conditions => ["projects.completed_at IS NULL"], 
                                              :include => [ :customer, :milestones], 
                                              :select => 'projects.name, projects.critical_count, projects.normal_count, projects.low_count, projects.total_tasks, projects.open_tasks,
                                              milestones.completed_tasks, milestones.total_tasks, milestones.project_id, milestones.name, milestones.description, projects.total_milestones, projects.open_milestones, projects.company_id,
                                              customers.name')
-      @completed_projects = current_user.completed_projects.size
     when 2
       # Activities
       @activities = EventLog.find(:all, :order => "event_logs.created_at DESC", :limit => @widget.number, 

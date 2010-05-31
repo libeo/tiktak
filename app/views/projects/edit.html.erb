@@ -55,7 +55,7 @@
     </td>
   </tr>
 
-  <% if current_user.can?( @project, 'grant' ) %>
+  <% if current_user.can?( @project, 'grant' ) or current_user.admin? %>
   <tr>
     <td valign="top">
       <fieldset>
