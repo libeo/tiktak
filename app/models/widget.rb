@@ -101,9 +101,9 @@ class Widget < ActiveRecord::Base
         order = 'work_logs.started_at desc'
         includes << :work_logs
       when 'name_asc'
-        order = 'tasks.name asc'
+        order = "task_owners.user_id = #{self.user_id} and task_owners.unread = true desc, lower(tasks.name) asc"
       when 'name_desc'
-        order = 'tasks.name desc'
+        order = "task_owners.user_id = #{self.user_id} and task_owners.unread = true desc, lower(tasks.name) desc"
     end
     return order, conditions.join(" AND "), includes
   end
