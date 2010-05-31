@@ -16,7 +16,9 @@
            [_('Duration (ascending)'), 'duration_asc'],
            [_('Duration (descending)'), 'duration_desc'],
            [_('Time added lately'), 'last_clocked_desc'],
-           [_('Created by user'), 'created']
+           [_('Created by user'), 'created'],
+           [_('Alphabetically (ascending)'), 'name_asc'],
+           [_('Alphabetically (descending)'), 'name_desc']
            ]) %>
 <label for="widget_filter_id"><%= _("Filter name") %></label>
 <%= select ( 'widget', 'filter_id', current_user.visible_task_filters.map { |t| [t.name, t.id] } ) %>

@@ -100,6 +100,10 @@ class Widget < ActiveRecord::Base
         conditions << 'work_logs.duration > 0'
         order = 'work_logs.started_at desc'
         includes << :work_logs
+      when 'name_asc'
+        order = 'tasks.name asc'
+      when 'name_desc'
+        order = 'tasks.name desc'
     end
     return order, conditions.join(" AND "), includes
   end

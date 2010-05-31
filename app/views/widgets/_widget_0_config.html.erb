@@ -15,7 +15,9 @@
            [_('Duration (ascending)'), 'duration_asc'],
            [_('Duration (descending)'), 'duration_desc'],
            [_('Time added lately'), 'last_clocked_desc'],
-           [_('Created by user'), 'created']
+           [_('Created by user'), 'created'],
+           [_('Alphabetically (ascending)'), 'name_asc'],
+           [_('Alphabetically (descending)'), 'name_desc']
            ]) %>
 <%= select( 'widget', 'mine', [[_('Mine'),true],[_('Everyone'),false]]) %>
 <select name="widget[filter_by]" id="widget_filter_by">
