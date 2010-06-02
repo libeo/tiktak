@@ -1,17 +1,9 @@
-#module ActiveSupport
-#  class TimeWithZone
-#    def datetime_to_i
-#      
-#      utc.is_a?(DateTime) ? utc.to_time.to_i : utc.to_i
-#    end
-#    alias_method :to_i, :datetime_to_i
-#    alias_method :hash, :datetime_to_i
-#    alias_method :tv_sec, :datetime_to_i
-#  
-#  end
-#end
-
 module TasksHelper
+
+  def task_properties_select(task)
+    return "<select name='task[properties]
+
+
 
   ###
   # Returns the html for lis and links for the different task views.
@@ -256,22 +248,18 @@ module TasksHelper
   # Returns a list of options to use for the project select tag.
   ###
   def options_for_user_projects(default=nil)
-    #projects = current_user.projects.find(:all, :include => "customer", :order => "customers.name, projects.name")
-    projects = Project.find(:all, :select => "projects.name, projects.id, customers.name", :conditions => "project_permissions.can_create = true and projects.completed_at is null and project_permissions.user_id = #{current_user.id}", :include => [:project_permissions, :customer], :order => "customers.name asc, projects.name asc")
+    projects = current_user.projects.can('create').all(
+      :select => 'projects.name, projects.id, customers.name',
+      :include => [:project_permissions, :customer],
+      :order => "customers.name asc, projects.name asc"
+    )
 
-    last_customer = nil
     options = []
-
-    projects.each do |project|
-      if project.customer.name != last_customer
-        options << [ h(project.customer.name), [] ]
-        last_customer = project.customer.name
-      end
-
-      options.last[1] << [ project.name, project.id ]
+    projects.group_by { |p| p.customer.name }.each do |c, p|
+      options << [ h(c), p.map { |i| [i.id, i.name] } ]
     end
 
-    return grouped_options_for_select(options, default)
+    return "<select>" + grouped_options_for_select(options, default) + "</select>"
   end
 
   # Returns the js to watch a task's project selector

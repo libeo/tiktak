@@ -159,6 +159,8 @@ class ScheduleController < ApplicationController
       while dur > 0
         day_dur = dur > u.workday_duration ? u.workday_duration : dur
       
+        dates[day.midnight] ||= {}
+        dates[day.midnight][u.id] ||= 0
         dates[day.midnight][u.id] += day_dur
         if (dur <= u.workday_duration)
           day += dur.minutes

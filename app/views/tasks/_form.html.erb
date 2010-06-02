@@ -1,34 +1,8 @@
-<%= hidden_field("task", "id") %>
 <%= error_messages_for 'task' %>
+<h1><%= @task.new_record? ? t(:new_task) : t(:edit_task) %></h1>
 
-<tr>
-  <td valign="top" id="task_sidebar">
-    <%= render(:partial => "details") %>
-    <%= render(:partial => "attributes") %>
-    <%= render(:partial => "notifications") %>
-    <%= render(:partial => "dependencies") %>
-    <%= render(:partial => "resources") %>
-    <%= render(:partial => "inline_worklog") %>
-  </td>
+<div class='edit_task'>
+  <%= render :partial => 'form_left_col', :locals => {:task => @task} %>
+  <%= render :partial => 'form_right_col', :locals => {:task => @task } %>
+</div>
 
-  <td valign="top">
-    <%= render(:partial => "new_comment") %>
-
-    <div id="task_history">
-      <%= render(:partial => "history") %>
-    </div>
-  </td>
-
-</tr>
-
-<script type="text/javascript">
-jQuery('#task_status').change(function() {
-	if( jQuery('#task_status').val() == "5" ) {
-		jQuery('#defer_options').show();
-	} else {
-		jQuery('#defer_options').hide();
-	}
-	return false;
-});
-jQuery('#comment').focus();
-</script>

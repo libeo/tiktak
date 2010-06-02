@@ -35,13 +35,12 @@ class TaskFilter < ActiveRecord::Base
   end
 
   def merge_options(options, conditions)
-    debugger
     options.delete :conditions
     options = {:order => "tasks.id desc",
       :conditions => conditions,
     }.merge(options)
 
-    #options[:include] ||= get_includes(options[:select]) || to_include
+    options[:include] ||= get_includes(options[:select]) || to_include
     return options
   end
 
@@ -52,7 +51,6 @@ class TaskFilter < ActiveRecord::Base
   end
 
   def tasks_paginated(extra_conditions=nil, options={})
-    debugger
     options = merge_options(options, conditions(extra_conditions))
     return Task.paginate(options)
   end
@@ -160,7 +158,8 @@ class TaskFilter < ActiveRecord::Base
 
     res << ["work_logs.company_id = #{user.company_id}" ] 
 
-    res = res.compact.join(" AND ")
+    debugger
+    res = res.compact.select { |c| c.length > 0 }.join(" AND ")
 
     return res
   end
@@ -301,9 +300,11 @@ class TaskFilter < ActiveRecord::Base
   # Status qualifiers have to be handled especially until the
   # migration from an array in code to db backed statuses is complete
   def conditions_for_status_qualifiers(status_qualifiers)
+    res = ""
     c = company || user.company
     ids = status_qualifiers.select { |q| c.statuses.include? q.qualifiable }.map { |q| q.qualifiable.id }.join(",")
-    return "tasks.status_id in (#{ids})"
+    res += "tasks.status_id in (#{ids})" if ids.length > 0
+    return res
   end
 
   #def conditions_for_status_qualifiers(status_qualifiers)

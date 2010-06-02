@@ -77,9 +77,6 @@ class Customer < ActiveRecord::Base
   end
 end
 
-class Client < Customer
-end
-
 # == Schema Information
 #
 # Table name: customers

@@ -2,6 +2,22 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  #edit task
+  new_task : "New Task"
+  edit_task : "Edit Task"
+  section_genral : "General"
+  task_name : "Name"
+  task_description : "Description"
+  task_assignments : "Assignments"
+  remove : "remove"
+  task_project : "Project"
+  task_milestone : "Milestone"
+  add_milestone : "add milestone"
+  due_date : "Due Date"
+  status : "Status"
+  duration : "Duration"
+  attributes : "Attributes"
+
   #duration
   w : "w"
   d : "d"

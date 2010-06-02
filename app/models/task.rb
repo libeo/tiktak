@@ -40,6 +40,8 @@ class Task < ActiveRecord::Base
   has_and_belongs_to_many  :dependants, :class_name => "Task", :join_table => "dependencies", :association_foreign_key => "task_id", :foreign_key => "dependency_id", :order => 'task_id', :after_add => :mark_new_dependant, :after_remove=> :mark_removed_dependant
 
   has_many :task_property_values, :dependent => :destroy, :include => [ :property ]
+  has_many :properties, :through => :task_property_values, :source => :property
+
   has_many :task_customers, :dependent => :destroy
   has_many :customers, :through => :task_customers, :order => "customers.name asc"
   adds_and_removes_using_params :customers

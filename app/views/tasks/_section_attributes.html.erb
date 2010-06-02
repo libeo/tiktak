@@ -1,0 +1,23 @@
+<div class='section left'>
+    <div class='title'>
+      <h2><%=t(:attributes)%></h2>
+    </div>
+
+    <div class='fields'>
+      <div class='entry'>
+        <% form.fields_for :task_property_values do |p_form| %>
+          <% current_user.company.properties.each do |property| %>
+            <h3><%=property.name%></h3>
+
+          <%= form.select 
+
+
+            <h3>Facturable</h3>
+            <select>
+                <option>Oui</option>
+                <option>Non</option>
+            </select>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,7 @@
+<% form_for task do |form| %>
+<div class='col_left'>
+  <%- ['general', 'attributes', 'dependencies'].each do |section| -%>
+    <%= render :partial => "section_#{section}", :locals => {:task => task, :form => form} %>
+  <%- end -%>
+</div>
+<% end %>

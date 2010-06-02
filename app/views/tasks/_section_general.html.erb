@@ -1,0 +1,81 @@
+<div class="section main">
+  <div class="title">
+    <h2><%=t(:section_general)%></h2>
+  </div>
+
+  <div class="fields">
+    <h3><%=t(:task_name)%></h3>
+
+      <%= form.text_field :name, :class => 'text' %>
+
+      <div class="vertical_fields">
+          <div class="description">
+            <h3><%=t(:task_description)%></h3>
+            <%= form.text_area :description %>
+          </div>
+
+          <!-- Section to assign ppl to the task -->
+          <div class="assignments">
+            <h3><%=t(:task_assignments)%></h3>
+              <div class="entry">
+                <%= text_field_tag :assignment_search %>
+                <%= image_tag "edit_task/plus" %>
+              </div>
+              <div class='clear'></div>
+
+              <!-- assignment list -->
+              <div class="list">
+                <% task.assignments.assigned.each do |assignment| %>
+                  <%- user = assignment.user -%>
+                  <div id="<%=assignment.dom_id%>" class='assignment'>
+                    <%= image_tag (user.avatar? ? user.avatar_path : "edit_task/no_avatar"), :class => 'avatar' %>
+                    <span><%=user.name%></span>
+                    <%= link_to_function image_tag("edit_task/x_gris", :alt => t(:remove), :title => t(:remove) ),
+                      "removeAssignment(this)" %>
+                    <% form.fields_for :assignments do |a_form| %>
+                      <% [:assigned, :notified, :bookmarked].each do |att| %>
+                        <%= a_form.hidden_field att %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+          </div>
+          <div class="clear"></div>
+      </div>
+
+      <!-- Project -->
+      <div class='entry'>
+        <h3><%=t(:task_project)%></h3>
+        <% project = task.new_record? current_user.default_project : task.project %>
+        <%= options_for_user_projects(project.id) %>
+      </div>
+
+      <!-- Milestones -->
+      <div class='entry'>
+        <h3><%=t(:task_milestone)%></h3>
+        <%= render :partial => 'tasks/milestone_list', :locals => {:milestones => project.milestones} %>
+        <%= image_tag "edit_task/plus", :title => t(:add_milestone), :alt => t(:add_milestone) %>
+      </div>
+
+      <!-- Duration -->
+      <div class='entry'>
+        <h3><%= t(:duration) %></h3>
+        <%= form.text_field :duration %>
+      </div>
+
+      <!-- Due date -->
+      <div class='entry'>
+        <h3><%=t(:due_date)%></h3>
+        <%= form.text_field :due_date %>
+        <%= image_tag "edit_task/calendar" %>
+      </div>
+
+      <!-- Status -->
+      <div class='entry'>
+        <h3><%=t(:status)%></h3>
+        <%= form.select :status, current_user.company.statuses %>
+      </div>
+
+  </div>
+</div>
