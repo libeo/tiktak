@@ -451,6 +451,15 @@ fieldset input {
   margin-bottom: 0.2em;
 }
 
+#task_sidebar fieldset p {
+  float: left;
+  clear: right;
+  text-align: left;
+  margin-top : 0.5em;
+  margin-right: 0.1em;
+  margin-bottom: 0.2em;
+}
+
 fieldset#task_information input { float: none; }
 fieldset#task_information input.button { float: right; }
 

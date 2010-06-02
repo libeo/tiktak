@@ -1,4 +1,6 @@
 <fieldset id="task_information">
   <%= text_area_tag 'comment', params[:comment], { :rows => 8, :style => "width:100%;", :onKeyUp => "highlightActiveNotifications()" }.merge( perms['comment'] )  %> <br />
-  <%= cit_submit_tag(@task) %>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+    <%= cit_submit_tag(@task) %>
+  <% end %>
 </fieldset>

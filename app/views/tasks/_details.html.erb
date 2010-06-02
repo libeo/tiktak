@@ -1,40 +1,68 @@
 <fieldset id="task_project_selection">
   <label for="task_name"><%=_ "Title" %></label>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+    <%= text_field("task", "name", { :size => nil, :class => "fill", :maxlength => 200 }.merge( perms['edit'] ))  %>
+  <% else %>
+    <p><%=@task.name%></p>
+  <% end %>
   <br />
-  <%= text_field("task", "name", { :size => nil, :class => "fill", :maxlength => 200 }.merge( perms['edit'] ))  %>
 
   <label for="task_description"><%=_ 'Description' %></label>
   <br />
-  <%= text_area "task", "description", { :rows => 4, :class => "fill" }.merge( perms['edit'] )  %>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+    <%= text_area "task", "description", { :rows => 4, :class => "fill" }.merge( perms['edit'] )  %>
+  <% else %>
+    <p><%=@task.description%></p>
+  <% end %>
 
   <label for="task_project_id"><%=_ 'Project' %></label>
-  <select name="task[project_id]" id="task_project_id" <%= "disabled=\"disabled\"" unless perms['reassign'].empty? %>>
-    <%= options_for_user_projects(@task.new_record? ? current_user.default_project_id : @task.project_id) %>
-  </select>
-  <%= task_project_watchers_js %>
   <br/>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+    <select name="task[project_id]" id="task_project_id" <%= "disabled=\"disabled\"" unless perms['reassign'].empty? %>>
+      <%= options_for_user_projects(@task.new_record? ? current_user.default_project_id : @task.project_id) %>
+    </select>
+    <%= task_project_watchers_js %>
+  <% else %>
+    <p><%=@task.project.name%></p>
+  <%end %>
 
   <div>
     <label for="task_milestone_id"><%=_ 'Milestone' %></label>
-    <%= milestone_select(perms) %>
-    <% if current_user.can?( Project.find(selected_project), 'milestone' ) %>
-      <span id="add_milestone"><a href="/milestones/quick_new?project_id=<%=selected_project%>" rel="shadowbox;height=300;width=460;player=iframe"><img src="/images/add.png" style="margin:0;padding:2px 0 0 0;" border="0" /></a></span>
+    <br/>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+      <%= milestone_select(perms) %>
+      <% if current_user.can?( Project.find(selected_project), 'milestone' ) %>
+        <span id="add_milestone"><a href="/milestones/quick_new?project_id=<%=selected_project%>" rel="shadowbox;height=300;width=460;player=iframe"><img src="/images/add.png" style="margin:0;padding:2px 0 0 0;" border="0" /></a></span>
+      <% end %>
+    <% else %>
+      <p><%=@task.milestone ? @task.milestone.name : _("[None]") %></p>
     <% end %>
   </div>
-  <br/>
 
   <% if current_user.option_tracktime.to_i == 1 %>
     <label for="task_duration"><%=_ 'Time Estimate' %></label>
-    <%= text_field 'task', 'duration', {:size => 12, :value => (@task.duration.to_i > 0 ? worked_nice(@task.duration) : ""), :class => 'tooltip', :title => _('2w 3d 1h')}.merge(perms['prioritize']) %><br/>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+      <%= text_field 'task', 'duration', {:size => 12, :value => (@task.duration.to_i > 0 ? worked_nice(@task.duration) : ""), :class => 'tooltip', :title => _('2w 3d 1h')}.merge(perms['prioritize']) %><br/>
+    <% else %>
+      <p><%=worked_nice(@task.duration)%></p>
+    <% end %>
   <% else %>
     <%= hidden_field_tag "task[duration]", "#{(@task.duration.to_i > 0 ? worked_nice(@task.duration) : "")}" %>
   <% end %>
 
   <label for="task_due_at"><%=_ 'Due Date' %></label>
-  <%= due_date_field(@task, perms) %>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+    <%= due_date_field(@task, perms) %>
+  <% else %>
+    <p><%=formatted_date_for_current_user(@task.due_date)%></p>
+  <% end %>
 
   <label for="task_status"><%= _("Status") %></label>
-  <%= status_field(@task) %>
+  <% if @task.new_record? or current_user.can?(@task.project, 'edit') or current_user.admin? %>
+    <%= status_field(@task) %>
+  <% else %>
+    <p><%=_(@task.status_type)%></p>
+  <% end %>
 
   <% if @task.closed? and current_user.admin? %>
     <label for="task_hidden"> <%= _("Hide task") %></label>
