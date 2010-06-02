@@ -125,7 +125,7 @@ class Task
 
       has_many  :assignments, :after_add => :mark_new_assignment, :after_remove => :mark_removed_assignment
 
-      has_many  :assigned_users, :through => :assignments, :source => :user, :class_name => 'User', :conditions => 'assignments.assigned = true',
+      has_many  :assigned_users, :through => :assignments, :class_name => 'User', :source => :user, :conditions => "assignments.assigned = true",
         :extend => UserAssignments, :before_add => :reject_if_already_assigned
 
       has_many  :notified_users, :through => :assignments, :source => :user, :conditions => "assignments.notified = true",

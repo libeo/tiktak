@@ -35,11 +35,6 @@
     <%= stylesheet_link_merged :widgets %>
   <% end %>
 
-  <% if controller.controller_name == 'work_logs' and controller.action_name == 'edit' %>
-    <%= javascript_include_merged :worklogs %>
-    <%= stylesheet_link_merged :worklogs %>
-  <% end %>
-
   <title><%= $CONFIG[:productName] %></title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 

@@ -12,6 +12,20 @@ class Task < ActiveRecord::Base
 
   include Misc
 
+  ROW_SELECT = '
+  projects.name,
+  customers.name,
+  users.name,
+  statuses.name,
+  milestones.id, milestones.name,
+  todos.name, todos.task_id, todos.completed_at,
+  dependencies_tasks.task_num, dependencies_tasks.name,
+  dependants_tasks.task_num, dependants_tasks.name,
+  tasks.id, tasks.project_id, tasks.milestone_id,
+  tasks.task_num, tasks.name, tasks.worked_seconds, tasks.due_at, tasks.duration, tasks.hidden, tasks.requested_by'
+  
+  ROW_INCLUDES = [{:project => :customer}, :assigned_users, :assignments, :status, :milestone, :todos, :dependencies, :dependants]
+
   belongs_to    :company
   belongs_to    :project
   belongs_to    :milestone
@@ -66,7 +80,6 @@ class Task < ActiveRecord::Base
 
   named_scope :open, :conditions => 'statuses.name = "Open"', :include => [:status]
   named_scope :closed, :conditions => 'statuses.name != "Open"', :include => [:status]
-
 
   private
 

@@ -5,6 +5,7 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
       t.remove :severity_id
       t.remove :type_id
     end
+    change_column_default(:tasks, :milestone_id, 0)
 
     change_table :views do |t|
       t.remove :filter_tags
@@ -21,6 +22,7 @@ class FixFieldsForNewVersion < ActiveRecord::Migration
       t.integer :severity_id, :default => 0
       t.integer :type_id, :default => 0
     end
+    execute "alter table tasks alter milestone_id drop default"
 
     change_table :views do |t|
       t.string :filter_tags, :default => ""

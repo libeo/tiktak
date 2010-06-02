@@ -40,7 +40,8 @@ class UsersController < ApplicationController
     @user.company_id = current_user.company_id
     @user.date_format = "%d/%m/%Y"
     @user.time_format = "%H:%M"
-    @user.perm_template.build if @user.create_projects?
+    debugger
+    @user.build_perm_template({:user => @user}) if @user.create_projects?
 
     if @user.save
       

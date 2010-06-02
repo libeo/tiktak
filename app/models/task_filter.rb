@@ -35,12 +35,13 @@ class TaskFilter < ActiveRecord::Base
   end
 
   def merge_options(options, conditions)
+    debugger
     options.delete :conditions
     options = {:order => "tasks.id desc",
       :conditions => conditions,
     }.merge(options)
 
-    options[:include] ||= get_includes(options[:select]) || to_include
+    #options[:include] ||= get_includes(options[:select]) || to_include
     return options
   end
 
@@ -51,7 +52,9 @@ class TaskFilter < ActiveRecord::Base
   end
 
   def tasks_paginated(extra_conditions=nil, options={})
-    return Task.paginate(merge_options(options, conditions(extra_conditions)))
+    debugger
+    options = merge_options(options, conditions(extra_conditions))
+    return Task.paginate(options)
   end
 
   # Returns the count of tasks matching the conditions of this filter.
@@ -298,18 +301,25 @@ class TaskFilter < ActiveRecord::Base
   # Status qualifiers have to be handled especially until the
   # migration from an array in code to db backed statuses is complete
   def conditions_for_status_qualifiers(status_qualifiers)
-    old_status_ids = []
     c = company || user.company
-
-    status_qualifiers.each do |q|
-      status = q.qualifiable
-      old_status = c.statuses.index(status)
-      old_status_ids << old_status
-    end
-
-    old_status_ids = old_status_ids.join(",")
-    return "tasks.status_id in (#{ old_status_ids })" if !old_status_ids.blank?
+    ids = status_qualifiers.select { |q| c.statuses.include? q.qualifiable }.map { |q| q.qualifiable.id }.join(",")
+    return "tasks.status_id in (#{ids})"
   end
+
+  #def conditions_for_status_qualifiers(status_qualifiers)
+  #  debugger
+  #  old_status_ids = []
+  #  c = company || user.company
+
+  #  status_qualifiers.each do |q|
+  #    status = q.qualifiable
+  #    old_status = c.statuses.index(status)
+  #    old_status_ids << old_status
+  #  end
+
+  #  old_status_ids = old_status_ids.join(",")
+  #  return "tasks.status_id in (#{ old_status_ids })" if !old_status_ids.blank?
+  #end
 
 
   # Returns the column name to use for lookup for the given

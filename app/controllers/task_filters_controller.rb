@@ -64,8 +64,8 @@ class TaskFiltersController < ApplicationController
     if !@filter.save
       flash[:notice] = _"Filter couldn't be saved. A name is required"
     end
-    
-    redirect_using_js_if_needed("/tasks/list")
+
+    redirect_using_js_if_needed tasks_path
   end
 
   def select

@@ -1,5 +1,4 @@
 <%
-  debugger
   worked = WorkLog.find(:all, :select => "(SUM(work_logs.duration) - SUM(work_logs.paused_duration)) as total_duration", 
                         :conditions => ["work_logs.started_at >= ? and work_logs.user_id = ? and work_logs.duration > 0", current_user.company.last_payperiod_date, current_user.id]
       ).first.attributes['total_duration'].to_i

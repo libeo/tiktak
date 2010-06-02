@@ -93,8 +93,8 @@ class WorkLogsController < ApplicationController
 
     respond_to do |format|
       if @work_log.save
-        flash[:notice] = 'WorkLog was successfully created.'
-        format.html { redirect_to(@work_log) }
+        flash['notice'] = 'WorkLog was successfully created.'
+        format.html { redirect_from_last }
         format.xml  { render :xml => @work_log, :status => :created, :location => @work_log }
       else
         format.html { render :action => "new" }
@@ -108,8 +108,8 @@ class WorkLogsController < ApplicationController
   def update
     respond_to do |format|
       if @work_log.update_attributes(params[:work_log])
-        flash[:notice] = 'WorkLog was successfully updated.'
-        format.html { redirect_to :back }
+        flash['notice'] = 'WorkLog was successfully updated.'
+        format.html { redirect_from_last }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -123,7 +123,8 @@ class WorkLogsController < ApplicationController
   def destroy
     @work_log.destroy
     respond_to do |format|
-      format.html { redirect_to(work_logs_url) }
+      flash['notice'] = 'WorkLog was successfully destroyed'
+      format.html { redirect_from_last }
       format.xml  { head :ok }
     end
   end

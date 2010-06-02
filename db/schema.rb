@@ -750,7 +750,7 @@ ActiveRecord::Schema.define(:version => 20100525135013) do
     t.datetime "completed_at"
     t.integer  "duration",                          :default => 0
     t.integer  "hidden",                            :default => 0
-    t.integer  "milestone_id"
+    t.integer  "milestone_id",                      :default => 0
     t.text     "description"
     t.integer  "company_id"
     t.integer  "updated_by_id"

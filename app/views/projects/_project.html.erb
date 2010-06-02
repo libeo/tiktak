@@ -47,7 +47,7 @@
       [<%= format_duration(total) %> <%= _ 'Estimated' %>]</div>
 
     <div class="information-header"><%= _('Work Done') %></div>
-    <div class="information-value"><%= format_duration(completed, current_user.duration_format, current_user.workday_duration, current_user.days_per_week) %> [<%= format_duration(completed_total, current_user.duration_format, current_user.workday_duration, current_user.days_per_week) %> <%= _ 'Estimated' %>]</div>
+    <div class="information-value"><%= format_duration(completed) %> [<%= format_duration(completed_total) %> <%= _ 'Estimated' %>]</div>
 
     <div class="information-header">&nbsp;</div>
     <div><p style="margin-bottom:0;"><%= @project.description %></p></div>

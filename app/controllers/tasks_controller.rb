@@ -11,20 +11,6 @@ class TasksController < ApplicationController
 
   private
 
-  TASK_FIELDS = 'tasks.task_num, tasks.name, tasks.due_at, tasks.description, tasks.milestone_id, tasks.repeat, tasks.duration, 
-  tasks.worked_seconds, tasks.project_id, tasks.status, tasks.requested_by, tasks.completed_at, tasks.hidden,
-  dependencies_tasks.task_num, dependencies_tasks.name, dependencies_tasks.due_at, dependencies_tasks.description, 
-  dependencies_tasks.milestone_id, dependencies_tasks.repeat, dependencies_tasks.duration, dependencies_tasks.worked_seconds, 
-  dependencies_tasks.project_id, dependencies_tasks.status, dependencies_tasks.requested_by, dependencies_tasks.completed_at, dependencies_tasks.hidden,
-  customers.name, customers.contact_name, customers.contact_email,
-  projects.name,
-  milestones.name,
-  users.name, users.company_id, users.email,
-  customers_projects.contact_email, customers_projects.contact_name, customers_projects.name,
-  task_property_values.id,
-  todos.name, todos.completed_at,
-  property_values.id, property_values.color, property_values.value, property_values.icon_url'
-
   # Filter that checks if user has been included in a project
   def any_projects
     unless current_user.projects.can(current_user, :create).size > 0
@@ -123,12 +109,12 @@ class TasksController < ApplicationController
   def index
 
     tf = current_task_filter
-    if tf.qualifiers.length == 0
-      tf.qualifiers = default_qualifiers
-      tf.save
-    end
+    #if tf.qualifiers.length == 0
+    #  tf.qualifiers = default_qualifiers
+    #  tf.save
+    #end
 
-    @tasks = tf.tasks_paginated(nil, :page => params[:page], :select => TASK_FIELDS)
+    @tasks = tf.tasks_paginated(nil, :page => params[:page], :select => Task::ROW_SELECT, :include => Task::ROW_INCLUDES)
     session[:channels] += ["tasks_#{current_user.company_id}"]
 
     respond_to do |format|

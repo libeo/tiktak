@@ -6,22 +6,6 @@ class WidgetsController < ApplicationController
   THIS_WEEK  = 3
   NEXT_WEEK  = 4
 
-  TASK_ROW_SELECT = 'tasks.name, tasks.hidden, tasks.duration, tasks.worked_seconds, tasks.milestone_id, tasks.due_at, tasks.completed_at, tasks.status_id, tasks.task_num, tasks.requested_by, tasks.description, tasks.repeat, tasks.company_id tasks.milestone_id,
-  dependencies_tasks.task_num, dependants_tasks.task_num, dependencies_tasks.description, dependants_tasks.description, dependencies_tasks.milestone_id, dependants_tasks.milestone_id,
-  projects.name,
-  projects.company_id,
-  assignments.bookmarked, assignments.user_id,
-  customers.name, customers.company_id,
-  milestones.name,
-  users.name, users.company_id, users.email,
-  todos.name, todos.completed_at,
-  statuses.name,
-  task_property_values.id,
-  property_values.id, property_values.color, property_values.value, property_values.icon_url'
-
-  TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :todos, :assignments, :assigned_users, :notified_users, {:task_property_values => [:property_value, :property]}, :status]
-  #TASK_ROW_INCLUDE = [:milestone, {:project => :customer}, :dependencies, :dependants, :tags, {:task_owners => :user }, :notifications]
-
   def show
     begin
       @widget = Widget.find(params[:id], :conditions => ["company_id = ? AND user_id = ?", current_user.company_id, current_user.id])
@@ -38,11 +22,12 @@ class WidgetsController < ApplicationController
       return
     end
     
+    debugger
     case @widget.widget_type
     when 11
       #Task filter
       order, extra, includes = @widget.order_by_sql
-      @items = @widget.filter.tasks(extra, :limit => @widget.number, :order => order, :include => TASK_ROW_INCLUDE + includes, :select => TASK_ROW_SELECT)
+      @items = @widget.filter.tasks(extra, :limit => @widget.number, :order => order, :include => Task::ROW_INCLUDES | includes, :select => Task::ROW_SELECT)
       
     when 0
       # Tasks
@@ -53,12 +38,11 @@ class WidgetsController < ApplicationController
         "(tasks.milestone_id not in (#{completed_milestone_ids_query}))",
       ]
       conditions << "tasks.id in (select task_id from assignments where assignments.user_id = #{current_user.id})" if @widget.mine?
-      #conditions << "task_owners.user_id = #{current_user.id}" if @widget.mine?
       conditions << filter if filter
       order, extra, includes = @widget.order_by_sql
       conditions << extra if extra.length > 0
       
-      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => TASK_ROW_INCLUDE + includes, :order => order, :limit => @widget.number, :select => TASK_ROW_SELECT)
+      @items = Task.find(:all, :conditions => conditions.join(" AND "), :include => Task::ROW_INCLUDES | includes, :order => order, :limit => @widget.number, :select => Task::ROW_SELECT)
 
     when 1
       # Project List
