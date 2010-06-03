@@ -1,10 +1,5 @@
 module TasksHelper
 
-  def task_properties_select(task)
-    return "<select name='task[properties]
-
-
-
   ###
   # Returns the html for lis and links for the different task views.
   ###

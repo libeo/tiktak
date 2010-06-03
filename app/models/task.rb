@@ -461,6 +461,19 @@ class Task < ActiveRecord::Base
   end
 
 
+  def task_properties
+    properties = []
+    task.company.properties.each do |prop|
+      res = self.task_property_values.select { |tpv| tpv.property_id == prop.id }.first
+      unless res
+        atts = {:property => prop, :value => prop.default_prop}
+        res = TaskPropertyValue.create(atts)
+      end
+      properties << res
+    end
+    properties
+  end
+
 end
 
 # == Schema Information
