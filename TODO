@@ -1,1 +1,7 @@
-transform configure and remove widget links into link_to
+Transform widget configure box and remove widget links into link_to
+Find cleaner way to add new assignments in task email notifications (in task branch)
+Finish new task interface (in task branch)
+Add accepts_nested_values in task model for task properties, assignments, etc etc (in task branch)
+Make new widget to quickly create tasks
+Fix bookmarks when not assigned to task
+add popup for task TODO icon
