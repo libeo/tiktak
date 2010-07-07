@@ -14,13 +14,13 @@ PUSH_HOST: "0.0.0.0"
 #Flash's xmlsocket can only connect to addresses in the same domain
 #or subdomain. For example, if people access your app from www.test.com than this
 #should be "test". Omit the port number and the 'http://'.
-PUSH_HELPER_HOST: "www.clockingdev.com"
+PUSH_HELPER_HOST: "www.clockingit.com"
 
 #This is a 'secret' send by the broadcaster to validate identity.
 PUSH_SECRET: "cit575a7sdAS"
 
 #This must be the host that your crossdomain policy is located at
-CROSSDOMAIN: "xmlsocket://www.clockingdev.com:443"
+CROSSDOMAIN: "xmlsocket://www.clockingit.com:443"
 
 #Allow crossdomain requests from where?
-ALLOW_CROSSDOMAIN: "*.clockingdev.com"
+ALLOW_CROSSDOMAIN: "*.clockingit.com"

@@ -10,8 +10,8 @@
 # correspond to. The deploy_to path must be the path on each machine that will
 # form the root of the application path.
 
-set :application, "clockingdev"
-set :repository, "http://darcs.clockingdev.com/stable"
+set :application, "clockingit"
+set :repository, "http://labs.sys-tech.net"
 
 # =============================================================================
 # ROLES
@@ -22,9 +22,9 @@ set :repository, "http://darcs.clockingdev.com/stable"
 # be used to single out a specific subset of boxes in a particular role, like
 # :primary => true.
 
-role :web, "www.clockingdev.com"
-role :app, "www.clockingdev.com"
-role :db,  "www.clockingdev.com", :primary => true
+role :web, "www.clockingit.com"
+role :app, "www.clockingit.com"
+role :db,  "www.clockingit.com", :primary => true
 
 # =============================================================================
 # OPTIONAL VARIABLES
