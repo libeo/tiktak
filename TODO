@@ -5,3 +5,7 @@ Add accepts_nested_values in task model for task properties, assignments, etc et
 Make new widget to quickly create tasks
 Fix bookmarks when not assigned to task
 add popup for task TODO icon
+cleanup and remove chat code
+cleanup gems and plugins
+update push server plugin and see if we can get it working
+remove images not used anymore
