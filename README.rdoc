@@ -1,42 +1,150 @@
+= SYS-TECH's ClockingIT fork
+
+Welcome to SYS-TECH's fork of the ClockingIT project (http://www.clockingit.com). Started in march 2008.
+
+
+
+== Objectives :
+
+=== Remove 'Feature Bloat'
+Remove features that are jugded unnecessary or rarely used by our employees
+
+=== Improve main features
+Concentrate development on the most used features and ways of making them better
+
+=== Improve looks and UI
+Redesign interfaces to make interactions between the user and ClockingIT fast, easy and simple
+
+=== Make ClockingIT more RESTful
+Make controllers act more like web services to give the possibility of integrating ClockingIT with other apps
+
+=== Optimise code, cleanup, and refactoring
+Make SQL queries simpler and faster to improve overall speed. (Significant performance bottlenecks have been observed in the reports generator, the widget generator, the task filter, and the project listing.)
+Refactor code to follow more closely the 'fat model, thin controller' paradigm to ease the transition towards more RESTful controllers and ease the creation of external projects that can reuse ClockingIT code.
+
+== New features added (so far):
+TODO: List features that we'd like to add and those coming soon
+
+=== Widgets in the dashboard
+
+New options have been added to the widget for sorting tasks. You can now sort by :
+
+* Task name
+* Creation date
+* Modification date
+* Due date
+* Duration
+* Last task worked on
+* Last tasks created by user
+
+The 'priority' sorting has also been changed. Bookmarked tasks are shown first, followed by tasks which are due soon, and then overworked tasks. This new sorting brings to the top tasks that need your attention the most.
+
+A new kind of widget has also been added called 'Tasks from filter' giving you the possibilty of customising your task listing by selecting a previously saved filter.
+
+=== Task bookmarks
+
+The star appearing next to a task has been replaced by a bookmark to give it a clearer meaning. Bookmarked tasks will always be shown first when sorting tasks by priority or alphabetically in a widget. The bookmark metaphor will soon be integrated to other parts of ClockingIT.
+
+=== Task Filter
+
+New filter options have been added to the search bar in the task tab. You can now filter by :
+
+* Task number
+* Creator
+* Task created by user X that has no one assigned to it
+
+=== Task creation
+
+A new interface and RESTful controller is near completion for creating and managing tasks.
+
+=== Reports Generator
+
+Overlapping work logs are now flagged red in generated reports. Useful for finding work logs that have been modified and no longer match the workday schedule.
+
+A new report type called 'Merged time sheet' has been added. In the 'Time sheet' report, the total work time is calculated by adding up the duration of each work log, no matter if work logs overlap each other or not. With a merged time sheet, time from overlapping work logs is subtracted from the total, easing the calculation of total 'real' hours spent in a workday.
+
+A new time range has also been added enabling you to generate reports since the last pay period (more details below)
+
+=== Pay period
+
+A new notion of 'pay period' is gradually being added to ClockingIT. A Pay period represents the number of days an employee works before he receives his pay check. You can define the initial date and the number of days in a pay period in the company settings.
+
+A timer that displays an estimate of the work time left before the next pay period has been added next to the tab menu (at the top of the page). The estimate is caluclated by multiplying a work day (defined in the user preferences) by the number of days in a pay period and subtracting the total time worked since the last pay period.
+
+
+=== Notice Group
+
+A notice group represents a group of users that will be notified by email on certain events or actions. For now, you can configure notice groups to be notified either when a new project is created of when a new task is created inside certain projects. Notice groups work independantly of task notifications. Notice groups can only be created by administrators for the time being.
+
+TODO: add notice group to tab menu, gregory is getting tired of having to type /notice_groups in the URL each time.
+
+=== Adding users automaticaly to new projects
+
+In the company settings, you can add users to a default list of users that will automatically be added to all projects newly created.
+
+
+
+== Removed stuff (or almost)
+
+* Custom task attributes. (too much of a hassle to work with, not integrated well enough with other features)
+* Unread icon, previously the star. (Task notifications are sufficient)
+* In task properties, the task tags, task type, and task severity. (These properties are rarely (actually, only one person used them from time to time) used)
+* task_owner and notification tables in DB. (will be merged into 'assignments' table)
+* File attachments to a task. (Too buggy and not used)
+* Chat system. (Didn't work in the firt place, and too much effort needed to re-integrate)
+
+
+
 == Installing CIT on your server
+
 === Step 1: Getting the source
 
 The source is released under the MIT/X Consortium License.
 
 The easiest way to get the source and easily update it from time to time is with git. You'll need to install that on your machine and then run:
 
-  git clone git://github.com/ari/clockingit.git
+  git clone git://github.com/sys-tech/clockingit.git
 
 
 === Step 2: Prerequsites
 
-You need to be running some type of Unix: OSX, Linux, Solaris, BSD. Windows will probably not work. You will also need a database. MySQL has been heavily tested, and some people are running postgresql.
+You need to be running some type of Unix: OSX, Linux, Solaris, BSD. Windows will probably not work. You will also need a database. MySQL and MariaDB have been heavily tested, and some people are running postgresql.
 
-Install the following packages:
+Basic system packages needed to install the rest:
 
-* ruby gems
-* ruby mysql driver (you could also choose postgresql)
-* rake
+* ruby and rails
+* mysql (or postgresql)
 * ImageMagick
 
 How to install these will differ on each platform. Some possibilities:
 
 ==== FreeBSD
+TODO: try this out
 
   portinstall ruby-iconv ruby18-gems ruby18-mysql rubygem-rake ImageMagick
 
 ==== OSX
+TODO: try this out
 
 First install the Macports system from http://www.macports.org. Then:
 
   sudo port install rb-rubygems rb-mysql rb-rake ImageMagick
 
-==== Other
+==== Debian-based linuxes:
 
-Under other operating systems use your favourite package manager to ensure you have Ruby 1.8.x, rubygems, Imagemagick, Rake and the Ruby mysql driver installed.
+You need to install these packages first:
+
+    sudo aptitude install build-essential ruby rubygems ruby1.8-dev libxml2-dev libxslt-dev mysql-server libmysql++-dev libmagick9-dev
+
+After that, use rubygems to install the latest version of rails:
+
+    sudo gem install rails ruby-debug
 
 
-=== Step 3: Phusion Passenger
+=== Step 3 : Install web server
+TODO: add doc on how to setup nginx + thin
+
+==== Phusion Passenger
 
 Install Phusion Passenger from http://www.modrails.com/install.html You can also run CIT with Mongrel, but it tends to be a little easier with Phusion to set up.
 
@@ -45,9 +153,15 @@ Naturally you'll want to be running Apache httpd and have an appropriate virtual
 
 === Step 4: Setup configuration and database
 
+There is a script in the root of the package that does a basic setup ClockingIT. You can run it by opening a terminal, typing:
+  
   ruby setup.rb
+
+and answering the questions.
+
+Email notifications requires a mail agent (like exim, qmail or sendmail) already setup on the host system. To setup email notifications, edit the file config/environment.local.rb and adjust the parameters for your mail agent
   
-  
+
 === Step 5: Ruby gems
 
 There are a few Ruby gems which are needed for running CIT. Change directory into the top of your CIT installation, then type:
@@ -63,8 +177,10 @@ If you have trouble on OSX with the mysql gem (this seems to be an issue on 10.5
 
 
 == Upgrading to a newer revision
+TODO: this procedure works more or less. Test it out and write more details
 
-  git checkout db/schema.rb
+Update your local git repository with 
+
   git pull
 
 Check that there aren't any updated gems or new gems to install. If there are, just follow the instructions you will be given on screen.
@@ -88,10 +204,9 @@ Restart daemons
 
   cd /usr/local/www/clockingit
   nohup ./script/push_server &
-  ./script/ferret_server -e production start
   apachectl restart
 
-== Setting up Email Integration
+== Setting up Email Reception
 
 You need to set up your email software so that it sends all emails for a subdomain to your rails user, and set up the alias so that it runs the mailman script.
 
