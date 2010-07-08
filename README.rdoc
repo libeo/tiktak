@@ -1,6 +1,6 @@
 = SYS-TECH's ClockingIT fork
 
-Welcome to SYS-TECH's fork of the ClockingIT project (http://www.clockingit.com). Started in march 2008.
+Welcome to SYS-TECH's fork of the ClockingIT project (http://www.clockingit.com). Started in march 2009.
 
 
 
@@ -100,12 +100,11 @@ In the company settings, you can add users to a default list of users that will 
 
 === Step 1: Getting the source
 
-The source is released under the MIT/X Consortium License.
+The source is released under the GNU GPL v3 license.
 
 The easiest way to get the source and easily update it from time to time is with git. You'll need to install that on your machine and then run:
 
   git clone git://github.com/sys-tech/clockingit.git
-
 
 === Step 2: Prerequsites
 
