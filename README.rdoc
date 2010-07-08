@@ -92,6 +92,7 @@ In the company settings, you can add users to a default list of users that will 
 * task_owner and notification tables in DB. (will be merged into 'assignments' table)
 * File attachments to a task. (Too buggy and not used)
 * Chat system. (Didn't work in the firt place, and too much effort needed to re-integrate)
+* Ferret server (using the Search classes from upstream instead)
 
 
 
