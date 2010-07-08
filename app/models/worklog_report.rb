@@ -638,7 +638,7 @@ class WorklogReport
         @generated_report = GeneratedReport.new
         @generated_report.company = current_user.company
         @generated_report.user = current_user
-        @generated_report.filename = "clockingit_report.csv"
+        @generated_report.filename = "tik-tak_report.csv"
         @generated_report.report = csv
         @generated_report.save    
       end

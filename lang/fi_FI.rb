@@ -572,7 +572,7 @@ Localization.define('fi_FI') do |l|
   l.store "Delete this post?  Are you sure?", "Poista viesti? Oletko varma?" # Toni Huuskonen
   l.store "Download CSV file of this report", "Lataa projektin CSV-tiedosto." # Aki Saksola
   l.store "Remove all access for <b>%s</b>?", "Poista kaikki oikeudet projektiin/tehtävään <b>%s</b>?"
-  l.store "Open to everyone using ClockingIT", "Open to everyone using ClockingIT"
+  l.store "Open to everyone using Tik-Tak", "Open to everyone using Tik-Tak"
   l.store "Preferences successfully updated.", "Asetukset päivitetty."
   l.store "Project was successfully created.", "Projekti luotu." # Aki Saksola
   l.store "Project was successfully updated.", "Projekti päivitetty." # Aki Saksola
@@ -620,7 +620,7 @@ Localization.define('fi_FI') do |l|
   l.store "Send notification emails to people affected by these changes", "Lähetä sähköposti kaikille joita nämä muutokset koskevat." # Aki Saksola
   l.store "Enter task numbers, separated by commas. Type text to search.", "Lisää tehtävänumerot pilkulla erotettuna. Kirjoita etsiäksesi." # Aki Saksola
   l.store "Create a private forum for people with access to this project?", "Create a private forum for people with access to this project?"
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "Welcome to ClockingIT. To get started, follow the steps below."
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Welcome to Tik-Tak. To get started, follow the steps below."
   l.store "If you require further help, check the %s, %s or email us at %s", "If you require further help, check the %s, %s or email us at %s"
   l.store "Either the project doesn't exist, or you don't have access to it.", "Either the project doesn't exist, or you don't have access to it."
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(Muokataan 25x25 ja 50x50 kokoon säilyttäen kuvasuhteen)" # Aki Saksola
@@ -631,12 +631,12 @@ Localization.define('fi_FI') do |l|
   l.store "To create a project outside of this welcome page, click %s in the %s menu entry", "To create a project outside of this welcome page, click %s in the %s menu entry"
   l.store "User was successfully created. Remember to give this user access to needed projects.", "Käyttäjä luotu. Muista antaa oikeudet tarvittaviin projekteihin."
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "Du måste skapa ett projekt för att samla dina uppgifter i eller få tillåtelse att skapa uppgifter i ett befintligt projekt..."
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(Käytä kokoa 250x50px. Logo tulee näkyviin ruudun yläosaan ClockingIT logon tilalle ja lisäksi siisäänkirjautumis sivulle.)"
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(Käytä kokoa 250x50px. Logo tulee näkyviin ruudun yläosaan Tik-Tak logon tilalle ja lisäksi siisäänkirjautumis sivulle.)"
   l.store "Additional people to be notified on task changes<br />in addition to creator and asignee.<br/><br/>Ctrl-click to toggle.", "Muut henkilöt joille ilmoitetaan tehtävään tulleista muutoksista<br/>valtuutetun ja luojan lisäksi<br/><br/>Ctrl-klikkaa muuttaaksesi."
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones."
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate."
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu."
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki."
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki."
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things."
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work."
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running."

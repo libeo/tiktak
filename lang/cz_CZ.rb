@@ -545,7 +545,7 @@ Localization.define('cz_CZ') do |l|
   l.store "Delete this post?  Are you sure?", "Jste si jistý, že chcete odstranit tento příspěvek?" # JmenoAdmin
   l.store "Download CSV file of this report", "Stáhnout CSV soubor tohoto hlášení" # JmenoAdmin
   l.store "Remove all access for <b>%s</b>?", "Odebrat všechna oprávění uživatele <b>%s</b>?" # JmenoAdmin
-  l.store "Open to everyone using ClockingIT", "Přístupné všem uživatelům ClockingIT" # JmenoAdmin
+  l.store "Open to everyone using Tik-Tak", "Přístupné všem uživatelům Tik-Tak" # JmenoAdmin
   l.store "Preferences successfully updated.", "Nastavení bylo úspěšně aktualizováno." # JmenoAdmin
   l.store "Project was successfully created.", "Projekt byl úspěšně vytvořen." # Ladislav Nešněra
   l.store "Project was successfully updated.", "Projekt byl úspěšně aktualizován." # JmenoAdmin
@@ -589,7 +589,7 @@ Localization.define('cz_CZ') do |l|
   l.store "Send notification emails to people affected by these changes", "Zaslat upozornění osobám, kterých se tyto úpravy týkají" # Ladislav Nešněra
   l.store "Enter task numbers, separated by commas. Type text to search.", "Vlože čísla úkolu oddělená pomocí čárky. Napište název úkolů pro zobrazení našeptávače." # JmenoAdmin
   l.store "Create a private forum for people with access to this project?", "Vytvořit soukromou diskuzi pro účastníky tohoto projektu?" # JmenoAdmin
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "Vítejte v ClockingIT. Postupujte dle následujících kroků." # Ladislav Nešněra
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Vítejte v Tik-Tak. Postupujte dle následujících kroků." # Ladislav Nešněra
   l.store "If you require further help, check the %s, %s or email us at %s", "Potřebujete-li další pomoc, můžete navštívit stránku %s, %s nebo nám pošlete email na %s" # JmenoAdmin
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(Rozměr bude změněn na 25x25 a 50x50 při zachování poměru stran)" # JmenoAdmin
   l.store "Text entered will be saved automatically to your current work notes.", "Zapsaný text bude automaticky uložen do vašich aktuálních pracovních poznámek." # Ladislav Nešněra
@@ -600,11 +600,11 @@ Localization.define('cz_CZ') do |l|
   l.store "User was successfully created. Remember to give this user access to needed projects.", "Uživatel byl úspěšně vytvořen. Nezapomeňte mu přidělit oprávnění k příslušným projektům." # JmenoAdmin
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "Pro vytvoření úkolů musíte vytvořit nový projekt, nebo získat oprávnění pro tvorbu úkolů v nějakém již existujícím projektu..." # JmenoAdmin
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "Počet chatovacích místností není omezen, ale můžete omezit přístup pouze pro jednotlivé projekty, nebo je nechat veřejné." # JmenoAdmin
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(Doporučujeme 250x50px. Logo bude zobrazeno zcela nahoře místo stávajícího ClockingIT a také na přihlašovací stránce)" # Ladislav Nešněra
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(Doporučujeme 250x50px. Logo bude zobrazeno zcela nahoře místo stávajícího Tik-Tak a také na přihlašovací stránce)" # Ladislav Nešněra
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "Také můžete prostě přidat <b>?mode=tasks</b> pro úkoly, <b>?mode=logs</b> pro pracovní záznamy, <br/>nebo <b>?mode=milestones</b> pro milníky." # JmenoAdmin
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "Můžete buď kliknout na zatržítko vlevo od %s, nebo přes úpravu úkolu změnit stav na Dokončeno, Zavrhnutý, Chybný nebo Duplicitní." # JmenoAdmin
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "Po vypracování úkolu je potřeba ho dokončit. Vyhledejte tento úkol kliknutím na %s v horní nabídce, nebo jej zkuste najít pomocí pole Vyhledat v té samé nabídce." # JmenoAdmin
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "Dalším krokem je %s. Tato možnost je přístupná i po kliknutí na volbu %s v horní nabídce. Více informací o úkolech dostanete v %s na stránkách ClockingIT Wiki." # JmenoAdmin
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "Dalším krokem je %s. Tato možnost je přístupná i po kliknutí na volbu %s v horní nabídce. Více informací o úkolech dostanete v %s na stránkách Tik-Tak Wiki." # JmenoAdmin
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "Vaším prvním krokem bude %s. Nedělejte si starosti, když nezadáte reálná data, projekt můžete kdykoliv vymazat a vytvořit nový, jakmile pochopíte principy." # JmenoAdmin
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "Když dokončíte práci na úkolu, klikněte na %s  pro pokračování v práci, ale na jiném úkolu, nebo použijte %s pro uložení pracovního záznamu. %s ukončí stopky bez vytvoření pracovního záznamu." # JmenoAdmin
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "Jakmile budete mít jeden nebo více úkolů nadefinovaných, je načase na nich začít pracovat. Klikněte na volbu %s v horní nabídce, vyberte nějaký úkol a klikněte hned vedle něj na %s. Stopky, které měří odpracovaný čas začnou běžet." # JmenoAdmin

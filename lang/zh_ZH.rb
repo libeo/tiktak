@@ -534,7 +534,7 @@ Localization.define('zh_ZH') do |l|
   l.store "Client was successfully created.", "Client was successfully created."
   l.store "Download CSV file of this report", "Download CSV file of this report"
   l.store "Remove all access for <b>%s</b>?", "Remove all access for <b>%s</b>?"
-  l.store "Open to everyone using ClockingIT", "Open to everyone using ClockingIT"
+  l.store "Open to everyone using Tik-Tak", "Open to everyone using Tik-Tak"
   l.store "Preferences successfully updated.", "成功更新偏好" # zhoupeng
   l.store "Project was successfully created.", "成功创建项目" # zhoupeng
   l.store "Project was successfully updated.", "成功更新项目" # zhoupeng
@@ -577,7 +577,7 @@ Localization.define('zh_ZH') do |l|
   l.store "Send notification emails to people affected by these changes", "Send notification emails to people affected by these changes"
   l.store "Enter task numbers, separated by commas. Type text to search.", "Enter task numbers, separated by commas. Type text to search."
   l.store "Create a private forum for people with access to this project?", "Create a private forum for people with access to this project?"
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "Welcome to ClockingIT. To get started, follow the steps below."
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Welcome to Tik-Tak. To get started, follow the steps below."
   l.store "If you require further help, check the %s, %s or email us at %s", "If you require further help, check the %s, %s or email us at %s"
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)"
   l.store "Text entered will be saved automatically to your current work notes.", "Text entered will be saved automatically to your current work notes."
@@ -588,11 +588,11 @@ Localization.define('zh_ZH') do |l|
   l.store "User was successfully created. Remember to give this user access to needed projects.", "User was successfully created. Remember to give this user access to needed projects."
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "You need to create a project to hold your tasks, or get access to create tasks in an existing project..."
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "You can have as many chat rooms as you like. They can be limited to a project or public across all your users."
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)"
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)"
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones."
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate."
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu."
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki."
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki."
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things."
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work."
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running."

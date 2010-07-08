@@ -601,7 +601,7 @@ Localization.define('pl_PL') do |l|
   l.store "Delete this post?  Are you sure?", "na pewno usunąć ten post ?" # chester
   l.store "Download CSV file of this report", "Pobierz raport w formacie CSV."
   l.store "Remove all access for <b>%s</b>?", "Usunąć całkiem dostęp dla <b>%s</b> ?"
-  l.store "Open to everyone using ClockingIT", "Otwórz dla wszystkich używających ClockingIT" # chester
+  l.store "Open to everyone using Tik-Tak", "Otwórz dla wszystkich używających Tik-Tak" # chester
   l.store "Preferences successfully updated.", "Ustawienia zaktualizowane."
   l.store "Project was successfully created.", "Projekt utworzony."
   l.store "Project was successfully updated.", "Projekt zaktualizowany."
@@ -651,7 +651,7 @@ Localization.define('pl_PL') do |l|
   l.store "Send notification emails to people affected by these changes", "Wyślij powiadomienia do osób powiązanych ze zmianami" # chester
   l.store "Enter task numbers, separated by commas. Type text to search.", "Wpisz numery zadań rozdzielone przecinkami. Wpisz tekst aby wyszukać zadanie." # chester
   l.store "Create a private forum for people with access to this project?", "Czy utworzyć prywatne forum dla użytkowników z dostępem do tego projektu ?" # chester
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "Witamy w ClockingIT! Przeprowadź poniższe kroki aby rozpocząć pracę." # chester
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Witamy w Tik-Tak! Przeprowadź poniższe kroki aby rozpocząć pracę." # chester
   l.store "If you require further help, check the %s, %s or email us at %s", "Jeśli potrzebujesz pomocy, sprawdź %s, %s lub napisz wiadomość email pod adres %s" # chester
   l.store "Either the project doesn't exist, or you don't have access to it.", "Ten projekt nie istnieje lub nie masz do niego dostępu." # Lukas
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(Zostanie pomniejszony do 25x25 i 50x50. Proporcje zostają zachowane)" # chester
@@ -666,13 +666,13 @@ Localization.define('pl_PL') do |l|
   l.store "Changes done here will not be logged in the Activity log or sent out as notifications.", "Zmiany tutaj wprowadzone nie zostaną zapisane w logach aktywności ani nie spowodują wysłania powiadomień." # chester
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "Aby zarządzać zadaniami musisz utworzyć nowy projekt lub uzyskać dostęp do tworzenia zadań w istniejącym projekcie."
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "Możesz założyć dowolną ilość pokojów. Każdy może zostać ograniczony do wybranego projektu lub udostępniony wszystkim twoim użytkownikom." # chester
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(250x50px powinno wyglądać dobrze. Logo zostanie wyświetlone na górze zamiast logo ClockingIT i na Twojej stronie logowania)" # chester
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(250x50px powinno wyglądać dobrze. Logo zostanie wyświetlone na górze zamiast logo Tik-Tak i na Twojej stronie logowania)" # chester
   l.store "Additional people to be notified on task changes<br />in addition to creator and asignee.<br/><br/>Ctrl-click to toggle.", "Dodatkowe osoby do powiadomienia o zmianach zadania<br />nie licząc twórcy oraz osoby przypisanej do zadania."
-  l.store "(Won't be resized, 150x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(Nie zostanie przeskalowane. Logo będzie widoczne zamiast logo ClockingIT i na stronie logowania.)"
+  l.store "(Won't be resized, 150x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(Nie zostanie przeskalowane. Logo będzie widoczne zamiast logo Tik-Tak i na stronie logowania.)"
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "możesz także dodać <b>?mode=tasks</b> tylko dla zadań, <b>?mode=logs</b> tylko dla logów <br/>albo <b>?mode=milestones</b> tylko dla Kroków" # chester
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "Możesz zaznaczyć checkbox po lewej stronie %s albo możesz edytować zadanie i zmienić status na 'Zamknięty', 'Nie do naprawy', 'Nieprawidłowy' albo 'Duplikat'." # chester
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "Po pracy nad zadaniem, należy go zamknąć. Znajdź zadanie naciskając %s w górnym menu albo użyj wyszukiwarki." # chester
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "Następne w kolejce jest %s. Możesz to także zrobić naciskając przycisk %s w menu na górze. Więcej informacji na temat zadań znajduje się w Wiki ClockingIT" # chester
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "Następne w kolejce jest %s. Możesz to także zrobić naciskając przycisk %s w menu na górze. Więcej informacji na temat zadań znajduje się w Wiki Tik-Tak" # chester
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "Następnym krokiem jest %s. Nie martw się o poprawność danych, zawsze możesz usunąć projekt i utworzyć nowy kiedy już opanujesz obsługę." # chester
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "Kiedy zakończysz pracę nad zadaniem, naciśnij inne %s aby kontynuować inne zadanie albo użyj %s aby zapisać zmiany zadania.  Wybranie %s zatrzymuje Timer bez logowania jakiejkolwiek pracy." # chester
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "Kiedy już utworzysz kilka zadań, czas rozpocząć pracę z nimi. Naciśnij %s w górnym menu, wybierz zadanie i naciśnij %s obok - rozpocznie się zliczanie czasu pracy nad tym zadaniem." # chester

@@ -1,5 +1,5 @@
 # A logical grouping of projects, called Client inside
-# ClockingIT.
+# Tik-Tak.
 
 class Customer < ActiveRecord::Base
   has_many(:custom_attribute_values, :as => :attributable, :dependent => :destroy, 

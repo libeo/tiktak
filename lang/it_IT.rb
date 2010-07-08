@@ -604,7 +604,7 @@ Localization.define('it_IT') do |l|
   l.store "Delete this post?  Are you sure?", "Cancellare questo post? Sicuro?" # M. L. Giannotta
   l.store "Download CSV file of this report", "Scarica file CVS di questo report."
   l.store "Remove all access for <b>%s</b>?", "Rimuovere tutto l'accesso per <b>%s</b>?"
-  l.store "Open to everyone using ClockingIT", "Apri a tutti usando ClockingIT" # PIetro Sacchi
+  l.store "Open to everyone using Tik-Tak", "Apri a tutti usando Tik-Tak" # PIetro Sacchi
   l.store "Preferences successfully updated.", "Le preferenze sono state aggiornate con successo."
   l.store "Project was successfully created.", "Il Progetto è stato creato con successo."
   l.store "Project was successfully updated.", "Il Progetto è stato aggiornato con successo."
@@ -655,7 +655,7 @@ Localization.define('it_IT') do |l|
   l.store "Send notification emails to people affected by these changes", "Send notification emails to people affected by these changes"
   l.store "Enter task numbers, separated by commas. Type text to search.", "Inserire il numero del task, separato dalle virgola , testo per ricercare" # PIetro Sacchi
   l.store "Create a private forum for people with access to this project?", "Creare un Forum privato per le persone che hanno accesso a questo Progetto?" # Filippo
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "Benvenuto in ClockingIT. Per inizare, segui i passi indicati sotto." # Gian Luca Matteucci
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Benvenuto in Tik-Tak. Per inizare, segui i passi indicati sotto." # Gian Luca Matteucci
   l.store "If you require further help, check the %s, %s or email us at %s", "If you require further help, check the %s, %s or email us at %s"
   l.store "Either the project doesn't exist, or you don't have access to it.", "Il Progetto non esiste o non hai accesso ad esso!" # Filippo
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(Sarà ridimensionata a 25x25 e 50x50, preservandone la proporzionalità)" # Filippo
@@ -669,12 +669,12 @@ Localization.define('it_IT') do |l|
   l.store "Changes done here will not be logged in the Activity log or sent out as notifications.", "Changes done here will not be logged in the Activity log or sent out as notifications."
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "Du måste skapa ett projekt för att samla dina uppgifter i eller få tillåtelse att skapa uppgifter i ett befintligt projekt..."
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "You can have as many chat rooms as you like. They can be limited to a project or public across all your users."
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(250x50px dovrebbe avere un bell'aspetto. Il logo verrà visualizzato in alto in sostizione a quello ClockingIT, e, sulla tua pagina di login.)"
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(250x50px dovrebbe avere un bell'aspetto. Il logo verrà visualizzato in alto in sostizione a quello Tik-Tak, e, sulla tua pagina di login.)"
   l.store "Additional people to be notified on task changes<br />in addition to creator and asignee.<br/><br/>Ctrl-click to toggle.", "Ulteriori persone verranno avvisate sulle variazioni di Task<br/>oltre a colui che le definisce o le assegna<br/><br/>Ctrl-click per attivare."
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones."
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate."
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu."
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki."
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki."
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "Il primo passo consiste nel %s. Non preoccuparti di inserire dti reali, potrai sempre cancellare il progetto che hai creato e ricominciare da capo, dopo aver capito come funziona il sistema." # Gian Luca Matteucci
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work."
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "Definito uno o più Compiti, è tempo di cominciare a lavorarci su! Clicca %s dal Menu di navigazione, scegli un Compito e clicca il %s vicino ad esso. Il timer per quel Compito sarà avviato." # Filippo

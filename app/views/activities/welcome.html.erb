@@ -8,7 +8,7 @@
           </tr>
           <tr>
             <td colspan=2>
-            <div class="welcome"><%= _'Welcome to ClockingIT. To get started, follow the steps below.'%><br><%= link_to _("Don't show this splash page"), :controller => 'activities', :action => 'hide_welcome' %></div>
+            <div class="welcome"><%= _'Welcome to Tik-Tak. To get started, follow the steps below.'%><br><%= link_to _("Don't show this splash page"), :controller => 'activities', :action => 'hide_welcome' %></div>
 
             <div class="tutorial<%= " complete" if @projects_count > 0%>">
               <%= _"The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", link_to(_('create a project'), :controller => 'projects', :action => 'new') %> <br /><br />
@@ -16,7 +16,7 @@
             </div>
 
             <div class="tutorial<%= " complete" if @tasks_count > 0 %><%= " todo" if @projects_count == 0%>">
-              <%= _ 'Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.', link_to(_('creating a task'), :controller => 'tasks', :action => 'new'), _('New Task'), "<a href=\"http://wiki.clockingit.com/wiki:tutorial#tasks\" target=\"_new\">#{_'the documentation'}</a>"  %>
+              <%= _ 'Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.', link_to(_('creating a task'), :controller => 'tasks', :action => 'new'), _('New Task'), "<a href=\"http://wiki.tik-tak.com/wiki:tutorial#tasks\" target=\"_new\">#{_'the documentation'}</a>"  %>
             </div>
 
             <div class="tutorial<%= " complete" if @work_count > 0 %><%= " todo" if @tasks_count == 0 %>">
@@ -33,7 +33,7 @@
               <%= _'The last thing to do, is %s unless you\'re working alone. Once you have created logins for them, grant them access to the projects they are to work on from the Edit Project page, accessible from the %s.', link_to(_('invite some co-workers'), :controller => 'users', :action => 'new'), link_to(_('Overview'), :controller => 'activities', :action => 'list') %>
             </div>
 
-            <div class="tutorial"><%= _('If you require further help, check the %s, %s or email us at %s', "<a href=\"http://forum.clockingit.com\" target=\"_new\">#{_'Forum'}</a>", "<a href=\"http://wiki.clockingit.com\" target=\"_new\">#{_'Wiki'}</a>", '<a href="mailto:support@clockingit.com">support@clockingit.com</a>.')%>
+            <div class="tutorial"><%= _('If you require further help, check the %s, %s or email us at %s', "<a href=\"http://forum.tik-tak.com\" target=\"_new\">#{_'Forum'}</a>", "<a href=\"http://wiki.tik-tak.com\" target=\"_new\">#{_'Wiki'}</a>", '<a href="mailto:support@tik-tak.com">support@tik-tak.com</a>.')%>
 
             </td>
           </tr>

@@ -10,15 +10,15 @@ class NotificationsTest < ActiveRecord::TestCase
   context "a normal notification" do
     setup do
       # need to hard code these configs because the fixtured have hard coded values
-      $CONFIG[:domain] = "clockingit.com"
+      $CONFIG[:domain] = "tik-tak.com"
       $CONFIG[:email_domain] = $CONFIG[:domain].gsub(/:\d+/, '')
 
       @expected = TMail::Mail.new
       @expected.set_content_type "text", "plain", { "charset" => CHARSET }
 
       @expected.from     = "#{$CONFIG[:from]}@#{$CONFIG[:email_domain]}"
-      @expected.reply_to = 'task-1@cit.clockingit.com'
-      @expected.to       = 'admin@clockingit.com'
+      @expected.reply_to = 'task-1@cit.tik-tak.com'
+      @expected.to       = 'admin@tik-tak.com'
       @expected['Mime-Version'] = '1.0'
       @expected.date     = Time.now
     end
@@ -30,7 +30,7 @@ class NotificationsTest < ActiveRecord::TestCase
       end
 
       should "create created mail as expected" do
-        @expected.subject  = '[ClockingIT] Created: [#1] Test [Test Project] (Unassigned)'
+        @expected.subject  = '[Tik-Tak] Created: [#1] Test [Test Project] (Unassigned)'
         @expected.body     = read_fixture('created')
 
         notification = Notifications.create_created(@task, @user, 
@@ -40,7 +40,7 @@ class NotificationsTest < ActiveRecord::TestCase
       end
 
       should "create changed mail as expected" do
-        @expected.subject = '[ClockingIT] Resolved: [#1] Test -> Open [Test Project] (Erlend Simonsen)'
+        @expected.subject = '[Tik-Tak] Resolved: [#1] Test -> Open [Test Project] (Erlend Simonsen)'
         @expected['Mime-Version'] = '1.0'
         @expected.body    = read_fixture('changed')
         

@@ -527,7 +527,7 @@ Localization.define('jp_JP') do |l|
   l.store "Delete this post?  Are you sure?", "この投稿を削除しますか?  ほとにぃ?" # 宇井　登
   l.store "Download CSV file of this report", "このレポートをCSVファイルとしてダウンロード" # 宇井　登
   l.store "Remove all access for <b>%s</b>?", "すべてのアクセス権を<b>%s</b>から削除しますか?" # 宇井　登
-  l.store "Open to everyone using ClockingIT", "Open to everyone using ClockingIT"
+  l.store "Open to everyone using Tik-Tak", "Open to everyone using Tik-Tak"
   l.store "Preferences successfully updated.", "Preferences successfully updated."
   l.store "Project was successfully created.", "プロジェクトの作成が成功しました。" # 宇井　登
   l.store "Project was successfully updated.", "プロジェクトの更新が成功しました。" # 宇井　登
@@ -568,7 +568,7 @@ Localization.define('jp_JP') do |l|
   l.store "Send notification emails to people affected by these changes", "Send notification emails to people affected by these changes"
   l.store "Enter task numbers, separated by commas. Type text to search.", "タスク番号を入力してください。コンマ(,)で区切ると複数指定できます。" # 宇井　登
   l.store "Create a private forum for people with access to this project?", "Create a private forum for people with access to this project?"
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "ClockingIT にようこそ！速やかに始めるために、以下の手順をお勧めします。" # 宇井　登
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Tik-Tak にようこそ！速やかに始めるために、以下の手順をお勧めします。" # 宇井　登
   l.store "If you require further help, check the %s, %s or email us at %s", "もっと突っ込んだヘルプが必要な場合、%sか%sをチェックするか、%sにメールしてください。" # 宇井　登
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(比率を維持した状態で 25x25 と 50x50 にリサイズされます)" # 宇井　登
   l.store "Text entered will be saved automatically to your current work notes.", "Text entered will be saved automatically to your current work notes."
@@ -578,11 +578,11 @@ Localization.define('jp_JP') do |l|
   l.store "User was successfully created. Remember to give this user access to needed projects.", "新規ユーザーが作成されました。忘れずに、プロジェクトへのアクセス権をユーザーに登録してください。" # 宇井　登
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "You need to create a project to hold your tasks, or get access to create tasks in an existing project..."
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "You can have as many chat rooms as you like. They can be limited to a project or public across all your users."
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(250×50pxをお勧めします。 ClockingITのロゴの代わりに表示され、ログインページにも表示されます。)" # 宇井　登
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(250×50pxをお勧めします。 Tik-Takのロゴの代わりに表示され、ログインページにも表示されます。)" # 宇井　登
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones."
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "%s の左側にあるチェックボックスをクリックするか、タスクを編集してステータスを終了、修正不可、無効あるいは重複に変更します。" # 宇井　登
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "タスク作業が完了したら、計測も完了させます。トップメニューの %s をクリックするか、検索から該当のタスクを見つけます（現在、日本語検索はうまく機能しません）。" # 宇井　登
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "次に%sします。 tトップメニューの %s ボタンをクリックするだけです。タスクについてのさらに詳しい説明はClockingITウィキの%sをご覧ください。" # 宇井　登
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "次に%sします。 tトップメニューの %s ボタンをクリックするだけです。タスクについてのさらに詳しい説明はTik-Takウィキの%sをご覧ください。" # 宇井　登
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "まず最初に %s を行います。 いつでも、作成したり開始したりしたプロジェクトを削除して、最初からやり直すことができますので、気軽に正規のデータを入力してください。" # 宇井　登
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "タスク作業を終了したら、別のタスクの %s をクリックしてそのタスクの作業を開始するか、 %s をクリックして作業時間を保存します。 %s をクリックすると作業記録をとらずにタイマーがストップします。" # 宇井　登
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "タスクの詳細を記述した後、それぞれの作業を開始します。続いて、トップメニューの %s をクリックし、作業するタスクを選んで %s をクリックします。すると、そのタスクのタイマーが作業時間を計測し始めます。" # 宇井　登

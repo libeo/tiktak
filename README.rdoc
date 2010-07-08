@@ -1,7 +1,6 @@
-= SYS-TECH's ClockingIT fork
+= Tik-Tak
 
-Welcome to SYS-TECH's fork of the ClockingIT project (http://www.clockingit.com). Started in march 2009.
-
+Welcome to Tik-Tak, a fork of the ClockingIT project (http://www.clockingit.com) made by SYS-TECH, started in march 2009.
 
 
 == Objectives :
@@ -13,14 +12,14 @@ Remove features that are jugded unnecessary or rarely used by our employees
 Concentrate development on the most used features and ways of making them better
 
 === Improve looks and UI
-Redesign interfaces to make interactions between the user and ClockingIT fast, easy and simple
+Redesign interfaces to make interactions between the user and Tik-Tak fast, easy and simple
 
-=== Make ClockingIT more RESTful
-Make controllers act more like web services to give the possibility of integrating ClockingIT with other apps
+=== Make Tik-Tak more RESTful
+Make controllers act more like web services to give the possibility of integrating Tik-Tak with other apps
 
 === Optimise code, cleanup, and refactoring
 Make SQL queries simpler and faster to improve overall speed. (Significant performance bottlenecks have been observed in the reports generator, the widget generator, the task filter, and the project listing.)
-Refactor code to follow more closely the 'fat model, thin controller' paradigm to ease the transition towards more RESTful controllers and ease the creation of external projects that can reuse ClockingIT code.
+Refactor code to follow more closely the 'fat model, thin controller' paradigm to ease the transition towards more RESTful controllers and ease the creation of external projects that can reuse Tik-Tak code.
 
 == New features added (so far):
 TODO: List features that we'd like to add and those coming soon
@@ -43,7 +42,7 @@ A new kind of widget has also been added called 'Tasks from filter' giving you t
 
 === Task bookmarks
 
-The star appearing next to a task has been replaced by a bookmark to give it a clearer meaning. Bookmarked tasks will always be shown first when sorting tasks by priority or alphabetically in a widget. The bookmark metaphor will soon be integrated to other parts of ClockingIT.
+The star appearing next to a task has been replaced by a bookmark to give it a clearer meaning. Bookmarked tasks will always be shown first when sorting tasks by priority or alphabetically in a widget. The bookmark metaphor will soon be integrated to other parts of Tik-Tak.
 
 === Task Filter
 
@@ -67,7 +66,7 @@ A new time range has also been added enabling you to generate reports since the 
 
 === Pay period
 
-A new notion of 'pay period' is gradually being added to ClockingIT. A Pay period represents the number of days an employee works before he receives his pay check. You can define the initial date and the number of days in a pay period in the company settings.
+A new notion of 'pay period' is gradually being added to Tik-Tak. A Pay period represents the number of days an employee works before he receives his pay check. You can define the initial date and the number of days in a pay period in the company settings.
 
 A timer that displays an estimate of the work time left before the next pay period has been added next to the tab menu (at the top of the page). The estimate is caluclated by multiplying a work day (defined in the user preferences) by the number of days in a pay period and subtracting the total time worked since the last pay period.
 
@@ -104,7 +103,7 @@ The source is released under the GNU GPL v3 license.
 
 The easiest way to get the source and easily update it from time to time is with git. You'll need to install that on your machine and then run:
 
-  git clone git://github.com/sys-tech/clockingit.git
+  git clone git://github.com/sys-tech/tik-tak.git
 
 === Step 2: Prerequsites
 
@@ -153,7 +152,7 @@ Naturally you'll want to be running Apache httpd and have an appropriate virtual
 
 === Step 4: Setup configuration and database
 
-There is a script in the root of the package that does a basic setup ClockingIT. You can run it by opening a terminal, typing:
+There is a script in the root of the package that does a basic setup Tik-Tak. You can run it by opening a terminal, typing:
   
   ruby setup.rb
 
@@ -202,7 +201,7 @@ then kill each of the three running daemons.
 
 Restart daemons
 
-  cd /usr/local/www/clockingit
+  cd /usr/local/www/tik-tak
   nohup ./script/push_server &
   apachectl restart
 
@@ -210,7 +209,7 @@ Restart daemons
 
 You need to set up your email software so that it sends all emails for a subdomain to your rails user, and set up the alias so that it runs the mailman script.
 
-For example to configure sendmail to pass to ClockingIT all emails sent to domain.com. See http://www.freebsd.org/doc/en/books/handbook/sendmail.html for more help on configuring sendmail on FreeBSD systems.
+For example to configure sendmail to pass to Tik-Tak all emails sent to domain.com. See http://www.freebsd.org/doc/en/books/handbook/sendmail.html for more help on configuring sendmail on FreeBSD systems.
 
 Add an entry to /etc/mail/local-host-names to contain your domain
 

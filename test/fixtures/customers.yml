@@ -1,13 +1,13 @@
 internal_customer:
   company: cit
   name: Internal
-  contact_email: admin@clockingit.com
+  contact_email: admin@tik-tak.com
   contact_name: Erlend Simonsen
   css: #menu {color: blue;} 
 external_customer:
   company: cit
   name: External
-  contact_email: admin@clockingit.com
+  contact_email: admin@tik-tak.com
   contact_name: Erlend Simonsen
   css: #menu {color: red;}
 fudge_internal_customer:

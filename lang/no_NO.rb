@@ -592,7 +592,7 @@ Localization.define('no_NO') do |l|
   l.store "Client was successfully updated.", "Kunde oppdatert."
   l.store "Download CSV file of this report", "Last ned CSV filen til denne rapporten."
   l.store "Remove all access for <b>%s</b>?", "Fjærn all tilgang for <b>%s</b>?"
-  l.store "Open to everyone using ClockingIT", "Åpent for alle som bruker ClockingIT"
+  l.store "Open to everyone using Tik-Tak", "Åpent for alle som bruker Tik-Tak"
   l.store "Preferences successfully updated.", "Innstillinger oppdatert."
   l.store "Project was successfully created.", "Prosjekt opprettet."
   l.store "Project was successfully updated.", "Prosjekt oppdatert."
@@ -642,7 +642,7 @@ Localization.define('no_NO') do |l|
   l.store "Send notification emails to people affected by these changes", "Send varslingspost til brukere påvirket av disse endringene" # Ronny Hanssen
   l.store "Enter task numbers, separated by commas. Type text to search.", "Skriv in oppgavenummer, separert med komma. Skriv tekst for å søke."
   l.store "Create a private forum for people with access to this project?", "Opprette ett privat forum for personene med  tilgang til dette prosjektet?" # Robert Svendsen
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "Velkommen til ClockingIT. For å begynne, følg stegende under." # Robert Svendsen
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Velkommen til Tik-Tak. For å begynne, følg stegende under." # Robert Svendsen
   l.store "If you require further help, check the %s, %s or email us at %s", "If you require further help, check the %s, %s or email us at %s"
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(Størrelsen blir endret til 25x25 eller 50x50)" # Robert Svendsen
   l.store "Text entered will be saved automatically to your current work notes.", "Teksten som blir fylt inn blir automatisk lagret til dine nåværende notater." # Robert Svendsen
@@ -652,15 +652,15 @@ Localization.define('no_NO') do |l|
   l.store "To create a project outside of this welcome page, click %s in the %s menu entry", "To create a project outside of this welcome page, click %s in the %s menu entry"
   l.store "User was successfully created. Remember to give this user access to needed projects.", "Bruker opprettet. Husk å gi brukeren tilgang til prosjekter."
   l.store "Changes done here will not be logged in the Activity log or sent out as notifications.", "Endringer blir ikke logget i aktivitetsloggen eller sendt ut som notiser." # Robert Svendsen
-  l.store "Changes done here will not go live until admin@clockingit.com is notified for verification.", "Endringer må bli godkjent av admin@clockingit.com først" # Robert Svendsen
+  l.store "Changes done here will not go live until admin@tik-tak.com is notified for verification.", "Endringer må bli godkjent av admin@tik-tak.com først" # Robert Svendsen
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "Du må opprette et prosjekt som kan holde oppgavene dine, eller få tilgang til et eksisterende prosjekt..."
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "Du kan ha så mange praterom som du vil. Eneste begrensing er at disse må være i et prosjekt eller offentlig for alle brukerne." # Robert Svendsen
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(250x50px burde se bra ut. Logoen vil bli vist øverst, og på loggin siden din.)"
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(250x50px burde se bra ut. Logoen vil bli vist øverst, og på loggin siden din.)"
   l.store "Additional people to be notified on task changes<br />in addition to creator and asignee.<br/><br/>Ctrl-click to toggle.", "Andre som skal varsles ved forandringer<br/>i tillegg til registrator og ansvarlig<br/><br/>Ctrl-klikk for å velge."
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones."
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate."
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu."
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki."
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki."
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things."
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work."
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running."

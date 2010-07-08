@@ -31,7 +31,7 @@ class PropertiesControllerTest < ActionController::TestCase
     assert_equal "Test", created.name
     assert_equal "val1", created.property_values.first.value
     assert_equal "val2", created.property_values.last.value
-    assert_equal "ClockingIT", created.company.name
+    assert_equal "Tik-Tak", created.company.name
   end
 
 

@@ -1,7 +1,7 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 cit:
-  name: ClockingIT
-  contact_email: admin@clockingit.com
+  name: Tik-Tak
+  contact_email: admin@tik-tak.com
   contact_name: Erlend Simonsen
   subdomain: cit
   show_forum: true

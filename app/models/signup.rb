@@ -3,7 +3,7 @@
 class Signup < ActionMailer::Base
 
   def signup(user, company, sent_at = Time.now)
-    @subject    = '[ClockingIT] Account Registration'
+    @subject    = '[Tik-Tak] Account Registration'
     @body       = {:user => user, :company => company}
     @recipients = user.email
     @from       = "admin@#{$CONFIG[:domain]}"
@@ -11,7 +11,7 @@ class Signup < ActionMailer::Base
   end
 
   def forgot_password(user, sent_at = Time.now)
-    @subject    = "[ClockingIT] #{user.company.name} Account Information"
+    @subject    = "[Tik-Tak] #{user.company.name} Account Information"
     @body       = {:user => user}
     @recipients = user.email
     @from       = "admin@#{$CONFIG[:domain]}"
@@ -19,7 +19,7 @@ class Signup < ActionMailer::Base
   end
 
   def account_created(user, created_by, welcome_message, sent_at = Time.now)
-    @subject    = "[ClockingIT] Invitation from #{created_by.name}"
+    @subject    = "[Tik-Tak] Invitation from #{created_by.name}"
     @body       = {:user => user, :created_by => created_by, :welcome_message => welcome_message}
     @recipients = user.email
     @from       = "admin@#{$CONFIG[:domain]}"
@@ -28,7 +28,7 @@ class Signup < ActionMailer::Base
   end
 
   def mass_email(user, sent_at = Time.now)
-    @subject    = "[ClockingIT] New version"
+    @subject    = "[Tik-Tak] New version"
     @body       = {:user => user}
     @recipients = user.email
     @from       = "admin@#{$CONFIG[:domain]}"
@@ -36,7 +36,7 @@ class Signup < ActionMailer::Base
   end
 
   def subdomain_changed(user, sent_at = Time.now)
-    @subject    = "[ClockingIT] #{user.company.name} - Login URL changed"
+    @subject    = "[Tik-Tak] #{user.company.name} - Login URL changed"
     @body       = {:user => user}
     @recipients = user.email
     @from       = "admin@#{$CONFIG[:domain]}"

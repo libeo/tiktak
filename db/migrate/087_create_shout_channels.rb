@@ -16,7 +16,7 @@ class CreateShoutChannels < ActiveRecord::Migration
     chan = ShoutChannel.new
     chan.public = 1
     chan.name = 'General'
-    chan.description = 'Public room shared by all ClockingIT users.'
+    chan.description = 'Public room shared by all Tik-Tak users.'
     chan.save
 
     Company.find(:all).each do |company|

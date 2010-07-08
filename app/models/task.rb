@@ -465,7 +465,7 @@ class Task < ActiveRecord::Base
     self.name
   end
 
-  # { :clockingit => [ {:tasks => []} ] }
+  # { :tik-tak => [ {:tasks => []} ] }
 
   def Task.filter_by_tag(tag, tasks)
     matching = []

@@ -2,7 +2,7 @@ class InitializeForums < ActiveRecord::Migration
   def self.up
     say_with_time "Creating global forums.." do
       Forum.new( :name => "General", :description => "Talk about whatever you want.", :description_html => "<p>Talk about whatever you want.</p>", :position => 0 ).save
-      Forum.new( :name => "Support", :description => "Problems using ClockingIT?", :description_html => "<p>Promlems using ClockingIT?</p>", :position => 1 ).save
+      Forum.new( :name => "Support", :description => "Problems using Tik-Tak?", :description_html => "<p>Promlems using Tik-Tak?</p>", :position => 1 ).save
     end
 
     say_with_time "Creating company forums.." do

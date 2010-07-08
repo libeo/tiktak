@@ -10,7 +10,7 @@
 # correspond to. The deploy_to path must be the path on each machine that will
 # form the root of the application path.
 
-set :application, "clockingit"
+set :application, "tik-tak"
 set :repository, "http://labs.sys-tech.net"
 
 # =============================================================================
@@ -22,9 +22,9 @@ set :repository, "http://labs.sys-tech.net"
 # be used to single out a specific subset of boxes in a particular role, like
 # :primary => true.
 
-role :web, "www.clockingit.com"
-role :app, "www.clockingit.com"
-role :db,  "www.clockingit.com", :primary => true
+role :web, "www.tik-tak.com"
+role :app, "www.tik-tak.com"
+role :db,  "www.tik-tak.com", :primary => true
 
 # =============================================================================
 # OPTIONAL VARIABLES

@@ -1016,7 +1016,7 @@ class TasksController < ApplicationController
   def get_csv
     list
 
-    filename = "clockingit_tasks"
+    filename = "tik-tak_tasks"
     filename_extras = []
 
     tf = TaskFilter.new(self, session)

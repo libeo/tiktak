@@ -8,7 +8,7 @@
 <label for="company_payperiod_date"><%= _ 'Pay Period Date' %></label><%= datetime_select 'company', 'payperiod_date', :ifFormat => "#{current_user.date_format} #{current_user.time_format}", :default => tz.utc_to_local(@company.payperiod_date) %><br/>
 <label for="company_payperiod_days"> <%= _ 'Pay Period Length (days)' %></label><%= text_field 'company', 'payperiod_days' %><br/>
 
-<label for="incoming_email_project" class="tooltip" title="<%=_ 'Emails received by ClockingIT that don\'t belong to a task will be added to this project' %>">
+<label for="incoming_email_project" class="tooltip" title="<%=_ 'Emails received by Tik-Tak that don\'t belong to a task will be added to this project' %>">
   <%=_ "Incoming Email Project" %>
 </label>
 <%= incoming_email_select_tag %>

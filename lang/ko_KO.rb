@@ -528,7 +528,7 @@ Localization.define('ko_KO') do |l|
   l.store "Client was successfully created.", "클라이언트가 잘 생성되었습니다." # 심마로
   l.store "Download CSV file of this report", "이 보고서의 CSV 파일 다운로드" # 심마로
   l.store "Remove all access for <b>%s</b>?", "<b>%s</b> 의 모든 권한을 제거하시겠습니까?" # 심마로
-  l.store "Open to everyone using ClockingIT", "ClockingIT의 모든 사용자에게 오픈됨" # 심마로
+  l.store "Open to everyone using Tik-Tak", "Tik-Tak의 모든 사용자에게 오픈됨" # 심마로
   l.store "Preferences successfully updated.", "설정이 잘 업데이트되었습니다." # 심마로
   l.store "Project was successfully created.", "프로젝트가 잘 생성되었습니다." # 심마로
   l.store "Project was successfully updated.", "프로젝트가 잘 업데이트되었습니다." # 심마로
@@ -568,7 +568,7 @@ Localization.define('ko_KO') do |l|
   l.store "Send notification emails to people affected by these changes", "변경의 영향을 받는 사람들에게 알림 이메일 전송함" # 심마로
   l.store "Enter task numbers, separated by commas. Type text to search.", "작업 번호를 쉼표로 구분하여 입력하세요. 검색하려면 텍스트를 입력하세요." # 심마로
   l.store "Create a private forum for people with access to this project?", "이 프로젝트에 관련된 사람들을 위한 비밀 포럼을 만들겠습니까?" # 심마로
-  l.store "Welcome to ClockingIT. To get started, follow the steps below.", "ClockingIT에 오신 것을 환영합니다. 시작하려면, 다음 단계를 따라 하세요." # 심마로
+  l.store "Welcome to Tik-Tak. To get started, follow the steps below.", "Tik-Tak에 오신 것을 환영합니다. 시작하려면, 다음 단계를 따라 하세요." # 심마로
   l.store "If you require further help, check the %s, %s or email us at %s", "도움이 더 필요하시면, %s, %s 를 살펴보시거나, %s 로 이메일을 보내 주세요." # 심마로
   l.store "(Will be resized to 25x25 and 50x50 while preserving aspect ratio)", "(비율을 유지한 채로 크기를 25x25와 50x50으로 축소합니다)" # 심마로
   l.store "Text entered will be saved automatically to your current work notes.", "입력한 텍스트는 현재 작업 노트에 자동으로 저장됩니다" # 심마로
@@ -578,11 +578,11 @@ Localization.define('ko_KO') do |l|
   l.store "User was successfully created. Remember to give this user access to needed projects.", "사용자가 잘 생성되었습니다. 필요한 프로젝트에 대한 접근 권한을 사용자에게 주세요." # 심마로
   l.store "You need to create a project to hold your tasks, or get access to create tasks in an existing project...", "You need to create a project to hold your tasks, or get access to create tasks in an existing project..."
   l.store "You can have as many chat rooms as you like. They can be limited to a project or public across all your users.", "원하는 만큼 대화방을 만들 수 있습니다. 대화방은 모든 사용자에게 공개될 수도 있고, 한 프로젝트에 제한될 수도 있습니다." # 심마로
-  l.store "(250x50px should look good. The logo will be shown up top instead of the ClockingIT one, and on your login page.)", "(250x50픽셀이 적당합니다. 로고는 ClockingIT 로고 대신에 화면 위쪽에 표시되며, 로그인 페이지에도 표시됩니다." # 심마로
+  l.store "(250x50px should look good. The logo will be shown up top instead of the Tik-Tak one, and on your login page.)", "(250x50픽셀이 적당합니다. 로고는 Tik-Tak 로고 대신에 화면 위쪽에 표시되며, 로그인 페이지에도 표시됩니다." # 심마로
   l.store "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones.", "You can also append <b>?mode=tasks</b> for only tasks, <b>?mode=logs</b> for only work logs, <br/>or <b>?mode=milestones</b> for just milestones."
   l.store "You can either click the checkbox to the left of the %s or you can edit the task and change the status to Closed, Won't Fix, Invalid or Duplicate.", "%s 왼쪽에 있는 체크박스를 클릭하거나, 작업을 편집하여 상태를 '완료됨', '수정하지 않음', '무효임', '중복임'으로 바꿉니다." # 심마로
   l.store "After working on a task, it's time to complete it. Find your task by clicking %s on the top menu, or search for it from the search field in the same menu.", "작업의 일을 다 했으면, 완료를 할 차례입니다. 맨 위의 메뉴에서 %s 를 눌러 작업을 찾거나 검색 필드를 사용하여 작업을 찾습니다." # 심마로
-  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the ClockingIT Wiki.", "두번째 단계는 %s 입니다. 상위 메뉴의 %s 버튼을 눌러서 시작하면 됩니다. 작업에 대한 더 많은 정보를 얻으려면,  ClockingIT 위키의 %s 을 살펴 보세요." # 심마로
+  l.store "Next up is %s. You can also do it by clicking the %s button up in the top menu. For more information about tasks, have a look at %s on the Tik-Tak Wiki.", "두번째 단계는 %s 입니다. 상위 메뉴의 %s 버튼을 눌러서 시작하면 됩니다. 작업에 대한 더 많은 정보를 얻으려면,  Tik-Tak 위키의 %s 을 살펴 보세요." # 심마로
   l.store "The first step is to %s. Don't worry about entering real data, you can always delete the project you create and start over, once you get the hang of things.", "첫번째 단계는 %s 입니다. 실제 데이터를 입력하는 것을 겁내지 마세요. 사용법을 익히고 나면, 생성한 프로젝트를 언제든지 삭제하고 다시 시작할 수 있습니다." # 심마로
   l.store "When done working on that task, either click another %s to continue working but on a different task, or use %s to save off this work. %s stops the timer without logging any work.", "한 작업을 마치고 나면, 다른 작업을 시작하기 위해 또다른 %s 를 누르거나, 저장하기 위해 %s 를 사용하거나, 작업을 기록하지 않고 타이머를 중지시키기 위해 %s 를 누릅니다." # 심마로
   l.store "Once you have one or more tasks defined, it's time to start working on them. Click %s on the top menu, pick a task and click the %s next to it. The timer for that task starts running.", "한두 개의 작업을 정의하고 나면, 실제로 작업을 시작할 수 있습니다. 상위 메뉴의 %s 를 누른 다음에, 작업을 하나 선택하고 그 옆에 있는 %s를 누릅니다. 작업에 대한 타이머가 동작하기 시작합니다." # 심마로

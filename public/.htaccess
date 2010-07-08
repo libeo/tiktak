@@ -23,7 +23,7 @@ RewriteEngine On
 # then you MUST also set the RewriteBase in this htaccess file.
 #
 # Example:
-#Alias /cit /usr/local/www/apps/clockingit/current/public
+#Alias /cit /usr/local/www/apps/tik-tak/current/public
 #RewriteBase /cit
 
 RewriteRule ^$ index.html [QSA]

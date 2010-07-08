@@ -48,7 +48,7 @@
         </td>
       </tr>
     </table>
-    <span id="contact" class="contact">Clocking IT - <a href="mailto:feedback@clockingit.com"><%=_ 'Feedback? Suggestions? Ideas? Bugs?'%></a> <%= link_to "[Admin]", :controller => "admin", :action => "index" if current_user.admin == 10 %></span>
+    <span id="contact" class="contact">Clocking IT - <a href="mailto:feedback@tik-tak.com"><%=_ 'Feedback? Suggestions? Ideas? Bugs?'%></a> <%= link_to "[Admin]", :controller => "admin", :action => "index" if current_user.admin == 10 %></span>
 
 <%= periodically_call_remote(:url => { :controller => 'tasks', :action => 'update_sheet_info' }, :frequency => 90 ) -%>
 
