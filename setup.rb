@@ -6,16 +6,16 @@ puts "If you don't want this to happen, please press <Ctrl-c> to abort."
 puts "*******************************************************************************************"
 puts
 
-print "Enter MySQL database name for ClockingIT [cit]: "
+print "Enter MySQL database name for Tik-Tak [tiktak]: "
 db = gets
-db = "cit" if db == "\n"
-print "Enter username for ClockingIT MySQL account [cit]: "
+db = "tiktak" if db == "\n"
+print "Enter username for Tik-Tak MySQL account [tiktak]: "
 dbuser = gets
-dbuser = "cit" if dbuser == "\n"
-print "Enter password for ClockingIT MySQL account [cit]: "
+dbuser = "tiktak" if dbuser == "\n"
+print "Enter password for Tik-Tak MySQL account [tiktak]: "
 dbpw = gets
-dbpw = "cit" if dbpw == "\n"
-print "Enter host for ClockingIT MySQL account [localhost]: "
+dbpw = "tiktak" if dbpw == "\n"
+print "Enter host for Tik-Tak MySQL account [localhost]: "
 dbhost = gets
 dbhost = "localhost" if dbhost == "\n"
 
@@ -30,7 +30,7 @@ puts
 
 
 
-puts "Please create the database and user for ClockingIT by running something like this: "
+puts "Please create the database and user for Tik-Tak by running something like this: "
 puts " echo \"CREATE DATABASE #{db} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci; GRANT ALL ON #{db}.* TO '#{dbuser}'@'localhost' IDENTIFIED BY '#{dbpw}'; FLUSH PRIVILEGES;\" | mysql -u root -p "
 puts
 puts "Press <Return> once you have done this."
@@ -40,7 +40,7 @@ puts
 domain = "\n"
 while domain == "\n" || domain.split('.').size < 3
   puts
-  print "Enter domain ClockingIT will be accessed from (for example projects.mycompany.com): "
+  print "Enter domain Tik-Tak will be accessed from (for example projects.mycompany.com): "
   domain = gets
 end
 
@@ -50,7 +50,7 @@ subdomain = domain.split('.').first
 domain = domain.split('.')[1..-1].join('.')
 
 puts
-puts "Using '#{subdomain}.#{domain}' to access ClockingIT."
+puts "Using '#{subdomain}.#{domain}' to access Tik-Tak."
 puts
 
 company = "\n"
@@ -153,7 +153,7 @@ File.open("config/environment.local.example") do |file|
 end
 env = env.join
 
-env.gsub!(/clockingit\.com/, domain)
+env.gsub!(/tik-tak\.com/, domain)
 
 File.open("config/environment.local.rb", "w") do |file|
   file.puts env
@@ -169,7 +169,7 @@ File.open("config/juggernaut_config.yml-example") do |file|
 end
 jug = jug.join
 
-jug.gsub!(/clockingit\.com/, domain)
+jug.gsub!(/tik-tak\.com/, domain)
 jug.gsub!(/www\./, subdomain + ".")
 jug.gsub!(/443/, jug_port)
 
