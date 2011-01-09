@@ -3,6 +3,10 @@
 puts "*******************************************************************************************"
 puts "This setup script will overwrite any configuration files you've already created in config/*"
 puts "If you don't want this to happen, please press <Ctrl-c> to abort."
+puts
+puts "=== WARNING ==="
+puts "Please make sure the rmagick and mysql gems have been installed before continuing."
+puts
 puts "*******************************************************************************************"
 puts
 
@@ -240,6 +244,7 @@ puts "  Creating initial company..."
 @company.contact_email = email
 @company.contact_name = name
 @company.subdomain = subdomain.downcase
+@company.payperiod_date = Date.today
 
 if @company.save
   @customer = Customer.new

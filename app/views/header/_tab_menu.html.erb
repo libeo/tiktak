@@ -9,13 +9,13 @@
     menu << [:timeline, {:controller => 'timeline', :action => 'list'}] if current_user.option_tracktime
     menu << [:reports, {:controller => 'reports', :action => 'list'}] if current_user.option_tracktime and current_user.can_any?(current_user.projects, 'report')
     menu << [:wiki, {:controller => 'wiki', :action => 'show'}] if current_user.company.show_wiki?
-    menu << [:forums, forum_path] if current_user.company.show_forum?
+    menu << [:forums, {:controller => 'forums', :action => 'index'}] if current_user.company.show_forum?
     menu << [:projects, {:controller => 'projects', :action => 'list'} ]
     menu.last << [[:add_project, {:controller => 'projects', :action => 'new'}]] if current_user.create_projects?
     menu << [:clients, {:controller => 'clients', :action => 'list'}] if current_user.can_view_clients?
     menu.last << [[:add_client, {:controller => 'clients', :action => 'new'}]] if current_user.can_create_clients?
     menu << [:users, {:controller => 'users', :action => 'list'}, [[:add_user, {:controller => 'users', :action => 'new'}]] ] if current_user.admin?
-    menu << [:resources, resources_path] if current_user.use_resources?
+    menu << [:resources, {:controller => 'resources', :action => 'index'}] if current_user.use_resources?
     #menu << [:chat, {:controller => 'shout', :action => 'list'}] if current_user.company.show_chat?
     #menu << [:files, {:controller => 'project_files', :action => 'list'}]
   %>
